@@ -8,7 +8,7 @@
 
 #include "create_bd.h"
 #include "erreur.h"
-#include "tri.h"
+#include "use_bd.h"
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -56,14 +56,14 @@ static void ajout_parametre(Donnee * data, FILE * file){
 
 /**
  * \fn static void ajout_lieux(Donnee * data, FILE * file)
- * \brief Ajoute les lieux et leur interet dans la variable data et tri le tableau à deux dimentions interet dans l'ordre decroissant de l'interet.
+ * \brief Ajoute l'identifiant, le nom, le nombre d'arcs et l'interet de chaques lieu dans la table Lieux.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param Un pointeur sur une structure FILE.
  */
 static void ajout_lieux(Donnee * data, FILE * file){
     char nom_lieu[1024];
-    int num_lieu, intret_lieu;
+    int num_lieu, intret_lieu, id = 0;
 
     /* allocation du tableau de type Lieu*/
     if(data->lieux == NULL) if((data->lieux = (Lieu*)malloc(data->nb_lieux_total*sizeof(Lieu))) == NULL)  fatalerreur("ajout_lieux : la creation du table lieux a echoué\n");
@@ -73,6 +73,7 @@ static void ajout_lieux(Donnee * data, FILE * file){
         data->lieux[num_lieu].interet = intret_lieu;
         data->lieux[num_lieu].nom = strdup(nom_lieu);
         data->lieux[num_lieu].nb_arc = 0;
+        data->lieux[num_lieu].id = id++;
     }
 }
 
@@ -86,7 +87,7 @@ static void ajout_lieux(Donnee * data, FILE * file){
 static void ajout_arcs(Donnee * data, FILE * file){
     int nb_element = data->nb_arcs / data->nb_lieux_total + 1;
     Arc **ch_tmp;
-    int i = 0, l1, l2, distance, insecurite, int_tmp, j;
+    int i = 0, l1, l2, distance, insecurite;
     int * nb_element_lieu;
 
     /* allocation du tableau map a deux dimantions. cette table grandi en fonction de nb_element et du nombre d'arcs pour un lieu*/
@@ -120,10 +121,10 @@ static void ajout_arcs(Donnee * data, FILE * file){
         data->map[l1][data->lieux[l1].nb_arc] = (Arc *)malloc(sizeof(Arc));
         if(data->map[l1][data->lieux[l1].nb_arc] == NULL) fatalerreur("ajout_arcs : allocation de l'arc");
         /* on instrit l'arc a son lieu de depart*/
-        data->map[l1][data->lieux[l1].nb_arc]->depart = l1;
+        data->map[l1][data->lieux[l1].nb_arc]->depart = &data->lieux[l1];
         data->map[l1][data->lieux[l1].nb_arc]->insecurite = insecurite;
         data->map[l1][data->lieux[l1].nb_arc]->distance = distance;
-        data->map[l1][data->lieux[l1].nb_arc]->destination = l2;
+        data->map[l1][data->lieux[l1].nb_arc]->destination = &data->lieux[l2];
         data->lieux[l1].nb_arc++; /*gaumentation du nombre d'arcs enregirte*/
 
         /*si le nombre d'arcs enregistre est superieur ou egale au nombre d'element disponible, on augmante le nombre delements de nb_element*/
@@ -138,16 +139,164 @@ static void ajout_arcs(Donnee * data, FILE * file){
         data->map[l2][data->lieux[l2].nb_arc] = (Arc *)malloc(sizeof(Arc));
         if(data->map[l2][data->lieux[l2].nb_arc] == NULL) fatalerreur("ajout_arcs : allocation de l'arc");
         /* on instrit l'arc a son lieu de d'arrive*/
-        data->map[l2][data->lieux[l2].nb_arc]->depart = l2;
+        data->map[l2][data->lieux[l2].nb_arc]->depart = &data->lieux[l2];
         data->map[l2][data->lieux[l2].nb_arc]->insecurite = insecurite;
         data->map[l2][data->lieux[l2].nb_arc]->distance = distance;
-        data->map[l2][data->lieux[l2].nb_arc]->destination = l1;
+        data->map[l2][data->lieux[l2].nb_arc]->destination = &data->lieux[l1];
         data->lieux[l2].nb_arc++; /*gaumentation du nombre d'arcs enregirte*/
     }
 
     /* sauvgarde du nombre d'arc dans la table definiassant les lieux et tri les arcs de map*/
     free(nb_element_lieu);
 }
+
+/**
+ * \fn int epure_map(Donnee *data,int id_lieu)
+ * \brief supprime les arcs domminés du lieu.
+ *
+ * \param Un pointeur sur une structure Donnee.
+ * \param l'indentifiant du lieu.
+ * \return le nombre d'arcs restant en depart du lieu.
+ */
+int epure_map(Donnee *data,int id_lieu){
+    int nbre_arc = nb_arc(data, id_lieu);
+    int id_arc, id_key = 0, id_cpy = 1;
+
+    int arc_interet, arc_distance, arc_insecurite;
+
+    /*recuperation des valeurs de la clef*/
+    int key_interet = interet_destination(data, id_lieu, id_key);
+    int key_distance = distance_arc(data, id_lieu, id_key);
+    int key_insecurite = insecurite_arc(data, id_lieu, id_key);
+
+    /*lecture de tous le tableau*/
+    for(id_arc = 1 ; id_arc < nbre_arc ; ++id_arc){
+        /*si l'arc n'existe pas, on prends le suivant*/
+        while((id_arc != nbre_arc)&&(pointeur_map_arc(data, id_lieu, id_arc) == NULL)) id_arc++;
+
+        /*recuperation des valeurs de l'arc*/
+        arc_interet = interet_destination(data, id_lieu, id_arc);
+        arc_distance = distance_arc(data, id_lieu, id_arc);
+        arc_insecurite = insecurite_arc(data, id_lieu, id_arc);
+
+        /*si l'arc est domine, on le suprime*/
+        if((arc_interet == key_interet)&&(arc_distance >= key_distance)&&(arc_insecurite >= key_insecurite)){
+            spr_pointeur_map_arc(data, id_lieu, id_arc);
+            maj_pointeur_map_arc(data, id_lieu, id_arc, NULL);
+        }
+        else{
+            /* l'inetere de la clef est differnts de celui de l'arc, on deplace la clef de un*/
+            if(arc_interet < key_interet){
+                /*si l'arc n'existe pas, on prends le suivant*/
+                while((id_key != nbre_arc)&&(pointeur_map_arc(data, id_lieu, id_key) == NULL)) ++id_key;
+
+                /*recuperation des valeurs de la clef*/
+                key_interet = interet_destination(data, id_lieu, id_key);
+                key_distance = distance_arc(data, id_lieu, id_key);
+                key_insecurite = insecurite_arc(data, id_lieu, id_key);
+            }
+
+            /* s'il y a des arc de supprimes, on comble les trous*/
+            if(id_arc != id_cpy){
+                if(pointeur_map_arc(data, id_lieu, id_cpy) != NULL) spr_pointeur_map_arc(data, id_lieu, id_cpy);
+                maj_pointeur_map_arc(data, id_lieu, id_cpy, pointeur_map_arc(data, id_lieu, id_arc));
+                maj_pointeur_map_arc(data, id_lieu, id_arc, NULL);
+
+                ++id_cpy;
+            }
+        }
+    }
+    return id_cpy;
+}
+
+/**
+ * \fn static int position_arc(const void *p1, const void *p2).
+ * \brief indique si l'arc p1 doit se trouver avant l'arc p2 selon :
+ * p1.destination.interet >= p2.destination.interet et
+ * p1.distance <= p2.distance et
+ * p2.insecurité <= p2.insecurité.
+ *
+ * \param pointeur sur l'arc 1.
+ * \param pointeur sur l'arc 2.
+ */
+static int position_arc(const void *p1, const void *p2){
+    Arc *a = *((Arc* const*)p1);
+    Arc *b = *((Arc* const*)p2);
+
+    /*comparaison*/
+    if(a->destination->interet > b->destination->interet)
+        return -1;
+
+    if(a->destination->interet == b->destination->interet){
+        if(a->distance < b->distance)
+            return -1;
+        if(a->distance == b->distance)
+            if(a->insecurite <= b->insecurite)
+                return -1;
+    }
+    return 1;
+}
+
+static int interet_decroissant(const void *interet1, const void *interet2){
+    int a = ((Interet_lieu const*)interet1)->interet;
+    int b = ((Interet_lieu const*)interet2)->interet;
+    return b - a;
+}
+
+static void creat_interet(Donnee *data){
+    int i;
+
+    data->table_interet = (Interet_lieu*)malloc(data->nb_lieux_total*sizeof(Interet_lieu));
+    if(data->table_interet == NULL) fatalerreur("creat_interet : echec de l'allocation de la table table_interet");
+
+    for(i = 0; i < data->nb_lieux_total; ++i){
+        data->table_interet[i].interet = data->lieux[i].interet;
+        data->table_interet[i].lieu = &data->lieux[i];
+        printf("creat_interet : table_interet %d id %d\n", data->table_interet[i].interet, data->table_interet[i].lieu->id);
+    }
+}
+
+static void create_index(Donnee *data, int id_lieu){
+    int i, last_lieu;
+    Arc **map = data->map[id_lieu];
+    if(data->index_lieu == NULL){
+        data->index_lieu = (Index_arc***)malloc(data->nb_lieux_total * sizeof(Index_arc**));
+        if(data->index_lieu == NULL)
+            fatalerreur("create_index : creation de la table d'index impossible");
+
+        for(i = 0; i < data->nb_lieux_total; ++i)
+            data->index_lieu[i] = NULL;
+    }
+
+    if(data->index_lieu[id_lieu] == NULL){
+        data->index_lieu[id_lieu] = (Index_arc**)malloc(data->nb_lieux_total * sizeof(Index_arc*));
+        if(data->index_lieu[id_lieu] == NULL)
+            fatalerreur("create_index : creation de la table d'index impossible");
+
+        //memset(data->index_lieu[id_lieu], NULL, data->nb_lieux_total * sizeof(Index_arc*));
+        for(i = 0; i < data->nb_lieux_total; ++i)
+            data->index_lieu[id_lieu][i] = NULL;
+    }
+
+    data->index_lieu[id_lieu][map[0]->destination->id] = (Index_arc*)malloc(sizeof(Index_arc));
+    data->index_lieu[id_lieu][map[0]->destination->id]->id_arc = 0;
+    last_lieu = 0;
+
+    for(i = 1; i < data->lieux[id_lieu].nb_arc; ++i){
+        if(map[last_lieu]->destination != map[i]->destination){
+            data->index_lieu[id_lieu][map[i]->destination->id] = (Index_arc*)malloc(sizeof(Index_arc));
+            data->index_lieu[id_lieu][map[i]->destination->id]->id_arc = i;
+
+            data->index_lieu[id_lieu][map[last_lieu]->destination->id]->nb_arc = i - last_lieu;
+
+            last_lieu = i;
+        }
+
+    }
+
+    data->index_lieu[id_lieu][map[last_lieu]->destination->id]->nb_arc = i - last_lieu;
+}
+
 /**
  * \fn static void ajout_arcs(Donnee * data, FILE * file)
  * \brief Ouvre le fichier et coordonne les differantes fonctions parmetant le stockage des informations en memoire.
@@ -169,6 +318,7 @@ Donnee * main_create_db(char * path){
     data->index_lieu = NULL;
     data->map = NULL;
     data->solution = NULL;
+    data->table_interet = NULL;
 
     /*ouvreture du fichier*/
     FILE * file = open_file(path);
@@ -187,12 +337,19 @@ Donnee * main_create_db(char * path){
         }
         free(line);
     }
+
+    creat_interet(data);
+    qsort(data->table_interet, data->nb_lieux_total, sizeof(Interet_lieu), interet_decroissant);
+
     for( i = 0; i < data->nb_lieux_total; ++i){
         /* tri des arcs*/
-        quicksort_map(data, i, 0, data->lieux[i].nb_arc-1);
+        //quicksort_map(data, i, 0, data->lieux[i].nb_arc-1);
+        qsort(data->map[i], data->lieux[i].nb_arc, sizeof(Arc*), position_arc);
 
         /*supression des arcs domine*/
         data->lieux[i].nb_arc = epure_map(data, i);
+
+        create_index(data, i);
     }
     return data;
 }
@@ -209,11 +366,20 @@ void free_db(Donnee * data){
     /*liberation de toutes les tables*/
     for(i = 0; i < data->nb_lieux_total; ++i){
         free(data->lieux[i].nom);
+
+        for(j = 0; j < data->nb_lieux_total; ++j)
+            if(data->index_lieu[i][j] != NULL)
+                free(data->index_lieu[i][j]);
+
         for(j = 0; j < data->lieux[i].nb_arc; ++j)
             free(data->map[i][j]);
+
+        free(data->index_lieu[i]);
         free(data->map[i]);
     }
     /*liberation de leur entet*/
+    free(data->table_interet);
+    free(data->index_lieu);
     free(data->lieux);
     free(data->map);
     free(data);
