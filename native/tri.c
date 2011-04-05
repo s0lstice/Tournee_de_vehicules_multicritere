@@ -73,7 +73,7 @@ static void swap(Arc *x,Arc *y){
  * \param j, indice de fin de la recherche.
  */
 static int choose_pivot(int i,int j ){
-    return((i+j) /2);
+    return ((i+j) /2);
 }
 
 /**
@@ -118,63 +118,4 @@ void quicksort_map(Donnee * data, int id_lieu, int m,int n){
         quicksort_map(data, id_lieu, m, j-1);
         quicksort_map(data, id_lieu, j+1, n);
     }
-}
-
-/**
- * \fn int epure_map(Donnee *data,int id_lieu)
- * \brief supprime les arcs domminés du lieu.
- *
- * \param Un pointeur sur une structure Donnee.
- * \param l'indentifiant du lieu.
- * \return le nombre d'arcs restant en depart du lieu.
- */
-int epure_map(Donnee *data,int id_lieu){
-    int nbre_arc = nb_arc(data, id_lieu);
-    int id_arc, id_key = 0, id_cpy = 1, i;
-
-    int arc_interet, arc_distance, arc_insecurite;
-
-    /*recuperation des valeurs de la clef*/
-    int key_interet = interet_destination(data, id_lieu, id_key);
-    int key_distance = distance_arc(data, id_lieu, id_key);
-    int key_insecurite = insecurite_arc(data, id_lieu, id_key);
-
-    /*lecture de tous le tableau*/
-    for(id_arc = 1 ; id_arc < nbre_arc ; ++id_arc){
-        /*si l'arc n'existe pas, on prends le suivant*/
-        while((id_arc != nbre_arc)&&(pointeur_arc(data, id_lieu, id_arc) == NULL)) id_arc++;
-
-        /*recuperation des valeurs de l'arc*/
-        arc_interet = interet_destination(data, id_lieu, id_arc);
-        arc_distance = distance_arc(data, id_lieu, id_arc);
-        arc_insecurite = insecurite_arc(data, id_lieu, id_arc);
-
-        /*si l'arc est domine, on le suprime*/
-        if((arc_interet == key_interet)&&(arc_distance >= key_distance)&&(arc_insecurite >= key_insecurite)){
-            spr_pointeur_arc(data, id_lieu, id_arc);
-            maj_pointeur_arc(data, id_lieu, id_arc, NULL);
-        }
-        else{
-            /* l'inetere de la clef est differnts de celui de l'arc, on deplace la clef de un*/
-            if(arc_interet < key_interet){
-                /*si l'arc n'existe pas, on prends le suivant*/
-                while((id_key != nbre_arc)&&(pointeur_arc(data, id_lieu, id_key) == NULL)) ++id_key;
-
-                /*recuperation des valeurs de la clef*/
-                key_interet = interet_destination(data, id_lieu, id_key);
-                key_distance = distance_arc(data, id_lieu, id_key);
-                key_insecurite = insecurite_arc(data, id_lieu, id_key);
-            }
-
-            /* s'il y a des arc de supprimes, on comble les trous*/
-            if(id_arc != id_cpy){
-                if(pointeur_arc(data, id_lieu, id_cpy) != NULL) spr_pointeur_arc(data, id_lieu, id_cpy);
-                maj_pointeur_arc(data, id_lieu, id_cpy, pointeur_arc(data, id_lieu, id_arc));
-                maj_pointeur_arc(data, id_lieu, id_arc, NULL);
-
-                ++id_cpy;
-            }
-        }
-    }
-    return id_cpy;
 }
