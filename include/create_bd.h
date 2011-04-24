@@ -101,7 +101,8 @@ struct donnee{
     int temps_execution; /*!< temps impartie pour la recherche de solutions.*/
     int nb_lieux_total; /*!< nombre de lieu interessant.*/
     int nb_arcs; /*!< nombre d'arcs total.*/
-    Interet_lieu *table_interet; /*!< tableau des interets décroissant avec les coresspondance des lieux*/
+    char ordre_lieu; /*! < definit si les leu sont choisent par interet croissant (c) ou decroissant (d).*/
+    Interet_lieu *liste_lieu; /*!< liste des lieux parordre de preferance*/
     Lieu *lieux; /*!< pointeur sur un tableau contenent l'ensemble des referances des lieux.*/
     Index_arc ***index_lieu; /*!< pointeur sur une table d'index pour l'utilisation de map*/
     Arc ***map; /*!< pointeur sur un tableau contenant pour chaque lieu l'enseble des arcs disponible. ces arc sont trié par interet décroissant, distance et insecurite croissant*/

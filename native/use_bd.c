@@ -250,12 +250,12 @@ int index_nb_arc(Donnee *data, int id_depart, int id_arrive){
     return data->index_lieu[id_depart][id_arrive]->nb_arc;
 }
 
-int table_interet_interet(Donnee *data, int id_table){
-    return data->table_interet[id_table].interet;
+int liste_lieu_interet(Donnee *data, int id_table){
+    return data->liste_lieu[id_table].interet;
 }
 
-Lieu *table_interet_lieu(Donnee *data, int id_table){
-    return data->table_interet[id_table].lieu;
+Lieu *liste_lieu_lieu(Donnee *data, int id_table){
+    return data->liste_lieu[id_table].lieu;
 }
 
 

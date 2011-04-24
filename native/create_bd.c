@@ -48,7 +48,7 @@ static char * readLine(FILE * fichier) {
  * \param Un pointeur sur une structure FILE.
  */
 static void ajout_parametre(Donnee * data, FILE * file){
-    fscanf(file, "%d;%d;%d", &data->temps_execution, &data->nb_lieux_total, &data->nb_arcs);
+    fscanf(file, "%d;%d;%d;%c", &data->temps_execution, &data->nb_lieux_total, &data->nb_arcs, &data->ordre_lieu);
     /* les nombres d'elements doivent contenir le nombre exacte*/
     data->nb_arcs++;
     data->nb_lieux_total++;
@@ -138,7 +138,7 @@ static void ajout_arcs(Donnee * data, FILE * file){
 
         data->map[l2][data->lieux[l2].nb_arc] = (Arc *)malloc(sizeof(Arc));
         if(data->map[l2][data->lieux[l2].nb_arc] == NULL) fatalerreur("ajout_arcs : allocation de l'arc");
-        /* on instrit l'arc a son lieu de d'arrive*/
+        /*on instrit l'arc a son lieu de d'arrive*/
         data->map[l2][data->lieux[l2].nb_arc]->depart = &data->lieux[l2];
         data->map[l2][data->lieux[l2].nb_arc]->insecurite = insecurite;
         data->map[l2][data->lieux[l2].nb_arc]->distance = distance;
@@ -237,22 +237,28 @@ static int position_arc(const void *p1, const void *p2){
     return 1;
 }
 
-static int interet_decroissant(const void *interet1, const void *interet2){
-    int a = ((Interet_lieu const*)interet1)->interet;
-    int b = ((Interet_lieu const*)interet2)->interet;
+static int interet_decroissant(const void *val1, const void *val2){
+    int a = ((Interet_lieu const*)val1)->interet;
+    int b = ((Interet_lieu const*)val2)->interet;
     return b - a;
+}
+
+static int interet_croissant(const void *val1, const void *val2){
+    int a = ((Interet_lieu const*)val1)->interet;
+    int b = ((Interet_lieu const*)val2)->interet;
+    return a - b;
 }
 
 static void creat_interet(Donnee *data){
     int i;
 
-    data->table_interet = (Interet_lieu*)malloc(data->nb_lieux_total*sizeof(Interet_lieu));
-    if(data->table_interet == NULL) fatalerreur("creat_interet : echec de l'allocation de la table table_interet");
+    data->liste_lieu = (Interet_lieu*)malloc(data->nb_lieux_total*sizeof(Interet_lieu));
+    if(data->liste_lieu == NULL) fatalerreur("creat_interet : echec de l'allocation de la table liste_lieu");
 
     for(i = 0; i < data->nb_lieux_total; ++i){
-        data->table_interet[i].interet = data->lieux[i].interet;
-        data->table_interet[i].lieu = &data->lieux[i];
-        printf("creat_interet : table_interet %d id %d\n", data->table_interet[i].interet, data->table_interet[i].lieu->id);
+        data->liste_lieu[i].interet = data->lieux[i].interet;
+        data->liste_lieu[i].lieu = &data->lieux[i];
+        printf("creat_interet : liste_lieu %d id %d\n", data->liste_lieu[i].interet, data->liste_lieu[i].lieu->id);
     }
 }
 
@@ -318,7 +324,7 @@ Donnee * main_create_db(char * path){
     data->index_lieu = NULL;
     data->map = NULL;
     data->solution = NULL;
-    data->table_interet = NULL;
+    data->liste_lieu = NULL;
 
     /*ouvreture du fichier*/
     FILE * file = open_file(path);
@@ -339,7 +345,10 @@ Donnee * main_create_db(char * path){
     }
 
     creat_interet(data);
-    qsort(data->table_interet, data->nb_lieux_total, sizeof(Interet_lieu), interet_decroissant);
+    if(data->ordre_lieu == 'd')
+        qsort(data->liste_lieu, data->nb_lieux_total, sizeof(Interet_lieu), interet_decroissant);
+    else
+        qsort(data->liste_lieu, data->nb_lieux_total, sizeof(Interet_lieu), interet_croissant);
 
     for( i = 0; i < data->nb_lieux_total; ++i){
         /* tri des arcs*/
@@ -378,7 +387,7 @@ void free_db(Donnee * data){
         free(data->map[i]);
     }
     /*liberation de leur entet*/
-    free(data->table_interet);
+    free(data->liste_lieu);
     free(data->index_lieu);
     free(data->lieux);
     free(data->map);

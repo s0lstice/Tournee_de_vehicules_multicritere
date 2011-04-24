@@ -50,6 +50,6 @@ void test_unit_create_bd(Donnee * data){
 
     printf("\n** Affichage des iinteret **\n");
     for(i = 0; i < nb_lieu(data); ++i){
-        printf("table_interet : interet %d id %d\n", table_interet_interet(data, i), data->table_interet[i].lieu->id);
+        printf("liste_lieu : interet %d id %d\n", liste_lieu_interet(data, i), data->liste_lieu[i].lieu->id);
     }
 }
