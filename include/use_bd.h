@@ -1,6 +1,7 @@
 #ifndef USE_BD_H_INCLUDED
 #define USE_BD_H_INCLUDED
 
+#include "create_bd.h"
 
 char * nom_lieu(Donnee * data, int id_lieu);
 int interet_lieu(Donnee * data, int id_lieu);
@@ -21,4 +22,12 @@ void spr_pointeur_map_arc(Donnee *data, int id_lieu, int id_arc);
 Index_arc *pointeur_index_arc(Donnee *data, int id_depart, int id_arrive);
 int index_destination(Donnee *data, int id_depart, int id_arrive);
 int index_nb_arc(Donnee *data, int id_depart, int id_arrive);
+int liste_lieu_interet(Donnee *data, int id_table);
+
+Lieu *liste_lieu_lieu(Donnee *data, int id_table);
+
+
+
+
+
 #endif // USE_BD_H_INCLUDED
