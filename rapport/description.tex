@@ -1,0 +1,26 @@
+\chapter{Introduction}
+
+Pour ce projet nous intéressons à réaliser un programme qui permet en fonction d'une liste de lieux de ressortir la liste des différents parcours possibles pour réaliser cette tournée entre les différents lieux. Ce problème est un peu similaire à celui du voyageur de commerce. 
+Le principe de l'application qu'on essaye de développer est de permettre à partir d'une Base de données représentant la configuration d'une ville.
+C'est-à-dire un ensemble de lieux relié entre par des arcs, de calculer un parcours pour passer par tous les lieux en fonction de leur intérêt pour l'utilisateur.
+La difficulté majeure est de retourner des solutions dans une  période très courte. 
+\begin{figure}[h]
+\begin{center}
+\input{graph.tex}
+\caption{Représentation simplifiée de la configuration}
+\end{center}
+\end{figure}
+
+\chapter{Cahier des charges}
+
+Suite à la première rencontre avec notre encadrant, un premier cahier des charges a été évoqué. Le logiciel doit retourner la liste des différents parcours possible pour visiter une série de lieux dans l'ordre désiré par l'utilisateur. Le but est de calculer un parcours qui minimise l'insécurité et la distance à parcourir tout en maximisant l'intérêt des lieux.
+\section{Besoins}
+\begin{itemize}
+\item Le programme devra retourner une solution de parcours viable rapidement,
+\item Le logiciel permettra de retourner une nouvelle solution si on interverti des lieux ou/et si on change l'ordre des lieux à visiter.
+\item Le programme doit être simple à utiliser
+\item
+\end{itemize}
+
+\chapter{Spécifation}
+  Dans ce chapitre on va détailler le système à développer même si c'est de façon simplifiée sans forcement allé jusqu'à tout les différents arbres hiérarchiques. 
