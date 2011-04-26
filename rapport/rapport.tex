@@ -1,0 +1,158 @@
+\documentclass[UTF8]{EPURapport}
+\input{include.tex}
+
+\thedocument{Rapport Projet Algo-C}{Tournée d'un véhicule multicritères}
+
+\grade{Département Informatique\\ 3\ieme{} année\\ 2010 - 2011}
+
+\authors{
+ \category{Étudiants}{
+  \name{Mickaël PURET} \mail{mickael.puret@etu.univ-tours.fr}
+  \name{Cyrille PICARD} \mail{cyrille.picard@etu.univ-tours.fr}
+ }
+ \details{DI3 2010 - 2011}
+}
+
+\supervisors{
+ \category{Encadrants}{
+  \name{Emmanuel Neron} \mail{emmanuel.neron@univ-tours.fr}
+ }
+ \details{Université François-Rabelais, Tours}
+}
+
+\abstracts{Description en français}
+{Mots clés français}
+{Description en anglais}
+{Mots clés en anglais}
+
+\begin{document}
+\input{description.tex}
+\input{algo.tex}
+
+\chapter{Algorythme de tri rapide multicritères}
+
+\algsetup{indent=3em}
+\begin{algorithm}
+\caption{Swap}
+\label{Swap}
+\begin{algorithmic}[1]
+\REQUIRE  ~\\
+Entrée : $X,Y$  pointeur sur des Arcs\\
+$X et Y$  sont des pointeurs valides
+\ENSURE ~\\
+Sortie :$\emptyset$ \\
+$X$ = $Y'$ et $Y$=$X'$\\
+ \STATE Allouer(tmp)\\
+ \STATE tmp $\gets$ $\uparrow$X\\
+ \STATE $\uparrow$X $\gets$ $\uparrow$Y\\
+ \STATE $\uparrow$Y $\gets$ tmp
+\end{algorithmic}
+\end{algorithm}
+
+\algsetup{indent=3em}
+\begin{algorithm}
+\caption{Quicksort\_map}
+\label{Quicksort_map}
+\begin{algorithmic}[1]
+\REQUIRE  ~\\
+Entrée : \begin{itemize}
+\item data pointeur sur la structure Donner\\
+\item id\_Lieu entier, identifiant du lieu a trier\\
+\item $m$ entier borne droit du tri\\
+\item $n$ entier  borne gauche du tri\\
+\end{itemize}
+Toutes les données sont valides
+\ENSURE ~\\
+Sortie : $\emptyset$ \\
+Postcondition : data  $\to$ map[id\_lieu] est trier par : \begin{itemize}
+\item Intérêt décroissant
+\item Distance croissant
+\item Insécurité croissant
+\end{itemize}
+\IF {$(m<n)$}
+   \STATE $k$ $\gets$ $($m$+$n$)/2$
+   \STATE swap (map[m],map[n])
+   \STATE $i$ $\gets$ $m+1$
+   \STATE $j$ $\gets$ $n$
+   \WHILE {$i \leq j$}     
+        \WHILE {$((i \leq n)$ \& $position(data, id\_lieu,i,m)$}
+   \STATE $i \gets i+1$
+        \ENDWHILE
+        \WHILE {$((j \leq n)$ \& $position(data,id\_lieu,j,m)$}
+            \STATE $j \gets j+1$
+        \ENDWHILE
+        \IF {$(i < j)$}
+          \STATE swap (map[i],map[j])
+        \ENDIF
+   \ENDWHILE     
+        \STATE swap(map[m],map[j])
+        \STATE quicksort\_map(data,id\_lieu,m,j-1)
+        \STATE quicksort\_map(data,id\_lieu,j+1,n)
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\algsetup{indent=3em}
+\begin{algorithm}
+\caption{Position}
+\label{Position}
+\begin{algorithmic}[1]
+\REQUIRE  ~\\
+Entrée : \begin{itemize}
+\item data pointeur sur la structure donnée\\
+\item id\_lieu entier, identifiant du lieu a trier\\
+\item id\_arc entier, identifiant de l'arc\\
+\item id\_key entier, identifiant de la clef\\
+\end{itemize}
+Toutes les données doivent être valides
+\ENSURE ~\\
+Sortie : posi est un booléen \\
+\begin{itemize}
+\item posi = 0 : id\_arc avant id\_key
+\item posi = 1 : id\_arc après id\_key
+\end{itemize}
+\STATE Key\_interet $\gets$ interet\_destination (data,id\_lieu,id\_key) 
+\STATE Key\_distance $\gets$ distance\_arc (data,id\_lieu,id\_key)
+\STATE Key\_insecurite $\gets$ insecurite\_arc (data,id\_lieu,id\_key)
+\STATE arc\_interet $\gets$ insecurite\_arc (data,id\_lieu,id\_arc)
+\STATE arc\_distance $\gets$ insecurite\_arc (data,id\_lieu,id\_arc) 
+\STATE arc\_insecurite $\gets$ insecurite\_arc (data,id\_lieu,id\_arc) 
+\STATE $posi = 1$
+\IF {$(arc\_interet > key\_interet)$}
+ \STATE $posi=0$
+\ENDIF
+\IF {$(posi \ne 0)$ et $(arc\_interet = key\_interet)$}
+ \IF {$(arc\_distance < key\_distance)$}
+  \STATE $posi = 0$
+ \ENDIF
+ \IF {$(posi \ne 0)$ et $(arc\_distance = key\_distance)$}
+  \IF {$(arc\_insecurite \le key\_insecurite)$}
+   \STATE $posi = 0$
+  \ENDIF 
+ \ENDIF
+\ENDIF
+\STATE retourner(posi)
+  
+\end{algorithmic}
+\end{algorithm}
+
+
+\chapter{Conclusion}
+
+\annexes
+\chapter{Fiche de suivi de projet}
+
+  \begin{tabulary}{\linewidth}{|C|J|}
+  \hline
+    17/01/2011 & 1ére rencontre avec Emmanuel Néron pour prendre une explication approfondi du sujet ainsi que le premier objectif à réaliser qui est le choix d'une structure de donnée pour gérer les villes.\\
+  \hline
+    20/02/2011  au 04/03/2011 & Réflexion sur les méthodes possibles pour la structure de donnée à mettre en place, ainsi que les algorithmes à utiliser pour parcourir les différentes structures de données.\\
+  \hline
+    04/03/2011 au 29/03/2011 & Réalisation de la structure de données pour gérer la configuration de la ville, mise en place d'algorithme de tri pour les arcs.\\
+  \hline
+    11/04/2011 & Réunion avec notre encadrant pour lui présenter la structure de données et l'esquisse de l'algorithme pour générer le trajet de référence.\\
+ \hline
+  \end{tabulary}
+
+\end{document}
+
