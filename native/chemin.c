@@ -4,6 +4,7 @@
 #include "use_index.h"
 #include "use_liste.h"
 #include "use_solution.h"
+#include "use_visite.h"
 #include "erreur.h"
 #include <stdlib.h>
 
