@@ -29,13 +29,13 @@
  */
 static int position(Donnee *data, int id_lieu, int id_arc, int id_key){
     /*recuperation des valeurs*/
-    int key_interet = interet_destination(data, id_lieu, id_key);
-    int key_distance = distance_arc(data, id_lieu, id_key);
-    int key_insecurite = insecurite_arc(data, id_lieu, id_key);
+    int key_interet = interet_map_destination(data, id_lieu, id_key);
+    int key_distance = distance_map_arc(data, id_lieu, id_key);
+    int key_insecurite = insecurite_map_arc(data, id_lieu, id_key);
 
-    int arc_interet = interet_destination(data, id_lieu, id_arc);
-    int arc_distance = distance_arc(data, id_lieu, id_arc);
-    int arc_insecurite = insecurite_arc(data, id_lieu, id_arc);
+    int arc_interet = interet_map_destination(data, id_lieu, id_arc);
+    int arc_distance = distance_map_arc(data, id_lieu, id_arc);
+    int arc_insecurite = insecurite_map_arc(data, id_lieu, id_arc);
 
     /*comparaison*/
     if(arc_interet > key_interet)
