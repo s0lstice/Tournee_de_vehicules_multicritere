@@ -1,0 +1,81 @@
+\setcounter{chapter}{0}
+\part{Algorithmique}
+
+
+\chapter{Réalisation de la structure de données}
+
+  \section{Introduction}
+
+  \section{Informations utile}
+    Le solveur reçoit en paramètre un document texte découpé en trois parties :
+    \begin{itemize}
+      \item Parametres (le nombre de lieux à visiter ; les temps de recherche en seconde ; le nombre de lieux ; le nombre d'arcs)
+      \item Lieux (identifiant ; intérêt ; nom du lieu)
+      \item Arcs (identifiant du lieu de départ ; identifiant du lieu d'arrivée ; distance ; insécurité)
+    \end{itemize}
+
+    voici un exemple de ville : \textcolor{magenta}{donner le .txt correspondant au graphe}
+
+  \section{disposition en mémoire}
+    L'ensemble des données sont stockées dans un jeu de structures et de tableaux alloués sur le tas.
+
+    Il existe une structure principal nome "donnée" qui contient l'ensemble des informations.\\
+    \\
+    \textbf{Donnee :}
+    \begin{itemize}
+      \item temps\_execution : Entier ; \textit{temps imparti pour la recherche de solutions.}
+      \item nb\_lieux\_total : Entier ; \textit{nombre de lieux intéressant.}
+      \item nb\_arcs : Entier; \textit{nombre d'arcs total.}
+      \item *table\_interet : Interet\_lieu ; \textit{tableau des intérêts décroissant avec les correspondances des lieux.}
+      \item *lieux : Lieu ; \textit{pointeur sur un tableau contenant l'ensemble des références des lieux.}
+      \item ***index\_lieu : Index\_arc ; \textit{pointeur sur une table d'index pour l'utilisation de map.}
+      \item ***map : Arc ; \textit{pointeur sur un tableau contenant pour chaque lieu l'ensemble des arcs disponible. Ces arcs sont triés par internet décroissant, distance et insécurité croissante.}
+      \item *solution : Caracteristique ; \textit{pointeur sur un tableau contenant l'ensemble des solutions acceptable.}
+    \end{itemize}
+
+    L'ensemble des lieux et de leurs informations sont contenus dans un tableau à une dimension de type "Lieu" :\\
+    \\
+    \textbf{Lieu :}
+    \begin{itemize}
+      \item id : Entier ; \textit{numéro du lieu.}
+      \item interet : Entier ; \textit{intérêt du lieu.}
+      \item *nom : Chaine de caractères ; \textit{nom du lieu.}
+      \item nb\_arc : Entier ; \textit{nombre d’arcs sortant.}
+    \end{itemize}
+
+    Les arcs sont alloués sur le tas indépendamment les uns des autres, la structure qui les définis est du type "Arc" :\\
+    \\
+    \textbf{Arc :}
+    \begin{itemize}
+      \item distance : Entier ; \textit{distance de l’arc.}
+      \item insecurite : Entier ; \textit{insécurité de l’arc.}
+      \item *depart : Lieu; \textit{lieu de départ de l’arc.}
+      \item *destination : Lieu; \textit{lieu de destination de l’arc.}
+    \end{itemize}
+
+    C'est pour se déplacer d'un lieu à un autre que le tableau à trois dimensions "map" à été mi en place. Sur sa première dimension, on retrouve le lieu de départ, sa deuxième dimension contient un tableau de pointeurs sur les arcs alloués sur le tas.
+
+    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+
+    Comme il existe un nombre variable d'arcs menant à la même destination pour un même point de départ, le tableau carré "index\_lieu" de type "index\_arc" se charge de faire la correspondance entre le départ et la destination.
+    La structure index\_arc contient deux entiers ; id\_arc est l'indice du premier arc disponible, nb\_arc indique combien d'arcs sont disponibles.\\
+    \\
+    \textbf{Index\_arc :}
+    \begin{itemize}
+      \item id\_arc : Entier ; \textit{identifiant de l'arc}
+      \item nb\_arc : Entier ; \textit{nombre d'arcs disponible}
+    \end{itemize}
+
+    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+
+    Le chemin de référence est construit de manière à maximiser dès le départ un des trois critères. De ce fait une table "liste\_lieu", de type "index\_lieu" contiens les lieux triés \textcolor{magenta}{en fonction des choix de l'utilisateur.\textbf{à faire}}. Ainsi le constructeur de chemins de référence n'aura plus qu'à utiliser cette liste sans faire de recherche.
+    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+
+    Le dernier tableau contenu par la structure de donnée est celui des solutions, il grandit avec l'avancement du programme. Il est nommé "solution" et est de type parcours. Il contient une structure de type "caractéristique" qui définit le chemin, un tableau trajet pointant les arcs utilisés et un tableau itinéraire qui stocke les lieux visités. \\
+    \\
+    \textbf{Parcourt :}
+    \begin{itemize}
+      \item *carac : Caracteristique; \textit{pointeur sur les caractéristiques de cette solution.}
+      \item *trajet : Arc; \textit{tableau contenant les arcs utilisés dans cette solution.}
+      \item itineraire : interet\_lieu; \textit{tableau contenant les lieux déjà visités et le nombre de fois.}
+    \end{itemize}
