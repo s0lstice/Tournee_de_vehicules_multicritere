@@ -1,15 +1,16 @@
-%% $Id: EPURapport.cls 31 2009-04-24 08:26:06Z 20404185t $
+%% $Id: EPURapport.cls 40 2010-04-02 06:46:36Z 20403346t $
 
 \NeedsTeXFormat{LaTeX2e}
 
 %----- Identification -----
-\ProvidesClass{EPURapport}[2009/04/24 - EPURapport document class]
+\ProvidesClass{EPURapport}[2009/09/16 - EPURapport document class]
 
 %----- Required Packages -----
 \RequirePackage{lmodern} %% A nice font
 \RequirePackage[T1]{fontenc}
 \RequirePackage{ifthen}
 \RequirePackage{fancyhdr} %% Bling-bling headers and footers
+\RequirePackage{algorithmic}
 
 %----- Options -----
 \newboolean{BTwoPages}
@@ -67,6 +68,7 @@
 \setlength{\voffset}{-2.54cm}
 \setlength{\hoffset}{-2.54cm}
 \setlength{\footskip}{1.5cm}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
 
 %----- Personnal config -----
 \def\notableofcontents{%
@@ -76,6 +78,11 @@
 \def\nolistoffigures{%
 	\renewcommand{\listoffigures}{}
 }
+
+\def\notableofcontents{%
+	\renewcommand{\listoffalgorithmname}{}
+}
+
 
 \def\nolistoftables{%
 	\renewcommand{\listoftables}{}
@@ -223,6 +230,8 @@
 \newcommand{\annexes}{
 	\appendix
 	\renewcommand\chaptername{\appendixname}
+	\part*{Annexes}
+	\addcontentsline{toc}{part}{Annexes}
 }
 
 \def\schoolLogo{logos/Logo_Polytech_Tours}
@@ -230,7 +239,7 @@
 %----- First Page -----
 \newcommand{\thefirstpage}{%
 \thispagestyle{empty}
-	\sffamily
+	% \sffamily
 	%\setcounter{page}{1}
 	\begin{center}
 		\includegraphics[width=8cm]{\schoolLogo}
@@ -359,12 +368,14 @@
 		{\large\thedocumenttype}\\~\\
 	\end{center}
 
-	\paragraph*{R\'esum\'e :} \thefrenchabstract
-	\paragraph*{Mots clefs :} \thefrenchkeywords
-	\paragraph*{Abstract:} \theenglishabstract
-	\paragraph*{Keywords:} \theenglishkeywords
-	\vspace{1cm}
-	\hrule
+	\textbf{R\'esum\'e :} \thefrenchabstract
+
+	\textbf{Mots clefs :} \thefrenchkeywords
+
+	\textbf{Abstract:} \theenglishabstract
+
+	\textbf{Keywords:} \theenglishkeywords
+
 	\vfill
 	
 	\authorsAndSupervisorsDisplay
@@ -484,7 +495,7 @@
       \rlap{\vbox to\z@{\vss
 	  \vskip 3pc}
 	}\hskip\leftskip\fi
-     \Huge\textsf{#1}\par\semirule\vspace{1cm} \endgroup
+     \Huge\thechapter .\  #1\par\semirule\vspace{1cm} \endgroup
   \skip@34\p@ \advance\skip@-\normalbaselineskip
   \vskip\skip@ }
 
@@ -493,7 +504,7 @@
 \def\@makeschapterhead#1{%
   \begingroup
   \fontsize{\@xivpt}{18}\bfseries\centering
-  \Huge\textsf{#1}\par\semirule\vspace{1cm} \endgroup
+  \Huge#1\par\semirule\vspace{1cm} \endgroup
   \skip@34\p@ \advance\skip@-\normalbaselineskip
   \vskip\skip@ }
 
@@ -514,3 +525,18 @@
 % Gestion de la premiere et derniere page.
 \AtBeginDocument{\thefirstpage}
 \AtEndDocument{\thelastpage}
+
+% commandes pour le compte-rendu
+\newcounter{compteseance}
+\setcounter{compteseance}{1}
+\newcommand{\CR}[2]{%
+\begin{center}
+\begin{tabular}{|p{3cm}|p{12cm}|}\hline
+ %Séance
+  %\no \arabic{compteseance} du
+   #1
+%\addtocounter{compteseance}{1}
+ & #2\\\hline
+\end{tabular}
+\end{center} }
+

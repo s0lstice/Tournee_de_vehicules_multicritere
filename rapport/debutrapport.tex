@@ -1,0 +1,299 @@
+\documentclass[twoside]{EPURapport}
+\input{include.tex}
+
+\thedocument{Rapport Projet Algo-C}{Tournée d'un véhicule multicritéres}%{Titre court}
+
+\grade{Département Informatique\\ 3\ieme{} année\\ 2010 - 2011}
+
+\authors{%
+	\category{Étudiants}{%
+		\name{Cyrille PICARD} \mail{cyrille.picard@etu.univ-tours.fr}
+		\name{Michael PURET} \mail{michael.puret@etu.univ-tours.fr}
+	}
+	\details{DI3 2010 - 2011}
+}
+
+\supervisors{%
+	\category{Encadrants}{%
+		\name{Emmanuel Neron} \mail{emmanuel.neron@univ-tours.fr}
+		%\name{Mohamed SLIMANE} \mail{slimane@univ-tours.fr}
+	}
+	\details{Université Fran¡ois-Rabelais, Tours}
+}
+
+\abstracts{Description en français}
+{Mots clés français}
+{Description en anglais}
+{Mots clés en anglais}
+
+
+\begin{document}
+
+
+\chapter{Introduction}
+
+Pour ce projet nous intéressons à réaliser un programme qui permet en fonction d'une liste de lieux de ressortir la liste des différents parcours possible pour réaliser cette tournée entre les différents lieux. Ce problème est un peu similaire à celui du voyageur de commerce. 
+Le principe de l'application qu'on essaye de développer est de permettre à partir d'une Base de données représentant la configuration d'une ville.
+C'est à dire un ensemble de lieux relié entre par des arcs, de calculer un parcours pour passer par tout les lieux en fonction de leur intérêt pour l'utilisateur.
+La difficulté majeur est de retourner des solutions dans une  période très courte. 
+
+\begin{figure}[h]
+\begin{center}
+\input{graph.tex}
+\caption{Représentation simplifiée de la configuration}
+\end{center}
+\end{figure}
+
+\part{Spécification}
+\chapter{Cahier des charges}
+
+Suite à la première rencontre avec notre encadrant un premier cahier des charges a été évoquer. Le logiciel doit retourner la liste des différents parcours possible pour visiter une série de lieux dans l'ordre désiré par l'utilisateur. Le but est de calculer un parcours qui minimise l'insécurité et la distance à parcourir tout en maximisant l'intérêt  des lieux.
+\section{Besoins}
+\begin{itemize}
+\item Le programme devra retourner une solution de parcours viable rapidement,
+\item Le logiciel permettra de retourner une nouvelle solution si on interverti des lieux ou/et si on change l'ordre des lieux à visiter.
+\item Le programme doit être simple à utiliser
+\item Le programme peut retourner un certain nombre de parcours calculé dans le temps d'exécution impartie.
+\end{itemize}
+
+\chapter{Spécifation}
+Dans ce chapitre on va détailler le système à développer même si c'est de façon simplifier sans forcement aller jusqu'à tout les différents arbre hiérarchique. 
+
+\part{Algorithimique}
+\chapter{Réalisation de la structure de données}
+
+  \section{Introduction}
+
+  \section{Informations utile}
+    Le solveur reçoit en paramètre un document texte découpé en trois parties :
+    \begin{itemize}
+      \item Parametres (le nombre de lieux à visiter ; les temps de recherche en seconde ; le nombre de lieux ; le nombre d'arcs)
+      \item Lieux (identifiant ; intérêt ; nom du lieu)
+      \item Arcs (identifiant du lieu de départ ; identifiant du lieu d'arrivée ; distance ; insécurité)
+    \end{itemize}
+
+    voici un exemple de ville : \textcolor{magenta}{donner le .txt correspondant au graphe}
+
+  \section{disposition en mémoire}
+    L'ensemble des données sont stockées dans un jeu de structures et de tableaux alloués sur le tas.
+
+    Il existe une structure principal nome "donnée" qui contient l'ensemble des informations.\\
+    \\
+    \textbf{Donnee :}
+    \begin{itemize}
+      \item temps\_execution : Entier ; \textit{temps imparti pour la recherche de solutions.}
+      \item nb\_lieux\_total : Entier ; \textit{nombre de lieux intéressant.}
+      \item nb\_arcs : Entier; \textit{nombre d'arcs total.}
+      \item *table\_interet : Interet\_lieu ; \textit{tableau des intérêts décroissant avec les correspondances des lieux.}
+      \item *lieux : Lieu ; \textit{pointeur sur un tableau contenant l'ensemble des références des lieux.}
+      \item ***index\_lieu : Index\_arc ; \textit{pointeur sur une table d'index pour l'utilisation de map.}
+      \item ***map : Arc ; \textit{pointeur sur un tableau contenant pour chaque lieu l'ensemble des arcs disponible. Ces arcs sont triés par internet décroissant, distance et insécurité croissante.}
+      \item *solution : Caracteristique ; \textit{pointeur sur un tableau contenant l'ensemble des solutions acceptable.}
+    \end{itemize}
+
+    L'ensemble des lieux et de leurs informations sont contenus dans un tableau à une dimension de type "Lieu" :\\
+    \\
+    \textbf{Lieu :}
+    \begin{itemize}
+      \item id : Entier ; \textit{numéro du lieu.}
+      \item interet : Entier ; \textit{intérêt du lieu.}
+      \item *nom : Chaine de caractéres ; \textit{nom du lieu.}
+      \item nb\_arc : Entier ; \textit{nombre d'arcs sortant.}
+    \end{itemize}
+
+    Les arcs sont alloués sur le tas indépendamment les uns des autres, la structure qui les définis est du type "Arc" :\\
+    \\
+    \textbf{Arc :}
+    \begin{itemize}
+      \item distance : Entier ; \textit{distance de l'arc.}
+      \item insecurite : Entier ; \textit{insécurité de l'arc.}
+      \item *depart : Lieu; \textit{lieu de départ de l'arc.}
+      \item *destination : Lieu; \textit{lieu de destination de l'arc.}
+    \end{itemize}
+
+    C'est pour se déplacer d'un lieu à un autre que le tableau à trois dimensions "map" à été mi en place. Sur sa première dimension, on retrouve le lieu de départ, sa deuxième dimension contient un tableau de pointeurs sur les arcs alloués sur le tas.
+
+    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+
+    Comme il existe un nombre variable d'arcs menant à la même destination pour un même point de départ, le tableau carré "index\_lieu" de type "index\_arc" se charge de faire la correspondance entre le départ et la destination.
+    La structure index\_arc contient deux entiers ; id\_arc est l'indice du premier arc disponible, nb\_arc indique combien d'arcs sont disponibles.\\
+    \\
+    \textbf{Index\_arc :}
+    \begin{itemize}
+      \item id\_arc : Entier ; \textit{identifiant de l'arc}
+      \item nb\_arc : Entier ; \textit{nombre d'arcs disponible}
+    \end{itemize}
+
+    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+
+    Le chemin de référence est construit de manière à maximiser dès le départ un des trois critères. De ce fait une table "liste\_lieu", de type "index\_lieu" contiens les lieux triés \textcolor{magenta}{en fonction des choix de l'utilisateur.\textbf{à faire}}. Ainsi le constructeur de chemins de référence n'aura plus qu'à utiliser cette liste sans faire de recherche.
+    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+
+    Le dernier tableau contenu par la structure de donnée est celui des solutions, il grandit avec l'avancement du programme. Il est nommé "solution" et est de type parcours. Il contient une structure de type "caractéristique" qui définit le chemin, un tableau trajet pointant les arcs utilisés et un tableau itinéraire qui stocke les lieux visités. \\
+    \\
+    \textbf{Parcourt :}
+    \begin{itemize}
+      \item *carac : Caracteristique; \textit{pointeur sur les caractéristiques de cette solution.}
+      \item *trajet : Arc; \textit{tableau contenant les arcs utilisés dans cette solution.}
+      \item itineraire : interet\_lieu; \textit{tableau contenant les lieux déjà visités et le nombre de fois.}
+    \end{itemize}
+    
+    
+%\chapter{Test Algo}
+%\algsetup{indent=3em}
+%\begin{algorithm}
+%\caption{calcul de la matrice B à partir de la matrice d'adjacence $A$}
+%\label{algo1}
+%\begin{algorithmic}[1]
+%\REQUIRE  ~\\
+%$n$ : entier positif $/*$ nombre de sommets $*/$\\
+%$A$ : tableau$[n \times n]$ de $\{0,1\}$  $/*$ matrice d'adjacence de $G$ $*/$
+%\ENSURE ~\\
+%$B$ : tableau$[n \times n]$ de $\{0,1\}$ $/*$ matrice énigmatique $*/$
+%  \FOR{$i$ {\textbf de} 1 \textbf{à} $n$}
+%     \FOR{$j$ {\textbf de} 1 \textbf{à} $n$}
+%        \STATE $k = 1$
+%        \WHILE{$((k \leq n)$ \& $(A_{i,k} \times A_{k,j} == 0))$}
+%            \STATE $k = k+1$
+%        \ENDWHILE
+%        \IF{$(k \leq n)$}
+%            \STATE $B_{i,j} = 1$
+%          \ELSE
+%             \STATE $B_{i,j} = 0$
+%        \ENDIF  
+%     \ENDFOR
+%   \ENDFOR
+% \end{algorithmic}
+%\end{algorithm}
+
+\chapter{Algo de tri rapide multicritères}
+
+\algsetup{indent=3em}
+\begin{algorithm}
+\caption{Swap}
+\label{Swap}
+\begin{algorithmic}[1]
+\REQUIRE  ~\\
+Entrée : $X,Y$  pointeur sur des Arcs\\
+$X et Y$  sont des pointeurs valides
+\ENSURE ~\\
+Sortie :$\emptyset$ \\
+$X$ = $Y'$ et $Y$=$X'$\\
+ \STATE Allouer(tmp)\\
+ \STATE tmp $\gets$ $\uparrow$X\\
+ \STATE $\uparrow$X $\gets$ $\uparrow$Y\\
+ \STATE $\uparrow$Y $\gets$ tmp
+\end{algorithmic}
+\end{algorithm}
+
+\algsetup{indent=3em}
+\begin{algorithm}
+\caption{Quicksort\_map}
+\label{Quicksort_map}
+\begin{algorithmic}[1]
+\REQUIRE  ~\\
+Entrée : \begin{itemize}
+\item data pointeur sur la structure Donner\\
+\item id\_Lieu entier, identifiant du lieu a trier\\
+\item $m$ entier borne droit du tri\\
+\item	$n$ entier  borne gauche du tri\\
+\end{itemize}
+Toutes les données sont valides
+\ENSURE ~\\
+Sortie : $\emptyset$ \\
+Postcondition : data  $\to$ map[id\_lieu] est trier par : \begin{itemize}
+\item IntérÕt décroissant
+\item Distance croissant
+\item Insécurité croissant
+\end{itemize}
+\IF {$(m<n)$}
+   \STATE $k$ $\gets$ $($m$+$n$)/2$
+   \STATE swap (map[m],map[n])
+   \STATE $i$ $\gets$ $m+1$
+   \STATE $j$ $\gets$ $n$
+   \WHILE {$i \leq j$}     
+        \WHILE {$((i \leq n)$ \& $position(data, id\_lieu,i,m)$}
+	  \STATE $i \gets i+1$
+        \ENDWHILE
+        \WHILE {$((j \leq n)$ \& $position(data,id\_lieu,j,m)$}
+            \STATE $j \gets j+1$
+        \ENDWHILE
+        \IF {$(i < j)$}
+          \STATE swap (map[i],map[j])
+        \ENDIF
+   \ENDWHILE     
+        \STATE swap(map[m],map[j])
+        \STATE quicksort\_map(data,id\_lieu,m,j-1)
+        \STATE quicksort\_map(data,id\_lieu,j+1,n)
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\algsetup{indent=3em}
+\begin{algorithm}
+\caption{Position}
+\label{Position}
+\begin{algorithmic}[1]
+\REQUIRE  ~\\
+Entrée : \begin{itemize}
+\item data pointeur sur la structure donnée\\
+\item id\_lieu entier, identifiant du lieu a trier\\
+\item id\_arc entier, identifiant de l'arc\\
+\item	id\_key entier, identifiant de la clef\\
+\end{itemize}
+Toutes les données doivent Õtre valides
+\ENSURE ~\\
+Sortie : posi est un booléen \\
+\begin{itemize}
+\item posi = 0 : id\_arc avant id\_key
+\item posi = 1 : id\_arc après id\_key
+\end{itemize}
+\STATE Key\_interet $\gets$ interet\_destination (data,id\_lieu,id\_key) 
+\STATE Key\_distance $\gets$ distance\_arc (data,id\_lieu,id\_key)
+\STATE Key\_insecurite $\gets$ insecurite\_arc (data,id\_lieu,id\_key)
+\STATE arc\_interet $\gets$ insecurite\_arc (data,id\_lieu,id\_arc)
+\STATE arc\_distance $\gets$ insecurite\_arc (data,id\_lieu,id\_arc) 
+\STATE arc\_insecurite $\gets$ insecurite\_arc (data,id\_lieu,id\_arc) 
+\STATE $posi = 1$
+\IF {$(arc\_interet > key\_interet)$}
+	\STATE $posi=0$
+\ENDIF
+\IF {$(posi \ne 0)$ et $(arc\_interet = key\_interet)$}
+	\IF {$(arc\_distance < key\_distance)$}
+		\STATE $posi = 0$
+	\ENDIF
+	\IF {$(posi \ne 0)$ et $(arc\_distance = key\_distance)$}
+		\IF {$(arc\_insecurite \le key\_insecurite)$}
+			\STATE $posi = 0$
+		\ENDIF	
+	\ENDIF
+\ENDIF
+\STATE retourner(posi)
+		
+\end{algorithmic}
+\end{algorithm}
+
+
+\chapter{Conclusion}
+
+
+
+\annexes
+\chapter{Fiche de suivi de projet\label{sec:fiche_suivi}}
+
+\CR{17/01/2008}{1ére rencontre avec Emmanuel Néron pour prendre une explication approfondi du sujet ainsi que le premier objectif à réaliser qui est le choix d'une structure de donnée pour gérer les villes.}
+\CR{20/02/2011  au 04/03/2011}{Réflexion sur les méthodes possible pour la structure de donnée à mettre en place, ainsi que les algorithmes à utiliser pour parcourir les différentes structures de données}
+\CR{04/03/2011 au 29/03/2011}{Réalisation de la structure de données pour gérer la configuration de la ville, mise en place d'algorithme de tri pour les arcs.}
+\CR{07/04/2008}{Finalisation de la structure de données, vérification des fonctions permettant d'interroger la structure de données pour les algorithmes permettant de créé les trajets, première réalisation d'un algorithme pour générer le trajet de référence.}
+\CR{11/04/2008}{Réunion avec notre encadrant pour lui présenter la structure de données et l'esquisse de l'algorithme pour générer le trajets de référence.}
+%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+
+
+\end{document}
+
