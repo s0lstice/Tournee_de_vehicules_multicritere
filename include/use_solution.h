@@ -25,7 +25,6 @@ int distance_arc_solution(Donnee *data, int id_solution, int id_arc);
 int insecurite_arc_solution(Donnee *data, int id_solution, int id_arc);
 int interet_lieu_solution(Donnee *data, int id_solution, int id_lieu);
 void unall_solution(Donnee *data);
-
 void all_visite_solution(Donnee *data, int id_solution);
 void initi_visite_solution(Donnee *data, int id_solution);
 int nb_visite_solution(Donnee *data, int id_solution, int id_lieu);

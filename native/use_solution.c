@@ -40,8 +40,10 @@ void all_parcourt(Donnee *data, int nb_reallocation){
 
         data->solution[i]->itineraire = (Lieu **)malloc(sizeof(Lieu*));
         if(data->solution[i]->itineraire == NULL) fatalerreur(data, "all_parcourt : echeque de l'allocation d'itineraire");
+
         data->solution[i]->trajet = (Arc **)malloc(sizeof(Arc*));
         if(data->solution[i]->trajet == NULL) fatalerreur(data, "all_parcourt : echeque de l'allocation d'trajet");
+
         data->solution[i]->visite = NULL;
     }
 
@@ -149,16 +151,21 @@ int interet_lieu_solution(Donnee *data, int id_solution, int id_lieu){
 }
 
 void unall_solution(Donnee *data){
-    int i;
+    int i, j, nb_lieu_total = nb_lieu(data);
     for(i = 0; i < data->nb_solution; ++i){
         free(data->solution[i]->itineraire);
         free(data->solution[i]->trajet);
-        free(data->solution[i]);
 
         if(data->solution[i]->visite != NULL){
+            for(j = 0; j < nb_lieu_total; ++j){
+                free(data->solution[i]->visite[j]);
+            }
+
             free(data->solution[i]->visite);
             data->solution[i]->visite = NULL;
         }
+
+        free(data->solution[i]);
     }
     free(data->solution);
 }

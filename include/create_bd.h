@@ -70,6 +70,7 @@ struct parcourt{
     Lieu **itineraire; /*!< tableau contenent les lieux traverses.*/
     int **visite; /*!< tableau contenant le nombre de fois que le lieu est raversé.*/
 };
+
 /**
  * \struct arc create_bd.h
  * \brief definit un arc par son point de depart, sa distance, son insecuritet et sa desitnation.
