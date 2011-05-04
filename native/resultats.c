@@ -1,6 +1,6 @@
 /**
- * \file create_bd_unit.c
- * \brief permet de verifier les donnée en stocké mémoire en les affichant.
+ * \file resultat.c
+ * \brief affiche l'ensemble des donnees contenuent en memoire.
  * \author Mickael PURET
  * \date 25 mars 2011
  *
@@ -8,7 +8,16 @@
 
 #include "resultats.h"
 #include "use_bd.h"
-
+#include "use_map.h"
+#include "use_index.h"
+#include "use_solution.h"
+#include "use_liste.h"
+/**
+ * \fn static FILE * open_file(char * path)
+ * \brief affiche l'ensemble des donnees contenuent en memoire..
+ *
+ * \param Un pointeur sur une structure Donnee.
+ */
 void print_result(Donnee * data){
     int i, j;
 
@@ -53,25 +62,23 @@ void print_result(Donnee * data){
         printf("liste_lieu : interet %d id %d\n", liste_lieu_coef(data, i), data->liste_lieu[i].lieu->id);
     }
 
-    for(i = 1; i < 3; ++i){
-        printf("\n*** chemin de base conposé de %d lieux ***\n", i);
-        printf("**cara : \n distance : %d \n insecurite : %d \n interet : %d \n nb_lieux_total : %d \n nb_lieux_utile : %d\n",
-            data->solution[0]->carac.distance,
-            data->solution[0]->carac.insecurite,
-            data->solution[0]->carac.interet,
-            data->solution[0]->carac.nb_lieux_total,
-            data->solution[0]->carac.nb_lieux_utile);
-        for(j = 0; j < nb_arc_solution(data, 0); ++j){
-            printf("**trajet : \n depart : %d \n destination : %d \n distance : %d \n insecurite : %d \n",
-                id_depart_trajet_solution(data, 0, j),
-                id_destination_trajet_solution(data, 0, j),
-                distance_arc_solution(data, 0, j),
-                insecurite_arc_solution(data, 0, j));
-        }
-        for(j = 0; j < nb_lieu_total_solution(data, 0); ++j){
-            printf("**lieu : \n id_lieu : %d \n interet : %d \n",
-                id_lieu_solution(data, 0, j),
-                interet_lieu_solution(data, 0, j));
-        }
+    printf("\n*** chemin de base ***\n");
+    printf("**cara : \n distance : %d \n insecurite : %d \n interet : %d \n nb_lieux_total : %d \n nb_lieux_utile : %d\n",
+        data->solution[0]->carac.distance,
+        data->solution[0]->carac.insecurite,
+        data->solution[0]->carac.interet,
+        data->solution[0]->carac.nb_lieux_total,
+        data->solution[0]->carac.nb_lieux_utile);
+    for(j = 0; j < nb_arc_solution(data, 0); ++j){
+        printf("**trajet : \n depart : %d \n destination : %d \n distance : %d \n insecurite : %d \n",
+            id_depart_trajet_solution(data, 0, j),
+            id_destination_trajet_solution(data, 0, j),
+            distance_arc_solution(data, 0, j),
+            insecurite_arc_solution(data, 0, j));
+    }
+    for(j = 0; j < nb_lieu_total_solution(data, 0); ++j){
+        printf("**lieu : \n id_lieu : %d \n interet : %d \n",
+            id_lieu_solution(data, 0, j),
+            interet_lieu_solution(data, 0, j));
     }
 }

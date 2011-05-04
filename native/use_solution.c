@@ -2,6 +2,10 @@
 #include "erreur.h"
 #include "use_solution.h"
 #include "use_bd.h"
+#include "use_lieu.h"
+#include "use_index.h"
+#include "use_map.h"
+#include <string.h>
 #include <stdlib.h>
 
 Parcourt *str_parcourt(Donnee *data, int id_parcourt){
@@ -19,12 +23,12 @@ void all_parcourt(Donnee *data, int nb_reallocation){
     Parcourt *temp_simplep;
 
     temp_doublep = (Parcourt **)realloc(data->solution, nb_reallocation*sizeof(Parcourt*));
-    if(temp_doublep == NULL) fatalerreur("all_Parcourt : echeque de l'allocation");
+    if(temp_doublep == NULL) fatalerreur(data, "all_Parcourt : echeque de l'allocation");
     data->solution = temp_doublep;
 
     for(i = data->nb_solution; i < nb_reallocation; ++i){
         temp_simplep = (Parcourt *)malloc(sizeof(Parcourt));
-        if(temp_simplep == NULL) fatalerreur("all_parcourt : echeque de l'allocation de all_parcourt");
+        if(temp_simplep == NULL) fatalerreur(data, "all_parcourt : echeque de l'allocation de all_parcourt");
         data->solution[i] = temp_simplep;
 
         data->solution[i]->carac.distance = 0;
@@ -35,7 +39,10 @@ void all_parcourt(Donnee *data, int nb_reallocation){
         data->solution[i]->carac.nb_arc = 0;
 
         data->solution[i]->itineraire = (Lieu **)malloc(sizeof(Lieu*));
+        if(data->solution[i]->itineraire == NULL) fatalerreur(data, "all_parcourt : echeque de l'allocation d'itineraire");
         data->solution[i]->trajet = (Arc **)malloc(sizeof(Arc*));
+        if(data->solution[i]->trajet == NULL) fatalerreur(data, "all_parcourt : echeque de l'allocation d'trajet");
+        data->solution[i]->visite = NULL;
     }
 
     data->nb_solution = nb_reallocation;
@@ -46,7 +53,7 @@ void add_lieu_solution(Donnee *data, int id_solution, int id_lieu){
     Lieu **temp;
 
     temp = (Lieu **)realloc(data->solution[id_solution]->itineraire, (nb_lieu +1)*sizeof(Lieu *));
-    if(temp == NULL) fatalerreur("add_lieu_solution : echeque de la realocation");
+    if(temp == NULL) fatalerreur(data, "add_lieu_solution : echeque de la realocation");
     data->solution[id_solution]->itineraire = temp;
 
     data->solution[id_solution]->itineraire[nb_lieu] = str_lieu(data, id_lieu);
@@ -67,7 +74,7 @@ void add_arc_solution(Donnee *data, int id_solution, int id_lieu_depart, int id_
     arc = str_map_arc(data, id_lieu_depart, id_arc);
 
     temp = (Arc **)realloc(data->solution[id_solution]->trajet, (nb_arc +1)*sizeof(Arc *));
-    if(temp == NULL) fatalerreur("add_lieu_solution : echeque de la realocation");
+    if(temp == NULL) fatalerreur(data, "add_lieu_solution : echeque de la realocation");
     data->solution[id_solution]->trajet = temp;
 
     data->solution[id_solution]->trajet[nb_arc] = arc;
@@ -147,6 +154,70 @@ void unall_solution(Donnee *data){
         free(data->solution[i]->itineraire);
         free(data->solution[i]->trajet);
         free(data->solution[i]);
+
+        if(data->solution[i]->visite != NULL){
+            free(data->solution[i]->visite);
+            data->solution[i]->visite = NULL;
+        }
     }
     free(data->solution);
+}
+
+int existe_visite_solution(Donnee *data, int id_solution){
+    if(data->solution[id_solution]->visite == NULL) return 0;
+    return 1;
+}
+
+void all_visite_solution(Donnee *data, int id_solution){
+    int i, nb_lieu_total = nb_lieu(data);
+
+    data->solution[id_solution]->visite = (int**)malloc(nb_lieu_total*sizeof(int*));
+    if(data->solution[id_solution]->visite == NULL) fatalerreur(data, "all_visite_solution : echeque de l'allocation");
+
+    for(i = 0; i < nb_lieu_total; ++i){
+        data->solution[id_solution]->visite[i] = (int*)malloc(2*sizeof(int));
+        data->solution[id_solution]->visite[i][0] = 0;
+        data->solution[id_solution]->visite[i][1] = 0;
+    }
+}
+
+void initi_visite_solution(Donnee *data, int id_solution){
+    int i, nb_solution, id_lieu;
+    nb_solution = nb_lieu_total_solution(data, id_solution);
+
+    for(i = 0; i < nb_solution; ++i){
+        id_lieu = data->solution[id_solution]->itineraire[i]->id;
+        data->solution[id_solution]->visite[id_lieu][0]++;
+
+        if(data->solution[id_solution]->visite[id_lieu][0] < 2)
+            data->solution[id_solution]->visite[id_lieu][1]++;
+    }
+}
+
+int nb_visite_solution(Donnee *data,int id_solution, int id_lieu){
+    return data->solution[id_solution]->visite[id_lieu][0];
+}
+
+void maj_nb_visite_solution(Donnee *data,int id_solution, int id_lieu, int value){
+    data->solution[id_solution]->visite[id_lieu][0] = value;
+}
+
+int nb_passage_solution(Donnee *data,int id_solution, int id_lieu){
+    return data->solution[id_solution]->visite[id_lieu][1];
+}
+
+void maj_nb_passage_solution(Donnee *data,int id_solution, int id_lieu, int value){
+    data->solution[id_solution]->visite[id_lieu][1] = value;
+}
+
+void unall_visite_solution(Donnee *data, int id_solution){
+    int i, nb_lieu_total = nb_lieu(data);
+
+    for(i = 0; i < nb_lieu_total; ++i){
+        free(data->solution[id_solution]->visite[i]);
+    }
+
+    free(data->solution[id_solution]->visite);
+    data->solution[id_solution]->visite = NULL;
+
 }

@@ -12,6 +12,7 @@
 #include "create_bd.h"
 #include "use_bd.h"
 #include "erreur.h"
+#include "use_map.h"
 
 // source : http://cprogramminglanguage.net/quicksort-algorithm-c-source-code.aspx
 

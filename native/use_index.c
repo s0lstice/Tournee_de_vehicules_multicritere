@@ -1,3 +1,11 @@
+/**
+ * \file use_index.c
+ * \brief ensemble de methodes permetant la gestion de la table index.
+ * \author Mickael PURET
+ * \date 25 mars 2011
+ *
+ */
+
 #include "create_bd.h"
 #include "erreur.h"
 #include "use_solution.h"
@@ -48,12 +56,27 @@ int index_nb_arc(Donnee *data, int id_depart, int id_arrive){
     return data->index_lieu[id_depart][id_arrive]->nb_arc;
 }
 
+/**
+ * \fn int relation_index_lieu(Donnee *data, int id_lieu_depart, int id_lieu_arrive).
+ * \brief indique si des arc existe entre deux lieux.
+ *
+ *
+ * \param Un pointeur sur une structure Donnee.
+ * \param l'indentifiant du lieu de depart.
+ * \param l'indentifiant du lieu d'arrvie.
+ * \return 0 : n'existe pas | 1 : existe.
+ */
 int relation_index_lieu(Donnee *data, int id_lieu_depart, int id_lieu_arrive){
     if(data->index_lieu[id_lieu_depart][id_lieu_arrive] == NULL) return 0;
     return 1;
 }
 
-
+/**
+ * \fn void unall_index(Donnee *data).
+ * \brief desalloue la table index.
+ *
+ * \param Un pointeur sur une structure Donnee.
+ */
 void unall_index(Donnee *data){
     int i,j;
 

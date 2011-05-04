@@ -26,5 +26,12 @@ int insecurite_arc_solution(Donnee *data, int id_solution, int id_arc);
 int interet_lieu_solution(Donnee *data, int id_solution, int id_lieu);
 void unall_solution(Donnee *data);
 
+void all_visite_solution(Donnee *data, int id_solution);
+void initi_visite_solution(Donnee *data, int id_solution);
+int nb_visite_solution(Donnee *data, int id_solution, int id_lieu);
+void maj_nb_visite_solution(Donnee *data, int id_solution, int id_lieu, int value);
+int nb_passage_solution(Donnee *data,int id_solution, int id_lieu);
+void maj_nb_passage_solution(Donnee *data,int id_solution, int id_lieu, int value);
+int existe_visite_solution(Donnee *data, int id_solution);
 
 #endif // USE_SOLUTION_H_INCLUDED

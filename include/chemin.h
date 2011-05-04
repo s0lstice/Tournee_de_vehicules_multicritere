@@ -2,6 +2,6 @@
 #define CHEMIN_H_INCLUDED
 
 #include "create_bd.h"
-void chemin_base(Donnee *data, int nb_lieu_sol);
+int chemin_base(Donnee *data);
 
 #endif // CHEMIN_H_INCLUDED

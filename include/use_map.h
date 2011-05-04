@@ -16,5 +16,6 @@ int distance_arc(Donnee *data, int id_lieu_depart, int id_lieu_arrive, int offse
 int insecurite_arc(Donnee *data, int id_lieu_depart, int id_lieu_arrive, int offset);
 int interet_destination_arc(Donnee *data, int id_lieu_depart, int id_lieu_arrive, int offset);
 void unall_map(Donnee *data);
+void spr_str_map_arc(Donnee *data, int id_lieu, int id_arc);
 
 #endif // USE_MAP_H_INCLUDED

@@ -68,6 +68,7 @@ struct parcourt{
     Caracteristique carac; /*!< caracteristique de cette solution.*/
     Arc **trajet; /*!< tableau contenent les arcs utilisé dans cette solution.*/
     Lieu **itineraire; /*!< tableau contenent les lieux traverses.*/
+    int **visite; /*!< tableau contenant le nombre de fois que le lieu est raversé.*/
 };
 /**
  * \struct arc create_bd.h
@@ -106,7 +107,6 @@ struct donnee{
     int nb_solution; /*!< nombre de solution trouvees*/
     char ordre_lieu; /*! < definit si les leu sont choisent par interet croissant (c) ou decroissant (d).*/
     Coef_lieu *liste_lieu; /*!< liste des lieux parordre de preferance*/
-    int **visite_lieu; /*!< indique le nombre de fois qu'un lieu est visite*/
     Lieu *lieux; /*!< pointeur sur un tableau contenent l'ensemble des referances des lieux.*/
     Index_arc ***index_lieu; /*!< pointeur sur une table d'index pour l'utilisation de map*/
     Arc ***map; /*!< pointeur sur un tableau contenant pour chaque lieu l'enseble des arcs disponible. ces arc sont trié par interet décroissant, distance et insecurite croissant*/
