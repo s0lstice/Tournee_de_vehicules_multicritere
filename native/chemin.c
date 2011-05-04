@@ -98,6 +98,7 @@ int chemin_base(Donnee *data){
                     }
                 }
 
+                /*mise en memoire au pouvoir etre trie*/
                 visite[id_visite][0] = nb_passage_solution(data, 0, id_sol);
                 visite[id_visite][1] = id_sol;
 
@@ -107,6 +108,7 @@ int chemin_base(Donnee *data){
         id_sol++;
     }
 
+    /* si la solution n'a pas ete trouve => tous les lieux utilent pour ce point de depart sont deja utilise*/
     if(trouve == 0){
         qsort(visite, id_visite, sizeof(visite), tris_croissant);
 
@@ -139,6 +141,7 @@ int chemin_base(Donnee *data){
     tmp = insecurite_solution(data, 0) + insecurite_arc(data, id_lieu_depart, id_sol, 0);
     maj_insecurite_solution(data, 0, tmp);
 
+    /*desalocation de visite si cette table existe*/
     if(id_visite >= 1){
         for(i = 0; i < nb_lieu_total; ++i)
             free(visite[i]);

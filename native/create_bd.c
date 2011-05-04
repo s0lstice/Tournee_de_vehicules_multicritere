@@ -275,22 +275,25 @@ static int interet_croissant(const void *lieu1, const void *lieu2){
 }
 
 /**
- * \fn static void create_interet(Donnee *data).
+ * \fn static void create_liste(Donnee *data).
  * \brief cree la table interet et la tris en fonction du parametre ordre_lieu.
  *
  * \param Un pointeur sur une structure Donnee.
  */
-static void create_interet(Donnee *data){
+static void create_liste(Donnee *data){
     int i;
 
+    /*creation de la liste*/
     data->liste_lieu = (Coef_lieu*)malloc(data->nb_lieux_total*sizeof(Coef_lieu));
     if(data->liste_lieu == NULL) fatalerreur(data, "creat_interet : echec de l'allocation de la table liste_lieu");
 
+    /*affectation de l'interet et du lieu*/
     for(i = 0; i < data->nb_lieux_total; ++i){
         data->liste_lieu[i].coef = data->lieux[i].interet;
         data->liste_lieu[i].lieu = &data->lieux[i];
     }
 
+    /*tris en croissant ou decroissant*/
     if(data->ordre_lieu == 'd')
         qsort(data->liste_lieu, data->nb_lieux_total, sizeof(Coef_lieu), interet_decroissant);
     else
@@ -307,32 +310,30 @@ static void create_index(Donnee *data){
     int id_lieu,i, last_lieu;
     Arc **map;
 
+    /*creation de l'index de niveau 1*/
+    data->index_lieu = (Index_arc***)malloc(data->nb_lieux_total * sizeof(Index_arc**));
+    if(data->index_lieu == NULL)
+        fatalerreur(data, "create_index : creation de la table d'index impossible lv 1");
+
+
     for( id_lieu = 0; id_lieu < data->nb_lieux_total; ++id_lieu){
         map = data->map[id_lieu];
 
-        if(data->index_lieu == NULL){
-            data->index_lieu = (Index_arc***)malloc(data->nb_lieux_total * sizeof(Index_arc**));
-            if(data->index_lieu == NULL)
-                fatalerreur(data, "create_index : creation de la table d'index impossible");
+        /*creation de l'index de niveau 1*/
+        data->index_lieu[id_lieu] = (Index_arc**)malloc(data->nb_lieux_total * sizeof(Index_arc*));
+        if(data->index_lieu[id_lieu] == NULL)
+            fatalerreur(data, "create_index : creation de la table d'index impossible lv 2");
 
-            for(i = 0; i < data->nb_lieux_total; ++i)
-                data->index_lieu[i] = NULL;
-        }
+        /*initialisation a NULL*/
+        for(i = 0; i < data->nb_lieux_total; ++i)
+            data->index_lieu[id_lieu][i] = NULL;
 
-        if(data->index_lieu[id_lieu] == NULL){
-            data->index_lieu[id_lieu] = (Index_arc**)malloc(data->nb_lieux_total * sizeof(Index_arc*));
-            if(data->index_lieu[id_lieu] == NULL)
-                fatalerreur(data, "create_index : creation de la table d'index impossible");
-
-            //memset(data->index_lieu[id_lieu], NULL, data->nb_lieux_total * sizeof(Index_arc*));
-            for(i = 0; i < data->nb_lieux_total; ++i)
-                data->index_lieu[id_lieu][i] = NULL;
-        }
-
+        /*creation de la structure Index_arc en fonction de map*/
         data->index_lieu[id_lieu][map[0]->destination->id] = (Index_arc*)malloc(sizeof(Index_arc));
         data->index_lieu[id_lieu][map[0]->destination->id]->id_arc = 0;
-        last_lieu = 0;
 
+        /*creation de la structure Index_arc en fonction de map pour les destination suivente*/
+        last_lieu = 0;
         for(i = 1; i < data->lieux[id_lieu].nb_arc; ++i){
             if(map[last_lieu]->destination != map[i]->destination){
                 data->index_lieu[id_lieu][map[i]->destination->id] = (Index_arc*)malloc(sizeof(Index_arc));
@@ -345,6 +346,7 @@ static void create_index(Donnee *data){
 
         }
 
+        /*mise a jour du nombre d'arc disponible dans l'index*/
         data->index_lieu[id_lieu][map[last_lieu]->destination->id]->nb_arc = i - last_lieu;
     }
 }
@@ -391,7 +393,7 @@ Donnee * main_create_db(char * path){
         free(line);
     }
 
-    create_interet(data);
+    create_liste(data);
     create_index(data);
     return data;
 }

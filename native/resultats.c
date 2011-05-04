@@ -21,17 +21,20 @@
 void print_result(Donnee * data){
     int i, j;
 
+    /*afficage des paramtres*/
     printf("*** Test de create_bd ***\n");
     printf("\n** Affichage des parametres **\n");
     printf("Temps d'executions du programme : %d s\n", temps_execution(data));
     printf("Nombres de lieux totales : %d\n", nb_lieu(data));
     printf("Nombres d'arcs totales : %d\n", nb_arc_total(data));
 
+    /*affichage des lieux*/
     printf("\n** Affichage des lieux **\n");
     for(i = 0; i < nb_lieu(data); ++i){
         printf("Lieu n° %d (%s) d'interet %d avec %d arcs\n", i, nom_lieu(data, i), interet_lieu(data, i), nb_arc(data, i));
     }
 
+    /*affichage des arcs*/
     printf("\n** Affichage des arcs **\n");
     for(i = 0; i < nb_lieu(data); ++i){
         printf("* Lieu de depart N° %d (%s)\n", i, data->lieux[i].nom);
@@ -45,6 +48,7 @@ void print_result(Donnee * data){
                    insecurite_map_arc(data, i, j));
     }
 
+    /*affichage de l'index*/
     printf("\n** Affichage des index **\n");
     for(i = 0; i < nb_lieu(data); ++i){
         printf("* Lieu de depart N° %d (%s)\n", i, data->lieux[i].nom);
@@ -57,11 +61,13 @@ void print_result(Donnee * data){
             }
     }
 
-    printf("\n** Affichage des interet **\n");
+    /*affichage de la liste tree*/
+    printf("\n** Affichage des interets **\n");
     for(i = 0; i < nb_lieu(data); ++i){
         printf("liste_lieu : interet %d id %d\n", liste_lieu_coef(data, i), data->liste_lieu[i].lieu->id);
     }
 
+    /*affichage du chemin de base*/
     printf("\n*** chemin de base ***\n");
     printf("**cara : \n distance : %d \n insecurite : %d \n interet : %d \n nb_lieux_total : %d \n nb_lieux_utile : %d\n",
         data->solution[0]->carac.distance,
