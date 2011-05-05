@@ -162,16 +162,13 @@ int interet_lieu_solution(Donnee *data, int id_solution, int id_lieu){
 }
 
 void unall_solution(Donnee *data){
-    int i, j, nb_lieu_total = nb_lieu(data);
+    int i, nb_lieu_total = nb_lieu(data);
 
     for(i = 0; i < data->nb_solution; ++i){
         free(data->solution[i]->itineraire);
         free(data->solution[i]->trajet);
 
         if(data->solution[i]->visite != NULL){
-            for(j = 0; j < nb_lieu_total; ++j){
-                free(data->solution[i]->visite[j]);
-            }
 
             free(data->solution[i]->visite);
             data->solution[i]->visite = NULL;
@@ -191,18 +188,12 @@ void all_visite_solution(Donnee *data, int id_solution){
     int i, nb_lieu_total = nb_lieu(data);
 
     /*creation du niveau 1 de visite*/
-    data->solution[id_solution]->visite = (int**)malloc(nb_lieu_total*sizeof(int*));
+    data->solution[id_solution]->visite = (int*)malloc(nb_lieu_total*sizeof(int));
     if(data->solution[id_solution]->visite == NULL) fatalerreur(data, "all_visite_solution : echeque de l'allocation lv 1");
 
-    for(i = 0; i < nb_lieu_total; ++i){
-        /*creation du niveau 2 de visite*/
-        data->solution[id_solution]->visite[i] = (int*)malloc(2*sizeof(int));
-        if(data->solution[id_solution]->visite[i] == NULL) fatalerreur(data, "all_visite_solution : echeque de l'allocation lv 2");
+    for(i = 0; i < nb_lieu_total; ++i)
+        data->solution[id_solution]->visite[i] = 0;
 
-        /*initialisation*/
-        data->solution[id_solution]->visite[i][0] = 0;
-        data->solution[id_solution]->visite[i][1] = 0;
-    }
 }
 
 void initi_visite_solution(Donnee *data, int id_solution){
@@ -212,11 +203,8 @@ void initi_visite_solution(Donnee *data, int id_solution){
     for(i = 0; i < nb_solution; ++i){
         /*compte le nombre de fois que le lieu est present*/
         id_lieu = data->solution[id_solution]->itineraire[i]->id;
-        data->solution[id_solution]->visite[id_lieu][0]++;
+        data->solution[id_solution]->visite[id_lieu]++;
 
-        /*compte le nombre de fois que le lieu ne rentre pas dans le calcule de l'interet*/
-        if(data->solution[id_solution]->visite[id_lieu][0] < 2)
-            data->solution[id_solution]->visite[id_lieu][1]++;
 
         /*cette estape peut etre remplacé par un teste ; une soustration de 2 à visite[id_lieu][0] ; ou autres.
         n'est pas tres optimise*/
@@ -224,29 +212,16 @@ void initi_visite_solution(Donnee *data, int id_solution){
 }
 
 int nb_visite_solution(Donnee *data,int id_solution, int id_lieu){
-    return data->solution[id_solution]->visite[id_lieu][0];
+    return data->solution[id_solution]->visite[id_lieu];
 }
 
 void maj_nb_visite_solution(Donnee *data,int id_solution, int id_lieu, int value){
-    data->solution[id_solution]->visite[id_lieu][0] = value;
-}
-
-int nb_passage_solution(Donnee *data,int id_solution, int id_lieu){
-    return data->solution[id_solution]->visite[id_lieu][1];
-}
-
-void maj_nb_passage_solution(Donnee *data,int id_solution, int id_lieu, int value){
-    data->solution[id_solution]->visite[id_lieu][1] = value;
+    data->solution[id_solution]->visite[id_lieu] = value;
 }
 
 void unall_visite_solution(Donnee *data, int id_solution){
     int i, nb_lieu_total = nb_lieu(data);
 
-    for(i = 0; i < nb_lieu_total; ++i){
-        free(data->solution[id_solution]->visite[i]);
-    }
-
     free(data->solution[id_solution]->visite);
     data->solution[id_solution]->visite = NULL;
-
 }

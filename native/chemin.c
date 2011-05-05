@@ -99,7 +99,7 @@ int chemin_base(Donnee *data){
                 }
 
                 /*mise en memoire au pouvoir etre trie*/
-                visite[id_visite][0] = nb_passage_solution(data, 0, id_sol);
+                visite[id_visite][0] = nb_visite_solution(data, 0, id_sol);
                 visite[id_visite][1] = id_sol;
 
                 id_visite++;
@@ -113,7 +113,7 @@ int chemin_base(Donnee *data){
         qsort(visite, id_visite, sizeof(visite), tris_croissant);
 
         id_sol = visite[0][1];
-        maj_nb_passage_solution(data, 0, id_sol, visite[0][0] +1);
+        maj_nb_visite_solution(data, 0, id_sol, visite[0][0] +1);
     }
 
     /*on augmente le nombre de fois qu'il a ete visité*/
