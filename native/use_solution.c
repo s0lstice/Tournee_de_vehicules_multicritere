@@ -204,10 +204,6 @@ void initi_visite_solution(Donnee *data, int id_solution){
         /*compte le nombre de fois que le lieu est present*/
         id_lieu = data->solution[id_solution]->itineraire[i]->id;
         data->solution[id_solution]->visite[id_lieu]++;
-
-
-        /*cette estape peut etre remplacé par un teste ; une soustration de 2 à visite[id_lieu][0] ; ou autres.
-        n'est pas tres optimise*/
     }
 }
 

@@ -56,9 +56,6 @@ static char * readLine(FILE * fichier) {
  */
 static void ajout_parametre(Donnee * data, FILE * file){
     fscanf(file, "%d;%d;%d;%c", &data->temps_execution, &data->nb_lieux_total, &data->nb_arcs, &data->ordre_lieu);
-    /* les nombres d'elements doivent contenir le nombre exacte*/
-    data->nb_arcs++;
-    data->nb_lieux_total++;
 }
 
 /**

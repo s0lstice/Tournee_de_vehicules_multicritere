@@ -69,22 +69,26 @@ void print_result(Donnee * data){
 
     /*affichage du chemin de base*/
     printf("\n*** chemin de base ***\n");
-    printf("**cara : \n distance : %d \n insecurite : %d \n interet : %d \n nb_lieux_total : %d \n nb_lieux_utile : %d\n",
-        data->solution[0]->carac.distance,
-        data->solution[0]->carac.insecurite,
-        data->solution[0]->carac.interet,
-        data->solution[0]->carac.nb_lieux_total,
-        data->solution[0]->carac.nb_lieux_utile);
-    for(j = 0; j < nb_arc_solution(data, 0); ++j){
-        printf("**trajet : \n depart : %d \n destination : %d \n distance : %d \n insecurite : %d \n",
-            id_depart_trajet_solution(data, 0, j),
-            id_destination_trajet_solution(data, 0, j),
-            distance_arc_solution(data, 0, j),
-            insecurite_arc_solution(data, 0, j));
+    if(existe_solution(data) == 1){
+        printf("**cara : \n distance : %d \n insecurite : %d \n interet : %d \n nb_lieux_total : %d \n nb_lieux_utile : %d\n",
+            data->solution[0]->carac.distance,
+            data->solution[0]->carac.insecurite,
+            data->solution[0]->carac.interet,
+            data->solution[0]->carac.nb_lieux_total,
+            data->solution[0]->carac.nb_lieux_utile);
+        for(j = 0; j < nb_arc_solution(data, 0); ++j){
+            printf("**trajet : \n depart : %d \n destination : %d \n distance : %d \n insecurite : %d \n",
+                id_depart_trajet_solution(data, 0, j),
+                id_destination_trajet_solution(data, 0, j),
+                distance_arc_solution(data, 0, j),
+                insecurite_arc_solution(data, 0, j));
+        }
+        for(j = 0; j < nb_lieu_total_solution(data, 0); ++j){
+            printf("**lieu : \n id_lieu : %d \n interet : %d \n",
+                id_lieu_solution(data, 0, j),
+                interet_lieu_solution(data, 0, j));
+        }
     }
-    for(j = 0; j < nb_lieu_total_solution(data, 0); ++j){
-        printf("**lieu : \n id_lieu : %d \n interet : %d \n",
-            id_lieu_solution(data, 0, j),
-            interet_lieu_solution(data, 0, j));
-    }
+    else
+        printf("/!\ il n'y a pas de solution /!\\ \n");
 }
