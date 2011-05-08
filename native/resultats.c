@@ -90,5 +90,5 @@ void print_result(Donnee * data){
         }
     }
     else
-        printf("/!\ il n'y a pas de solution /!\\ \n");
+        printf("/!\\ il n'y a pas de solutions /!\\ \n");
 }

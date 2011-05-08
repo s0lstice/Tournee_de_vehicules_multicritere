@@ -25,7 +25,7 @@ int main(int argc , char * argv [])
     else
         printf("probléme dans les parametres d'entrées\n");
 
-    printf("debut : %d \n", time(&debut));
+    printf("debut : %ld \n", time(&debut));
     data = main_create_db(argv[1]);
 
     stop = debut + temps_execution(data);
@@ -34,7 +34,8 @@ int main(int argc , char * argv [])
     print_result(data);
 
     free_db(data);
-    printf("fin : %d \n", time(&fin));
-    printf("duree : %d", fin - debut);
+    printf("fin : %ld \n", time(&fin));
+    printf("duree : %ld", fin - debut);
+    printf("duree : %ld", fin - debut);
     return 0;
 }

@@ -162,7 +162,7 @@ int interet_lieu_solution(Donnee *data, int id_solution, int id_lieu){
 }
 
 void unall_solution(Donnee *data){
-    int i, nb_lieu_total = nb_lieu(data);
+    int i;
 
     for(i = 0; i < data->nb_solution; ++i){
         free(data->solution[i]->itineraire);
@@ -216,8 +216,6 @@ void maj_nb_visite_solution(Donnee *data,int id_solution, int id_lieu, int value
 }
 
 void unall_visite_solution(Donnee *data, int id_solution){
-    int i, nb_lieu_total = nb_lieu(data);
-
     free(data->solution[id_solution]->visite);
     data->solution[id_solution]->visite = NULL;
 }

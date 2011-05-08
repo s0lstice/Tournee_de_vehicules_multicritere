@@ -68,7 +68,7 @@ struct parcourt{
     Caracteristique carac; /*!< caracteristique de cette solution.*/
     Arc **trajet; /*!< tableau contenent les arcs utilisé dans cette solution.*/
     Lieu **itineraire; /*!< tableau contenent les lieux traverses.*/
-    int **visite; /*!< tableau contenant le nombre de fois que le lieu est raversé.*/
+    int *visite; /*!< tableau contenant le nombre de fois que le lieu est raversé.*/
 };
 
 /**

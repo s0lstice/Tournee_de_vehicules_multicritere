@@ -348,12 +348,12 @@ static void create_index(Donnee *data){
     }
 }
 
-(/**
+/**
  * \fn static void ajout_arcs(Donnee * data, FILE * file)
  * \brief Ouvre le fichier et coordonne les differantes fonctions parmetant le stockage des informations en memoire.
  *
  * \param Une chaine de caractères designant le fichier contenant les données.
- */)
+ */
 Donnee * main_create_db(char * path){
     char * line ;
     Donnee * data;
