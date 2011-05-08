@@ -1,7 +1,7 @@
 /**
  * \file use_bd.c
  * \brief ensemble de methodes permetant la recuperation d'informations provenant des données.
- * \author Mickael PURET
+ * \author Mickael PURET & CP
  * \date 25 mars 2011
  *
  */
@@ -12,7 +12,7 @@
 
 /**
  * \fn char * nom_lieu(Donnee * data, int id_lieu).
- * \brief renvoie le nom du lieu.
+ * \brief renvoie le nom du lieu à partir du tableau lieu de la structure de donnee et de l'identifiant du lieu.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
@@ -23,8 +23,8 @@ char *nom_lieu(Donnee * data, int id_lieu){
 }
 
 /**
- * \fn int Coef_lieu(Donnee * data, int id_lieu).
- * \brief renvoie l'interet du lieu.
+ * \fn int interet_lieu(Donnee * data, int id_lieu).
+ * \brief renvoie l'interet du lieu à partir du tableau lieu de la structure de donnee et de l'identifiant du lieu.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
@@ -36,7 +36,8 @@ int interet_lieu(Donnee * data, int id_lieu){
 
 /**
  * \fn int nb_arc(Donnee *data, int id_lieu).
- * \brief renvoie le nombre d'arc que comprent un lieu.
+ * \brief renvoie le nombre d'arc que comprent un lieu (sortant ?) à partir du tableau lieu de la structure de donnee et de l'identifiant du lieu.
+
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
@@ -48,10 +49,10 @@ int nb_arc(Donnee *data, int id_lieu){
 
 /**
  * \fn int nb_arc_total(Donnee *data).
- * \brief renvoie le nombre d'arc dans le systeme
+ * \brief renvoie le nombre d'arc dans le systeme.
  *
  * \param Un pointeur sur une structure Donnee.
- * \return un entier indiquant le nombre d'arc dans le systeme.
+ * \return un entier indiquant le nombre d'arc total dans le systeme.
  */
 int nb_arc_total(Donnee *data){
     return data->nb_arcs;
@@ -59,7 +60,7 @@ int nb_arc_total(Donnee *data){
 
 /**
  * \fn int nb_lieu(Donnee *data).
- * \brief renvoie le nombre de lieu dans le systeme.
+ * \brief renvoie le nombre de lieu total dans le systeme.
  *
  * \param Un pointeur sur une structure Donnee.
  * \return un entier indiquant le nombre de lieux.

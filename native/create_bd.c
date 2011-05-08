@@ -1,7 +1,7 @@
 /**
  * \file create_bd.c
- * \brief Pars le dociment et stock toutes les valeurs en memoire.
- * \author Mickael PURET
+ * \brief Parcours le document texte et stock toutes les valeurs en memoire.
+ * \author Mickael PURET & CP
  * \date 21 mars 2011
  *
  */
@@ -36,7 +36,7 @@ static FILE * open_file(Donnee *data,char * path){
 
 /**
  * \fn static char * readLine(FILE * fichier)
- * \brief lit une ligne d'au maximum 1024 caractères et la retourne sous forme d'une chaine alloué sur le tas.
+ * \brief lit une ligne d'au maximum 1024 caractères et la retourne sous forme d'une chaine allouée sur le tas.
  *
  * \param Un pointeur sur une structure FILE valide.
  * \return une chaine de caractères.
@@ -86,7 +86,7 @@ static void ajout_lieux(Donnee * data, FILE * file){
  * \brief indique si l'arc p1 doit se trouver avant l'arc p2 selon :
  * p1.destination.interet >= p2.destination.interet et
  * p1.distance <= p2.distance et
- * p2.insecurité <= p2.insecurité.
+ * p1.insecurité <= p2.insecurité.
  *
  * \param pointeur sur l'arc 1.
  * \param pointeur sur l'arc 2.
@@ -259,7 +259,7 @@ static int interet_decroissant(const void *lieu1, const void *lieu2){
 }
 
 /**
- * \fn static int interet_decroissant(const void *val1, const void *val2).
+ * \fn static int interet_(de)croissant(const void *val1, const void *val2).
  * \brief indique si l'interet de lieu1 et plus faible que l'interet de lieu2.
  *
  * \param pointeur sur lieu1.
@@ -348,12 +348,12 @@ static void create_index(Donnee *data){
     }
 }
 
-/**
+(/**
  * \fn static void ajout_arcs(Donnee * data, FILE * file)
  * \brief Ouvre le fichier et coordonne les differantes fonctions parmetant le stockage des informations en memoire.
  *
  * \param Une chaine de caractères designant le fichier contenant les données.
- */
+ */)
 Donnee * main_create_db(char * path){
     char * line ;
     Donnee * data;
