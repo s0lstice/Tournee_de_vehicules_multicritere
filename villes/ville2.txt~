@@ -1,0 +1,21 @@
+﻿%Temps de recherche en secondes 
+%nombres de ville 
+%nombres d'arcs 
+%{c|d} determine si les chemins sont construt par interet croissant ou decroissant 
+#Parametres
+60;4;3;d
+
+%n° ; interee (le lieu n°0 est le point de depart) ; nom du lieux
+#Lieux
+0;0;Depart
+1;6;L1
+2;2;L2
+3;12;L3
+4;1;L4
+
+%n°Lieux 1, n°Lieux 2, distance : insecurité
+#Arcs
+0;1;10;1
+0;2;7;2
+0;3;8;3
+0;4;1;2
