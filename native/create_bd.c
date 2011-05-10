@@ -147,6 +147,8 @@ int epure_map(Donnee *data,int id_lieu){
             /* l'inetere de la clef est differnts de celui de l'arc, on deplace la clef de un*/
             if(arc_interet < key_interet){
                 /*si l'arc n'existe pas, on prends le suivant*/
+                ++id_key;
+                /*on comble les vides*/
                 while((id_key != nbre_arc)&&(str_map_arc(data, id_lieu, id_key) == NULL)) ++id_key;
 
                 /*recuperation des valeurs de la clef*/
