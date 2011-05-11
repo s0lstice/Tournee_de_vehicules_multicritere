@@ -96,12 +96,21 @@ static int position_arc(const void *p1, const void *p2){
     Arc *b = *((Arc* const*)p2);
 
     /*comparaison*/
+
+    /*distinction des lieux d'interet differant, l'interet le plus fort est placé avant*/
     if(a->destination->interet > b->destination->interet)
         return -1;
 
     if(a->destination->interet == b->destination->interet){
+        /*distinction des lieux d'interet identique, l'identifiant le plus faible est placé avant*/
+        if(a->destination->id < b->destination->id)
+            return -1;
+
+        /*distinction des distance, la distance la plus faible est placé avant*/
         if(a->distance < b->distance)
             return -1;
+
+        /* en cas de distance identique, c'est l'insecurite qui devient placent, l'insecurite le plus faible est placeavant*/
         if(a->distance == b->distance)
             if(a->insecurite <= b->insecurite)
                 return -1;
@@ -121,12 +130,12 @@ int epure_map(Donnee *data,int id_lieu){
     int nbre_arc = nb_arc(data, id_lieu);
     int id_arc, id_key = 0, id_cpy = 1;
 
-    int arc_interet, arc_distance, arc_insecurite;
+    int arc_distance, arc_insecurite, arc_destination;
 
     /*recuperation des valeurs de la clef*/
-    int key_interet = interet_map_destination(data, id_lieu, id_key);
     int key_distance = distance_map_arc(data, id_lieu, id_key);
     int key_insecurite = insecurite_map_arc(data, id_lieu, id_key);
+    int key_destination = destination_map_arc(data, id_lieu, id_key);
 
     /*lecture de tous le tableau*/
     for(id_arc = 1 ; id_arc < nbre_arc ; ++id_arc){
@@ -134,27 +143,28 @@ int epure_map(Donnee *data,int id_lieu){
         while((id_arc != nbre_arc)&&(existe_map_arc(data, id_lieu, id_arc) == 0)) id_arc++;
 
         /*recuperation des valeurs de l'arc*/
-        arc_interet = interet_map_destination(data, id_lieu, id_arc);
         arc_distance = distance_map_arc(data, id_lieu, id_arc);
         arc_insecurite = insecurite_map_arc(data, id_lieu, id_arc);
+        arc_destination = destination_map_arc(data, id_lieu, id_arc);
 
         /*si l'arc est domine, on le suprime*/
-        if((arc_interet == key_interet)&&(arc_distance >= key_distance)&&(arc_insecurite >= key_insecurite)){
+        /*a destination egale, les inetret sont egaux*/
+        if((arc_destination == key_destination)&&(arc_distance >= key_distance)&&(arc_insecurite >= key_insecurite)){
             spr_str_map_arc(data, id_lieu, id_arc);
             maj_str_map_arc(data, id_lieu, id_arc, NULL);
         }
         else{
-            /* l'inetere de la clef est differnts de celui de l'arc, on deplace la clef de un*/
-            if(arc_interet < key_interet){
-                /*si l'arc n'existe pas, on prends le suivant*/
+            /*si les lieux de destinations sont differant*/
+            if(arc_destination != key_destination){
+                /*on deplace la clef d'un*/
                 ++id_key;
-                /*on comble les vides*/
+                /*si l'arc n'existe pas, on prends le suivant*/
                 while((id_key != nbre_arc)&&(str_map_arc(data, id_lieu, id_key) == NULL)) ++id_key;
 
                 /*recuperation des valeurs de la clef*/
-                key_interet = interet_map_destination(data, id_lieu, id_key);
                 key_distance = distance_map_arc(data, id_lieu, id_key);
                 key_insecurite = insecurite_map_arc(data, id_lieu, id_key);
+                key_destination = destination_map_arc(data, id_lieu, id_key);
             }
 
             /* s'il y a des arc de supprimes, on comble les trous*/
