@@ -36,6 +36,5 @@ int main(int argc , char * argv [])
     free_db(data);
     printf("fin : %ld \n", time(&fin));
     printf("duree : %ld", fin - debut);
-    printf("duree : %ld", fin - debut);
     return 0;
 }

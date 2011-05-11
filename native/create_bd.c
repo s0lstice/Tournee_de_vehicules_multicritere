@@ -404,6 +404,9 @@ Donnee * main_create_db(char * path){
 
     create_liste(data);
     create_index(data);
+
+    /*fermeture du fichier*/
+    fclose(file);
     return data;
 }
 
