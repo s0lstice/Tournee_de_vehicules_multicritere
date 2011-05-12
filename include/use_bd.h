@@ -11,5 +11,6 @@ int temps_execution(Donnee *data);
 void maj_nb_arc(Donnee *data, int id_lieu, int nb_arc);
 int next_lieu(Donnee *data, int id_lieu);
 void maj_next_lieu(Donnee *data, int id_lieu, int valeu);
+int nb_solution(Donnee *data);
 
 #endif // USE_BD_H_INCLUDED

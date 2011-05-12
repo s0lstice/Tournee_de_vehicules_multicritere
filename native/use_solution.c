@@ -219,3 +219,44 @@ void unall_visite_solution(Donnee *data, int id_solution){
     free(data->solution[id_solution]->visite);
     data->solution[id_solution]->visite = NULL;
 }
+
+void cpy_solution(Donnee *data, int id_solution_destination, int id_solution_source){
+    int i, nb_lieux_total;
+    Arc **temp_arc;
+    Lieu **temp_lieu;
+    Parcourt *destination_solution = data->solution[id_solution_destination];
+    Parcourt *source_solution = data->solution[id_solution_source];
+
+    /*copy des caracteristique*/
+    destination_solution->carac.distance = source_solution->carac.distance;
+    destination_solution->carac.insecurite = source_solution->carac.insecurite;
+    destination_solution->carac.interet = source_solution->carac.interet;
+    destination_solution->carac.nb_arc = source_solution->carac.nb_arc;
+    destination_solution->carac.nb_lieux_total = source_solution->carac.nb_lieux_total;
+    destination_solution->carac.nb_lieux_utile = source_solution->carac.nb_lieux_utile;
+
+    /*copy de l'itineraire*/
+    nb_lieux_total = destination_solution->carac.nb_lieux_total;
+
+    /*on augmente l'itineraire de nb_lieux_total*/
+    temp_lieu = (Lieu **)realloc(destination_solution->itineraire, (nb_lieux_total)*sizeof(Lieu *));
+    if(temp_lieu == NULL) fatalerreur(data, "cpy_solution : echeque de la realocation de itineraire");
+    destination_solution->itineraire = temp_lieu;
+
+    for(i = 0; i < nb_lieux_total; ++i){
+        destination_solution->itineraire[i] = source_solution->itineraire[i];
+    }
+
+    /*copy du trajet*/
+    /*on augmante le trajet de nb_lieux_total*/
+    temp_arc = (Arc **)realloc(destination_solution->trajet, (nb_lieux_total -1)*sizeof(Arc *)); //-1 : il y a un arc de moins que de lieu
+    if(temp_arc == NULL) fatalerreur(data, "cpy_solution : echeque de la realocation de trajet");
+    destination_solution->trajet = temp_arc;
+
+    /*on affecte l'adresse de l'arc*/
+    for(i = 0; i < nb_lieux_total -1; ++i){
+        destination_solution->trajet[i] = source_solution->trajet[i];
+    }
+
+    /*on ne copy pas la table des visites car elle n'est utilisé que pour la generation de chemin de referance*/
+}

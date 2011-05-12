@@ -394,9 +394,9 @@ Donnee * main_create_db(char * path){
 
         /*si la ligne commance par un # on utilise la fonction corespondane*/
         if(line[0] == '#'){
-            if( (strcasecmp(line + 1, "Parametres\n") == 0) ) ajout_parametre(data, file);
-            else if( (strcasecmp(line + 1, "Lieux\n") == 0) ) ajout_lieux(data, file);
-                else if( (strcasecmp(line + 1, "Arcs\n") == 0) ) ajout_arcs(data, file);
+            if( strcasecmp(line + 1, "Parametres\n") == 0 ) ajout_parametre(data, file);
+            else if( strcasecmp(line + 1, "Lieux\n") == 0 ) ajout_lieux(data, file);
+                else if( strcasecmp(line + 1, "Arcs\n") == 0 ) ajout_arcs(data, file);
                     else fatalerreur(data, "main_creat_db : aucun traitement pour cette ligne\n");
         }
         free(line);

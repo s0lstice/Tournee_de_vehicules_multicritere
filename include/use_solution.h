@@ -32,5 +32,5 @@ void maj_nb_visite_solution(Donnee *data, int id_solution, int id_lieu, int valu
 int nb_passage_solution(Donnee *data,int id_solution, int id_lieu);
 void maj_nb_passage_solution(Donnee *data,int id_solution, int id_lieu, int value);
 int existe_visite_solution(Donnee *data, int id_solution);
-
+void cpy_solution(Donnee *data, int id_solution_destination, int id_solution_source);
 #endif // USE_SOLUTION_H_INCLUDED

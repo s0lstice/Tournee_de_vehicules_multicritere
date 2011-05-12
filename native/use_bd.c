@@ -91,3 +91,7 @@ int temps_execution(Donnee *data){
 void maj_nb_arc(Donnee *data, int id_lieu, int nb_arc){
     data->lieux[id_lieu].nb_arc = nb_arc;
 }
+
+int nb_solution(Donnee *data){
+    return data->nb_solution;
+}
