@@ -154,7 +154,7 @@ int interet_destination_arc(Donnee *data, int id_lieu_depart, int id_lieu_arrive
 void unall_map(Donnee *data){
     int j,i;
 
-    for(i = 0; i < data->nb_lieux_total; ++i){
+    for(i = 0; i < data->parametres.nb_lieux; ++i){
 
         for(j = 0; j < data->lieux[i].nb_arc; ++j){
             free(data->map[i][j]);
@@ -162,4 +162,9 @@ void unall_map(Donnee *data){
         free(data->map[i]);
     }
     free(data->map);
+}
+
+Arc *ptr_arc(Donnee *data, int id_lieu_depart, int id_lieu_arrive, int offset){
+    int id_arc = data->index_lieu[id_lieu_depart][id_lieu_arrive]->id_arc;
+    return data->map[id_lieu_depart][id_arc + offset];
 }

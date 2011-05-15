@@ -42,8 +42,12 @@ Lieu *str_lieu(Donnee *data, int id_lieu){
  */
 void unall_lieu(Donnee *data){
     int i;
-    for(i = 0; i < data->nb_lieux_total; ++i){
+    for(i = 0; i < data->parametres.nb_lieux; ++i){
         free(data->lieux[i].nom);
     }
     free(data->lieux);
+}
+
+int nb_arc_lieu(Donnee *data, int id_lieu){
+    return data->lieux[id_lieu].nb_arc;
 }

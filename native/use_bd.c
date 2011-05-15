@@ -55,7 +55,7 @@ int nb_arc(Donnee *data, int id_lieu){
  * \return un entier indiquant le nombre d'arc total dans le systeme.
  */
 int nb_arc_total(Donnee *data){
-    return data->nb_arcs;
+    return data->parametres.nb_arcs;
 }
 
 /**
@@ -66,7 +66,7 @@ int nb_arc_total(Donnee *data){
  * \return un entier indiquant le nombre de lieux.
  */
 int nb_lieu(Donnee *data){
-    return data->nb_lieux_total;
+    return data->parametres.nb_lieux;
 }
 
 /**
@@ -77,7 +77,7 @@ int nb_lieu(Donnee *data){
  * \return un entier indiquant le temps de recherche impartie.
  */
 int temps_execution(Donnee *data){
-    return data->temps_execution;
+    return data->parametres.temps_execution;
 }
 
 /**
@@ -90,8 +90,4 @@ int temps_execution(Donnee *data){
  */
 void maj_nb_arc(Donnee *data, int id_lieu, int nb_arc){
     data->lieux[id_lieu].nb_arc = nb_arc;
-}
-
-int nb_solution(Donnee *data){
-    return data->nb_solution;
 }

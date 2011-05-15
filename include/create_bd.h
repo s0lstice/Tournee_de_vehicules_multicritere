@@ -18,7 +18,42 @@ typedef struct lieu Lieu;
 typedef struct donnee Donnee;
 typedef struct index_arc Index_arc;
 typedef struct coef_lieu Coef_lieu;
+typedef struct solutions Solution;
+typedef struct prarametres Parametres;
+typedef struct resultats Resultats;
 
+/**
+ * \struct prarametres create_bd.h
+ * \brief contien les information sur la recherche.
+ *
+ */
+struct prarametres{
+    int temps_execution; /*!< temps impartie pour la recherche de solutions.*/
+    int nb_lieux; /*!< nombre de lieu interessant.*/
+    int nb_arcs; /*!< nombre d'arcs total.*/
+    int nb_resultat; /*!< nombre de resultats trouves*/
+    char ordre_lieu; /*! < definit si les leu sont choisent par interet croissant (c) ou decroissant (d).*/
+};
+
+/**
+ * \struct solution create_bd.h
+ * \brief structure contenent une liste de solution pouvant devenir des resultats.
+ *
+ */
+struct resultats{
+    int *nb_resultats; /*!< nombre de solution trouvees*/
+    Parcourt **resultats; /*!< pointeur sur un tableau contenant une pilles de solution partieles*/
+};
+
+/**
+ * \struct solution create_bd.h
+ * \brief structure contenent une liste de solution pouvant devenir des resultats.
+ *
+ */
+struct solutions{
+    int nb_solution; /*!< nombre de solution trouvees*/
+    Parcourt **solution; /*!< pointeur sur un tableau contenant une pilles de solution partieles*/
+};
 /**
  * \struct coef_lieu create_bd.h
  * \brief structure permetant d'affecter une valeur a un lieu.
@@ -101,17 +136,13 @@ struct lieu{
  *
  */
 struct donnee{
-    int temps_execution; /*!< temps impartie pour la recherche de solutions.*/
-    int nb_lieux_total; /*!< nombre de lieu interessant.*/
-    int nb_lieux_solution; /*!< nombre de lieu interessant.*/
-    int nb_arcs; /*!< nombre d'arcs total.*/
-    int nb_solution; /*!< nombre de solution trouvees*/
-    char ordre_lieu; /*! < definit si les leu sont choisent par interet croissant (c) ou decroissant (d).*/
-    Coef_lieu *liste_lieu; /*!< liste des lieux parordre de preferance*/
+    Parametres parametres; /*!<contient les information sur la recherche*/
+    Coef_lieu *liste_lieu; /*!< liste des lieux tries par interet croissant ou decroissant*/
     Lieu *lieux; /*!< pointeur sur un tableau contenent l'ensemble des referances des lieux.*/
     Index_arc ***index_lieu; /*!< pointeur sur une table d'index pour l'utilisation de map*/
     Arc ***map; /*!< pointeur sur un tableau contenant pour chaque lieu l'enseble des arcs disponible. ces arc sont trié par interet décroissant, distance et insecurite croissant*/
-    Parcourt **solution; /*!< pointeur sur un tableau contenant l'ensemble des solutions acceptable */
+    Resultats resultat; /*!< pointeur sur un tableau contenant l'ensemble des solutions acceptable*/
+    Solution solution; /*!<liste de solutions envisageble*/
 };
 
 Donnee * main_create_db(char * path);

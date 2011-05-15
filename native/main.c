@@ -19,8 +19,8 @@
 int main(int argc , char * argv [])
 {
     Donnee * data;
-    time_t debut, fin, stop;
-    int i;
+    time_t debut, fin, stop, temps_recherche;
+    int i, j;
 
     if(argc != 1)
         printf("lecture du fichier %s .\n", argv[1]);
@@ -31,18 +31,22 @@ int main(int argc , char * argv [])
     data = main_create_db(argv[1]);
 
     stop = debut + temps_execution(data);
-    i = 2;
 
     while((time(NULL) < stop) && (chemin_base(data) == 1)){
-        all_parcourt(data, i);
-        cpy_solution(data, i-1, 0);
-        ++i;
+        j = nb_solution(data);
+        all_parcourt(data, 1);
+        cpy_solution(data, j, 0);
+        i = nb_solution(data);
+        //create_chemin_solution(data, j-1, i);
     }
+
+    time(&temps_recherche);
 
     print_result(data);
 
     free_db(data);
     printf("fin : %ld \n", time(&fin));
+    printf("temps de recherche : %ld\n", temps_recherche - debut);
     printf("duree : %ld \n", fin - debut);
     return 0;
 }

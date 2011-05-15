@@ -80,8 +80,8 @@ int relation_index_lieu(Donnee *data, int id_lieu_depart, int id_lieu_arrive){
 void unall_index(Donnee *data){
     int i,j;
 
-    for(i = 0; i < data->nb_lieux_total; ++i){
-        for(j = 0; j < data->nb_lieux_total; ++j){
+    for(i = 0; i < data->parametres.nb_lieux; ++i){
+        for(j = 0; j < data->parametres.nb_lieux; ++j){
             if(data->index_lieu[i][j] != NULL)
                 free(data->index_lieu[i][j]);
         }
