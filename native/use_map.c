@@ -4,13 +4,13 @@
 #include <stdlib.h>
 
 /**
- * \fn int Coef_lieu(Donnee * data, int id_lieu).
- * \brief renvoie l'identifiant de la destination de l'arc.
+ * \fn int destination_map_arc(Donnee * data, int id_lieu, int id_arc).
+ * \brief renvoie l'identifiant du lieu de destination de l'arc.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
  * \param l'indentifiant de l'arc.
- * \return un entier indiquant l'identifiant de la destination de l'arc.
+ * \return un entier indiquant l'identifiant du lieu destination de l'arc.
  */
 int destination_map_arc(Donnee * data, int id_lieu, int id_arc){
     return data->map[id_lieu][id_arc]->destination->id;
@@ -18,12 +18,12 @@ int destination_map_arc(Donnee * data, int id_lieu, int id_arc){
 
 /**
  * \fn int depart_map_arc(Donnee * data, int id_lieu, int id_arc).
- * \brief renvoie l'identifiant de la destination de l'arc.
+ * \brief renvoie l'identifiant du lieu de départ de l'arc.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
  * \param l'indentifiant de l'arc.
- * \return un entier indiquant l'identifiant de la destination de l'arc.
+ * \return un entier indiquant l'identifiant du lieu de départ de l'arc.
  */
 int depart_map_arc(Donnee * data, int id_lieu, int id_arc){
     return data->map[id_lieu][id_arc]->depart->id;
@@ -44,12 +44,12 @@ int distance_map_arc(Donnee * data, int id_lieu, int id_arc){
 
 /**
  * \fn int insecurite_map_arc(Donnee * data, int id_lieu, int id_arc).
- * \brief renvoie l'insecurite de l'arc.
+ * \brief renvoie l'insecurité de l'arc.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
  * \param l'indentifiant de l'arc.
- * \return un entier indiquant l'insecurite de l'arc.
+ * \return un entier indiquant l'insecurité de l'arc.
  */
 int insecurite_map_arc(Donnee * data, int id_lieu, int id_arc){
     return data->map[id_lieu][id_arc]->insecurite;
@@ -57,12 +57,12 @@ int insecurite_map_arc(Donnee * data, int id_lieu, int id_arc){
 
 /**
  * \fn int interet_map_destination(Donnee *data, int id_lieu, int id_arc).
- * \brief renvoie l'interet de la destination de l'arc.
+ * \brief renvoie l'interet du lieu de destination de l'arc.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
  * \param l'indentifiant de l'arc.
- * \return un entier indiquant l'interet de la destination de l'arc.
+ * \return un entier indiquant l'interet du lieu de destination de l'arc.
  */
 int interet_map_destination(Donnee *data, int id_lieu, int id_arc){
     int id_lieu_destination = data->map[id_lieu][id_arc]->destination->id;
@@ -71,12 +71,12 @@ int interet_map_destination(Donnee *data, int id_lieu, int id_arc){
 
 /**
  * \fn char *nom_destination(Donnee *data, int id_lieu, int id_arc).
- * \brief renvoie l'interet de la destination de l'arc.
+ * \brief renvoie le nom du lieu de destination de l'arc.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
  * \param l'indentifiant de l'arc.
- * \return une chaine de caracteres contenant les nom de la destination.
+ * \return une chaine de caracteres contenant le nom du lieu de destination.
  */
 char *nom_destination(Donnee *data, int id_lieu, int id_arc){
     int id_lieu_destination = data->map[id_lieu][id_arc]->destination->id;
@@ -85,7 +85,7 @@ char *nom_destination(Donnee *data, int id_lieu, int id_arc){
 
 /**
  * \fn Arc *str_map_arc(Donnee *data, int id_lieu, int id_arc).
- * \brief retourn in pointeur sur l'arc demandé.
+ * \brief retourne un pointeur sur l'arc demandé.
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.
@@ -95,6 +95,16 @@ char *nom_destination(Donnee *data, int id_lieu, int id_arc){
 Arc *str_map_arc(Donnee *data, int id_lieu, int id_arc){
     return data->map[id_lieu][id_arc];
 }
+
+/**
+ * \fn existe_map_arc(Donnee *data, int id_lieu, int id_arc).
+ * \brief permet de tester si il existe l'arc.
+ *
+ * \param Un pointeur sur une structure Donnee.
+ * \param l'indentifiant du lieu.
+ * \param l'indentifiant de l'arc.
+ * \return 0 si l'arc n'existe pas et 1 si il existe
+ */
 
 int existe_map_arc(Donnee *data, int id_lieu, int id_arc){
     if(data->map[id_lieu][id_arc] == NULL) return 0;
