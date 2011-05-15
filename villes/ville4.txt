@@ -3,7 +3,7 @@
 %nombres d'arcs 
 %{c|d} determine si les chemins sont construt par interet croissant ou decroissant 
 #Parametres
-0;81;501;d
+5;81;500;d
 
 %n° ; interee (le lieu n°0 est le point de depart) ; nom du lieux
 #Lieux
@@ -88,7 +88,6 @@
 78;23;L78
 79;76;L79
 80;38;L80
-
 
 %n°Lieux 1, n°Lieux 2, distance : insecurité
 #Arcs

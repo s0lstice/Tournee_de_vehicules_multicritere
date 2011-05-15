@@ -74,11 +74,11 @@ void print_result(Donnee * data){
         printf("\n*** chemin n° %d ***\n",i);
         if(existe_solution(data) == 1){
             printf("**cara : \n distance : %d \n insecurite : %d \n interet : %d \n nb_lieux_total : %d \n nb_lieux_utile : %d\n",
-                data->solution[i]->carac.distance,
-                data->solution[i]->carac.insecurite,
-                data->solution[i]->carac.interet,
-                data->solution[i]->carac.nb_lieux_total,
-                data->solution[i]->carac.nb_lieux_utile);
+                data->solution.solution[i]->carac.distance,
+                data->solution.solution[i]->carac.insecurite,
+                data->solution.solution[i]->carac.interet,
+                data->solution.solution[i]->carac.nb_lieux_total,
+                data->solution.solution[i]->carac.nb_lieux_utile);
             for(j = 0; j < nb_arc_solution(data, i); ++j){
                 printf("**trajet : \n depart : %d \n destination : %d \n distance : %d \n insecurite : %d \n",
                     id_depart_trajet_solution(data, i, j),

@@ -14,6 +14,7 @@
 #include "use_liste.h"
 #include "use_solution.h"
 #include "use_lieu.h"
+#include "use_resultat.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -55,7 +56,7 @@ static char * readLine(FILE * fichier) {
  * \param Un pointeur sur une structure FILE.
  */
 static void ajout_parametre(Donnee * data, FILE * file){
-    fscanf(file, "%d;%d;%d;%c", &data->temps_execution, &data->nb_lieux_total, &data->nb_arcs, &data->ordre_lieu);
+    fscanf(file, "%d;%d;%d;%c", &data->parametres.temps_execution, &data->parametres.nb_lieux, &data->parametres.nb_arcs, &data->parametres.ordre_lieu);
 }
 
 /**
@@ -70,7 +71,7 @@ static void ajout_lieux(Donnee * data, FILE * file){
     int num_lieu, intret_lieu, id = 0;
 
     /* allocation du tableau de type Lieu*/
-    if(data->lieux == NULL) if((data->lieux = (Lieu*)malloc(data->nb_lieux_total*sizeof(Lieu))) == NULL)  fatalerreur(data, "ajout_lieux : la creation du table lieux a echoué\n");
+    if(data->lieux == NULL) if((data->lieux = (Lieu*)malloc(data->parametres.nb_lieux*sizeof(Lieu))) == NULL)  fatalerreur(data, "ajout_lieux : la creation du table lieux a echoué\n");
 
     /* initialisation des tableau lieux et interet*/
     while(fscanf(file, "%d;%d;%s\n", &num_lieu, &intret_lieu, nom_lieu) == 3){
@@ -187,26 +188,26 @@ int epure_map(Donnee *data,int id_lieu){
  * \param Un pointeur sur une structure FILE.
  */
 static void ajout_arcs(Donnee * data, FILE * file){
-    int nb_element = data->nb_arcs / data->nb_lieux_total + 1;
+    int nb_element = data->parametres.nb_arcs / data->parametres.nb_lieux + 1;
     Arc **ch_tmp;
     int i = 0, l1, l2, distance, insecurite;
     int * nb_element_lieu;
 
     /* allocation du tableau map a deux dimantions. cette table grandi en fonction de nb_element et du nombre d'arcs pour un lieu*/
-    data->map = (Arc ***)malloc(data->nb_lieux_total*sizeof(Arc**));
+    data->map = (Arc ***)malloc(data->parametres.nb_lieux*sizeof(Arc**));
     if(data->map == NULL) fatalerreur(data, "ajout_arcs : echec de l'allocation de map lv1");
 
-    for(i = 0;  i < data->nb_lieux_total; ++i){
+    for(i = 0;  i < data->parametres.nb_lieux; ++i){
         data->map[i] = (Arc**)malloc(nb_element*sizeof(Arc*));
         if(data->map[i] == NULL) fatalerreur(data, "ajout_arcs : echec de l'allocation de map lv2");
     }
 
     /* allocation d'un tableau temporaire servent a gere l'alloaction du nombre d'arcs de chaque lieu.*/
-    nb_element_lieu = (int *)malloc((data->nb_lieux_total)*sizeof(int));
+    nb_element_lieu = (int *)malloc((data->parametres.nb_lieux)*sizeof(int));
     if(nb_element_lieu == NULL) fatalerreur(data, "ajout_arcs : echec de l'allocation de nb_element_lieu");
 
     /* initialisation de cette table a deux dimantions (nombre d'element x nombre d'element max)*/
-    for(i = 0; i < data->nb_lieux_total; ++i)
+    for(i = 0; i < data->parametres.nb_lieux; ++i)
         nb_element_lieu[i] = 0;
 
     /* lecture du fichier ligne a ligne et traitement des informations*/
@@ -251,7 +252,7 @@ static void ajout_arcs(Donnee * data, FILE * file){
     free(nb_element_lieu);
 
     /*suppression des arc dommine et mise a jour de la table lieux en fonction*/
-    for( i = 0; i < data->nb_lieux_total; ++i){
+    for( i = 0; i < data->parametres.nb_lieux; ++i){
         qsort(data->map[i], data->lieux[i].nb_arc, sizeof(Arc*), position_arc);
         data->lieux[i].nb_arc = epure_map(data, i);
     }
@@ -293,20 +294,20 @@ static void create_liste(Donnee *data){
     int i;
 
     /*creation de la liste*/
-    data->liste_lieu = (Coef_lieu*)malloc(data->nb_lieux_total*sizeof(Coef_lieu));
+    data->liste_lieu = (Coef_lieu*)malloc(data->parametres.nb_lieux*sizeof(Coef_lieu));
     if(data->liste_lieu == NULL) fatalerreur(data, "creat_interet : echec de l'allocation de la table liste_lieu");
 
     /*affectation de l'interet et du lieu*/
-    for(i = 0; i < data->nb_lieux_total; ++i){
+    for(i = 0; i < data->parametres.nb_lieux; ++i){
         data->liste_lieu[i].coef = data->lieux[i].interet;
         data->liste_lieu[i].lieu = &data->lieux[i];
     }
 
     /*tris en croissant ou decroissant*/
-    if(data->ordre_lieu == 'd')
-        qsort(data->liste_lieu, data->nb_lieux_total, sizeof(Coef_lieu), interet_decroissant);
+    if(data->parametres.ordre_lieu == 'd')
+        qsort(data->liste_lieu, data->parametres.nb_lieux, sizeof(Coef_lieu), interet_decroissant);
     else
-        qsort(data->liste_lieu, data->nb_lieux_total, sizeof(Coef_lieu), interet_croissant);
+        qsort(data->liste_lieu, data->parametres.nb_lieux, sizeof(Coef_lieu), interet_croissant);
 }
 
 /**
@@ -320,21 +321,21 @@ static void create_index(Donnee *data){
     Arc **map;
 
     /*creation de l'index de niveau 1*/
-    data->index_lieu = (Index_arc***)malloc(data->nb_lieux_total * sizeof(Index_arc**));
+    data->index_lieu = (Index_arc***)malloc(data->parametres.nb_lieux * sizeof(Index_arc**));
     if(data->index_lieu == NULL)
         fatalerreur(data, "create_index : creation de la table d'index impossible lv 1");
 
 
-    for( id_lieu = 0; id_lieu < data->nb_lieux_total; ++id_lieu){
+    for( id_lieu = 0; id_lieu < data->parametres.nb_lieux; ++id_lieu){
         map = data->map[id_lieu];
 
         /*creation de l'index de niveau 1*/
-        data->index_lieu[id_lieu] = (Index_arc**)malloc(data->nb_lieux_total * sizeof(Index_arc*));
+        data->index_lieu[id_lieu] = (Index_arc**)malloc(data->parametres.nb_lieux * sizeof(Index_arc*));
         if(data->index_lieu[id_lieu] == NULL)
             fatalerreur(data, "create_index : creation de la table d'index impossible lv 2");
 
         /*initialisation a NULL*/
-        for(i = 0; i < data->nb_lieux_total; ++i)
+        for(i = 0; i < data->parametres.nb_lieux; ++i)
             data->index_lieu[id_lieu][i] = NULL;
 
         /*creation de la structure Index_arc en fonction de map*/
@@ -373,19 +374,20 @@ Donnee * main_create_db(char * path){
     /*allocation de la structure contenent toutes les donnees et initialisation*/
     data = (Donnee *)malloc(sizeof(Donnee));
 
-    data->temps_execution = 0;
-    data->nb_lieux_total = 0;
-    data->nb_lieux_solution = 0;
-    data->nb_arcs = 0;
+    data->parametres.temps_execution = 0;
+
+    data->parametres.nb_arcs = 0;
     data->lieux = NULL;
     data->index_lieu = NULL;
     data->map = NULL;
-    data->solution = NULL;
     data->liste_lieu = NULL;
-    data->nb_solution = 0;
+
+    init_solution(data);
+    init_resultat(data);
 
     /*ouvreture du fichier*/
     FILE * file = open_file(data, path);
+
 
     /*parcour de tous le fichier*/
     while(!feof(file)){
@@ -417,7 +419,7 @@ Donnee * main_create_db(char * path){
  * \param la tructure Donnée aloué sur le tas.
  */
 void free_db(Donnee * data){
-    unall_solution(data);
+    unall_solutions(data);
     unall_index(data);
     unall_liste(data);
     unall_map(data);
