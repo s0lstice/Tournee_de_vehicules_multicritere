@@ -41,8 +41,9 @@ struct prarametres{
  *
  */
 struct resultats{
-    int *nb_resultats; /*!< nombre de solution trouvees*/
-    Parcourt **resultats; /*!< pointeur sur un tableau contenant une pilles de solution partieles*/
+    int nb_lieux; /*!< indique le nombre maximum de lieu dans les resultats*/
+    int **nb_resultats; /*!< tableau contenent le nombre de resultats alloue en fonction des lieu et le nombre de resultats reel*/
+    Parcourt ***resultats; /*!< contient l'ensemble des resultats en fontion du nombre de lieux qui les constitient et de leu identifiant*/
 };
 
 /**

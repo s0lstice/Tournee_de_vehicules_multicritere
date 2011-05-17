@@ -15,12 +15,13 @@
 #include "use_bd.h"
 #include <time.h>
 #include "use_solution.h"
+#include "use_resultat.h"
 
 int main(int argc , char * argv [])
 {
     Donnee * data;
     time_t debut, fin, stop, temps_recherche;
-    int i, j;
+    int i;
 
     if(argc != 1)
         printf("lecture du fichier %s .\n", argv[1]);
@@ -32,11 +33,13 @@ int main(int argc , char * argv [])
 
     stop = debut + temps_execution(data);
 
+    i = 1;
+
     while((time(NULL) < stop) && (chemin_base(data) == 1)){
-        j = nb_solution(data);
+        all_resultat(data, nb_lieu_total_solution(data, 0), 1);
+        cpy_solution_to_resultat(data, nb_lieu_total_solution(data, 0), 0);
         all_parcourt(data, 1);
-        cpy_solution(data, j, 0);
-        i = nb_solution(data);
+        cpy_solution(data, i++, 0);
         //create_chemin_solution(data, j-1, i);
     }
 

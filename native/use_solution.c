@@ -51,15 +51,8 @@ void all_parcourt(Donnee *data, int nb_ajout){
         data->solution.solution[i]->carac.nb_lieux_utile = 0;
         data->solution.solution[i]->carac.nb_arc = 0;
 
-        /*creation de l'itineraire*/
-        data->solution.solution[i]->itineraire = (Lieu **)malloc(sizeof(Lieu*));
-        if(data->solution.solution[i]->itineraire == NULL) fatalerreur(data, "all_parcourt : echeque de l'allocation d'itineraire");
-
-        /*creation du trajet*/
-        data->solution.solution[i]->trajet = (Arc **)malloc(sizeof(Arc*));
-        if(data->solution.solution[i]->trajet == NULL) fatalerreur(data, "all_parcourt : echeque de l'allocation d'trajet");
-
-        /* initialisation des visite a null (n'est pas toujours utile*/
+        data->solution.solution[i]->itineraire = NULL;
+        data->solution.solution[i]->trajet = NULL;
         data->solution.solution[i]->visite = NULL;
     }
 
