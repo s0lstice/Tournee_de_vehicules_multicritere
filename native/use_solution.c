@@ -271,7 +271,7 @@ void cpy_solution(Donnee *data, int id_solution_destination, int id_solution_sou
     Parcourt *destination_solution = data->solution.solution[id_solution_destination];
     Parcourt *source_solution = data->solution.solution[id_solution_source];
 
-    /*copy des caracteristique*/
+    /*copie des caracteristiques*/
     destination_solution->carac.distance = source_solution->carac.distance;
     destination_solution->carac.insecurite = source_solution->carac.insecurite;
     destination_solution->carac.interet = source_solution->carac.interet;
@@ -279,7 +279,7 @@ void cpy_solution(Donnee *data, int id_solution_destination, int id_solution_sou
     destination_solution->carac.nb_lieux_total = source_solution->carac.nb_lieux_total;
     destination_solution->carac.nb_lieux_utile = source_solution->carac.nb_lieux_utile;
 
-    /*copy de l'itineraire*/
+    /*copie de l'itineraire*/
     nb_lieux_total = destination_solution->carac.nb_lieux_total;
 
     /*on augmente l'itineraire de nb_lieux_total*/

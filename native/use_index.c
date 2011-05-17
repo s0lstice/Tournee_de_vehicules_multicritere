@@ -1,7 +1,7 @@
 /**
  * \file use_index.c
  * \brief ensemble de methodes permetant la gestion de la table index.
- * \author Mickael PURET
+ * \author Mickael PURET & Cyrille Picard
  * \date 25 mars 2011
  *
  */
@@ -13,7 +13,7 @@
 
 /**
  * \fn Index_arc *pointeur_index_arc(Donnee *data, int id_depart, int id_arrive).
- * \brief retourn un pointeur sur une structure index_arc depuis l'index en fonction du lieur de depart et du lieu d'arrivé.
+ * \brief retourne un pointeur sur une structure index_arc depuis l'index en fonction du lieu de départ et du lieu d'arrivé.
  *
  * La structure index_arc contient l'identifiant du premier arc du lieu de destination et le nombre d'arc qui lui est associé.
  *
@@ -58,7 +58,7 @@ int index_nb_arc(Donnee *data, int id_depart, int id_arrive){
 
 /**
  * \fn int relation_index_lieu(Donnee *data, int id_lieu_depart, int id_lieu_arrive).
- * \brief indique si des arc existe entre deux lieux.
+ * \brief indique si des arcs existe entre deux lieux.
  *
  *
  * \param Un pointeur sur une structure Donnee.

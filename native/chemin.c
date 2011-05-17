@@ -18,11 +18,11 @@
 
 /**
  * \fn static int tris_croissant (void const *pa, void const *pb);
- * \brief fonction utilisateur de comparaison fournie a qsort().
+ * \brief fonction utilisatrice de comparaison fournie a qsort().
  *
  * \param pointeur sur un tableau a.
  * \param pointeur sur un tableau b.
- * \return une valeur accepté par qsort indiquent si a est supperieur à b.
+ * \return une valeur acceptée par qsort indiquent si a est supperieur à b.
  */
 static int tris_croissant (void const *a, void const *b){
    /*
@@ -42,7 +42,7 @@ static int tris_croissant (void const *a, void const *b){
 
 /**
  * \fn chemin_base(Donnee *data);
- * \brief ajoute un lieu a la solution de base en respectant la liste coute que coute. en gerant les retours en arriere.
+ * \brief ajoute un lieu à la solution de base en respectant la liste coute que coute. en gerant les retours en arriere.
  *
  * \param Un pointeur sur une structure Donnee.
  */

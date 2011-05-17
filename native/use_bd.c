@@ -1,7 +1,7 @@
 /**
  * \file use_bd.c
  * \brief ensemble de methodes permetant la recuperation d'informations provenant des données.
- * \author Mickael PURET & CP
+ * \author Mickael PURET & Cyrille Picard
  * \date 25 mars 2011
  *
  */
@@ -36,7 +36,7 @@ int interet_lieu(Donnee * data, int id_lieu){
 
 /**
  * \fn int nb_arc(Donnee *data, int id_lieu).
- * \brief renvoie le nombre d'arc que comprent un lieu (sortant ?) à partir du tableau lieu de la structure de donnee et de l'identifiant du lieu.
+ * \brief renvoie le nombre d'arc sortant que comprent un lieu à partir du tableau lieu de la structure de donnee et de l'identifiant du lieu.
 
  *
  * \param Un pointeur sur une structure Donnee.

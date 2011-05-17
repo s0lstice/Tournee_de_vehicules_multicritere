@@ -1,7 +1,7 @@
 /**
  * \file resultat.c
  * \brief affiche l'ensemble des donnees contenuent en memoire.
- * \author Mickael PURET
+ * \author Mickael PURET & Cyrille Picard
  * \date 25 mars 2011
  *
  */
@@ -17,14 +17,14 @@
 
 /**
  * \fn static FILE * open_file(char * path)
- * \brief affiche l'ensemble des donnees contenuent en memoire..
+ * \brief affiche l'ensemble des donnees contenuent en memoire.
  *
  * \param Un pointeur sur une structure Donnee.
  */
 void print_result(Donnee * data){
     int i, j, k;
 
-    /*afficage des paramtres*/
+    /*afficage des parametres*/
     printf("*** Test de create_bd ***\n");
     printf("\n** Affichage des parametres **\n");
     printf("Temps d'executions du programme : %d s\n", temps_execution(data));
@@ -64,7 +64,7 @@ void print_result(Donnee * data){
             }
     }
 
-    /*affichage de la liste tree*/
+    /*affichage de la liste triee*/
     printf("\n** Affichage des interets **\n");
     for(i = 0; i < nb_lieu(data); ++i){
         printf("liste_lieu : interet %d id %d\n", liste_lieu_coef(data, i), data->liste_lieu[i].lieu->id);
