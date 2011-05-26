@@ -56,8 +56,27 @@ Suite à la première rencontre avec notre encadrant un premier cahier des charges
 \item Le programme peut retourner un certain nombre de parcours calculé dans le temps d'exécution impartie.
 \end{itemize}
 
-\chapter{Spécifation}
+\chapter{Modélisation du problème}
+
+\section{Variables}
+\section{Contraintes}
+\section{Fonctions Objectifs}
+
+\chapter{ /*Spécification*/ }
 Dans ce chapitre on va détailler le système à développer même si c'est de façon simplifier sans forcement aller jusqu'à tout les différents arbre hiérarchique. 
+Pour réaliser un programme qui permet de répondre au mieux au besoins nous avons séparer le problème en 4-5 partie : 
+
+\begin{enumerate}
+\item Pour gérer la configuration des lieux, il faut un ensemble de structure de données qui permet de stocker et d'utiliser les différents paramètre lier à la configuration, c'est à dire :   l'intérêt des lieux, la communication entre les différents lieux, les arcs qui permette cette communication et les caractéristiques de ces arc (Distance, Insécurité).
+\item Comment trier les arcs entre 2 lieux....
+\item Générer un chemin de base
+\item Générer de nouveaux chemin en réalisant des permutations dans le chemin de base en fonction des permutations possible entre les lieux.
+\item Avoir un structure permettant de retourner les chemins générer
+\end{enumerate}
+
+\section {Lien entre les différentes partie}
+
+\textcolor{blue}{diagramme de classe}
 
 \part{Algorithimique}
 \chapter{Réalisation de la structure de données}
@@ -281,12 +300,12 @@ Sortie : posi est un booléen \\
 \annexes
 \chapter{Fiche de suivi de projet\label{sec:fiche_suivi}}
 
-\CR{17/01/2008}{1ére rencontre avec Emmanuel Néron pour prendre une explication approfondi du sujet ainsi que le premier objectif à réaliser qui est le choix d'une structure de donnée pour gérer les villes.}
+\CR{17/01/2011}{1ére rencontre avec Emmanuel Néron pour prendre une explication approfondi du sujet ainsi que le premier objectif à réaliser qui est le choix d'une structure de donnée pour gérer les villes.}
 \CR{20/02/2011  au 04/03/2011}{Réflexion sur les méthodes possible pour la structure de donnée à mettre en place, ainsi que les algorithmes à utiliser pour parcourir les différentes structures de données}
 \CR{04/03/2011 au 29/03/2011}{Réalisation de la structure de données pour gérer la configuration de la ville, mise en place d'algorithme de tri pour les arcs.}
-\CR{07/04/2008}{Finalisation de la structure de données, vérification des fonctions permettant d'interroger la structure de données pour les algorithmes permettant de créé les trajets, première réalisation d'un algorithme pour générer le trajet de référence.}
-\CR{11/04/2008}{Réunion avec notre encadrant pour lui présenter la structure de données et l'esquisse de l'algorithme pour générer le trajets de référence.}
-%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+\CR{07/04/2011}{Finalisation de la structure de données, vérification des fonctions permettant d'interroger la structure de données pour les algorithmes permettant de créé les trajets, première réalisation d'un algorithme pour générer le trajet de référence.}
+\CR{11/04/2011}{Réunion avec notre encadrant pour lui présenter la structure de données et l'esquisse de l'algorithme pour générer le trajets de référence.}
+\CR{11/04/2011 au 05/05/2011}{Réalisation et implémentation de l'algorithme pour générer un chemin de base et résolution d'un problème par rapport au tri des arc entre les lieux.}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
