@@ -21,7 +21,7 @@ int main(int argc , char * argv [])
 {
     Donnee * data;
     time_t debut, fin, stop, temps_recherche;
-    int i;
+    int i, nb_lieux;
 
     if(argc != 1)
         printf("lecture du fichier %s .\n", argv[1]);
@@ -36,12 +36,22 @@ int main(int argc , char * argv [])
     i = 1;
 
     while((time(NULL) < stop) && (chemin_base(data) == 1)){
-        all_resultat(data, nb_lieu_total_solution(data, 0), 1);
-        cpy_solution_to_resultat(data, nb_lieu_total_solution(data, 0), 0);
-        all_parcourt(data, 1);
-        cpy_solution(data, i++, 0);
+        nb_lieux = nb_lieu_total_solution(data, 0);
+
+        all_solutions(data, 1);
+        cpy_solution(data, 1, 0);
+
+        all_resultats(data, nb_lieux, 2);
+        cpy_solution_to_resultat(data, nb_lieux, 1);
+        cut_solution_to_resultat(data, nb_lieux, 1);
         //create_chemin_solution(data, j-1, i);
     }
+
+    /*while(data->solution.nb_solution > 1){
+        nb_lieux = nb_lieu_total_solution(data, 0);
+        //all_resultats(data, nb_lieux, 1);
+        //cut_solution_to_resultat(data, nb_lieux, 0);
+    }*/
 
     time(&temps_recherche);
 

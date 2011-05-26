@@ -52,7 +52,7 @@ int chemin_base(Donnee *data){
 
     /* s'il n'y a pas de solution, on en ceree une*/
     if(existe_solution(data) == 0){
-        all_parcourt(data, 1);
+        all_solutions(data, 1);
         add_lieu_solution(data, 0, 0);
     }
 
