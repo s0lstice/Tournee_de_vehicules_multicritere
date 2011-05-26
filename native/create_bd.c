@@ -419,7 +419,7 @@ Donnee * main_create_db(char * path){
  * \param la tructure Donnée aloué sur le tas.
  */
 void free_db(Donnee * data){
-    unall_resultat(data);
+    unall_resultats(data);
     unall_solutions(data);
     unall_index(data);
     unall_liste(data);

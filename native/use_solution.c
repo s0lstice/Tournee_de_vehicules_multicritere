@@ -26,7 +26,7 @@ int existe_solution(Donnee *data){
     return 1;
 }
 
-void all_parcourt(Donnee *data, int nb_ajout){
+void all_solutions(Donnee *data, int nb_ajout){
     int nb_solution_totale = nb_solution(data);
     int nb_reallocation = nb_solution_totale + nb_ajout;
     int i;
@@ -34,14 +34,14 @@ void all_parcourt(Donnee *data, int nb_ajout){
 
     /*on redimentionne la table du nombre specifie*/
     temp_doublep = (Parcourt **)realloc(data->solution.solution, nb_reallocation*sizeof(Parcourt*));
-    if(temp_doublep == NULL) fatalerreur(data, "all_Parcourt : echeque de l'allocation");
+    if(temp_doublep == NULL) fatalerreur(data, "all_solutions : echeque de l'allocation");
     data->solution.solution = temp_doublep;
 
     /*definition des nouvelles tables*/
     for(i = data->solution.nb_solution; i < nb_reallocation; ++i){
         /*creation de la solution*/
         data->solution.solution[i] = (Parcourt *)malloc(sizeof(Parcourt));
-        if(data->solution.solution[i] == NULL) fatalerreur(data, "all_parcourt : echeque de l'allocation de all_parcourt");
+        if(data->solution.solution[i] == NULL) fatalerreur(data, "all_solutions : echeque de l'allocation de all_solutions");
 
         /*initialisation des caracteristique*/
         data->solution.solution[i]->carac.distance = 0;
@@ -60,7 +60,7 @@ void all_parcourt(Donnee *data, int nb_ajout){
     data->solution.nb_solution = nb_reallocation;
 }
 
-void unall_parcourt(Donnee *data, int nb_suppretion){
+void unall_nb_solutions(Donnee *data, int nb_suppretion){
     int nb_solution_totale = nb_solution(data);
     int nb_solution_restant = nb_solution_totale - nb_suppretion;
     int i;
@@ -78,7 +78,7 @@ void unall_parcourt(Donnee *data, int nb_suppretion){
     }
 
     temp_doublep = (Parcourt **)realloc(data->solution.solution, nb_solution_restant*sizeof(Parcourt*));
-    if(temp_doublep == NULL) fatalerreur(data, "unall_parcourt : echeque de la reallocation");
+    if(temp_doublep == NULL) fatalerreur(data, "unall_solutions : echeque de la reallocation");
     data->solution.solution = temp_doublep;
 
     data->solution.nb_solution = nb_solution_restant;
@@ -215,7 +215,6 @@ void unall_solutions(Donnee *data){
         if(data->solution.solution[i]->visite != NULL){
 
             free(data->solution.solution[i]->visite);
-            data->solution.solution[i]->visite = NULL;
         }
 
         free(data->solution.solution[i]);
@@ -339,7 +338,7 @@ void create_chemin_solution(Donnee *data, int debut_generation, int fin_generati
 */
             /*allocation de nb_arc_depart_destination solution*/
 /*            curseur_solution_vide = nb_solution(data);
-            all_parcourt(data, nb_arc_depart_destination - nb_solution_vide);
+            all_solutions(data, nb_arc_depart_destination - nb_solution_vide);
             nb_solution_vide = nb_arc_depart_destination;
 
             for(id_arc = 1; id_arc < nb_arc_depart_destination; ++id_arc){ //depart de l'arc 1 car on a deja l'arc 0
@@ -367,7 +366,7 @@ void create_chemin_solution(Donnee *data, int debut_generation, int fin_generati
     }
 
     if(nb_solution_vide > 0)
-        unall_parcourt(data, nb_solution_vide);
+        unall_solutions(data, nb_solution_vide);
 }
 */
 /*
@@ -403,6 +402,6 @@ void supr_deminees_solutions(Donnee *data, int debut_generation, int fin_generat
         }
     }
 
-    unall_parcourt(data, id_write, fin_generation);
+    unall_solutions(data, id_write, fin_generation);
 }
 */

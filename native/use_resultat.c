@@ -1,4 +1,5 @@
 #include "use_resultat.h"
+#include "use_solution.h"
 #include <stdlib.h>
 #include "erreur.h"
 
@@ -12,7 +13,8 @@ int nb_lieu_resultats(Donnee *data){
     return data->resultat.nb_lieux;
 }
 
-void all_resultat(Donnee *data, int nb_lieux, int nb_ajout){
+
+void all_resultats(Donnee *data, int nb_lieux, int nb_ajout){
     int **tmp_doubptr_int;
     int i, nb_l;
     Parcourt ***tmp_tripptr_parcourt;
@@ -22,19 +24,19 @@ void all_resultat(Donnee *data, int nb_lieux, int nb_ajout){
     if(data->resultat.nb_lieux < nb_lieux){
         /*reallocation de la table des parcourts enxistant en fonction des leux*/
         tmp_doubptr_int = (int**)realloc(data->resultat.nb_resultats, nb_lieux*sizeof(int*));
-        if(tmp_doubptr_int == NULL) fatalerreur(data, "all_resultat : echeque de la reallocation de la table des resultats lv1");
+        if(tmp_doubptr_int == NULL) fatalerreur(data, "all_resultats : echeque de la reallocation de la table des resultats lv1");
         data->resultat.nb_resultats = tmp_doubptr_int;
 
         for(i = data->resultat.nb_lieux; i < nb_lieux; ++i){
             data->resultat.nb_resultats[i] = (int*)malloc(2*sizeof(int));
-            if(data->resultat.nb_resultats[i] == NULL) fatalerreur(data, "all_resultat : echeque de la reallocation de la table des resultats lv2");
+            if(data->resultat.nb_resultats[i] == NULL) fatalerreur(data, "all_resultats : echeque de la reallocation de la table des resultats lv2");
             data->resultat.nb_resultats[i][0] = 0;
             data->resultat.nb_resultats[i][1] = 0;
         }
 
         /*realocation des parcourts*/
         tmp_tripptr_parcourt = (Parcourt ***)realloc(data->resultat.resultats, nb_lieux*sizeof(Parcourt**));
-        if(tmp_tripptr_parcourt == NULL) fatalerreur(data, "all_resultat : echeque de la reallocation des parcourts lv1");
+        if(tmp_tripptr_parcourt == NULL) fatalerreur(data, "all_resultats : echeque de la reallocation des parcourts lv1");
         data->resultat.resultats = tmp_tripptr_parcourt;
 
         for( i = data->resultat.nb_lieux; i < nb_lieux; ++i)
@@ -42,21 +44,20 @@ void all_resultat(Donnee *data, int nb_lieux, int nb_ajout){
 
         /* mise a jour du maximium de lieux utilise*/
         data->resultat.nb_lieux = nb_lieux;
-        data->resultat.nb_resultats[nb_lieux -1][1] += nb_ajout;
     }
 
     /*allocation des nouveaux resultat*/
-    nb_l = data->resultat.nb_resultats[nb_lieux -1][1];
+    nb_l = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;
     tmp_doubptr_parcourt = (Parcourt **)realloc(data->resultat.resultats[nb_lieux -1], (nb_l)*sizeof(Parcourt*));
-    if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "all_resultat : echeque de la reallocation des parcourts lv2");
+    if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "all_resultats : echeque de la reallocation des parcourts lv2");
     data->resultat.resultats[nb_lieux -1] = tmp_doubptr_parcourt;
 
 
     /*initialisation de la partie rajoute*/
-    for(i = data->resultat.nb_resultats[nb_lieux -1][0]; i < data->resultat.nb_resultats[nb_lieux -1][1]; ++i){
+    for(i = data->resultat.nb_resultats[nb_lieux -1][1]; i < data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout; ++i){
         /*creation des desultat*/
         data->resultat.resultats[nb_lieux -1][i] = (Parcourt *)malloc(sizeof(Parcourt));
-        if(data->resultat.resultats[nb_lieux -1][i] == NULL) fatalerreur(data, "all_resultat : echeque de l'allocation des resultats vl3");
+        if(data->resultat.resultats[nb_lieux -1][i] == NULL) fatalerreur(data, "all_resultats : echeque de l'allocation des resultats vl3");
 
         /*initialisation des caracteristique*/
         data->resultat.resultats[nb_lieux -1][i]->carac.distance = 0;
@@ -81,6 +82,9 @@ void cpy_resultat(Donnee *data, int nb_lieux, int id_resultat_destination, int i
     Lieu **temp_lieu;
     Parcourt *destination_resultat = data->resultat.resultats[nb_lieux -1][id_resultat_destination];
     Parcourt *source_resultat = data->resultat.resultats[nb_lieux -1][id_resultat_source];
+
+    if(data->resultat.nb_resultats[nb_lieux -1][1]-data->resultat.nb_resultats[nb_lieux -1][0] < 1)
+        all_resultats(data, nb_lieux, 1);
 
     /*copy des caracteristique*/
     destination_resultat->carac.distance = source_resultat->carac.distance;
@@ -127,12 +131,12 @@ int cpy_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution){
 
     /*si la table de resultat n'existe pas encore, on la cree*/
     if(data->resultat.nb_lieux < nb_lieux)
-        all_resultat(data, nb_lieux, 1);
+        all_resultats(data, nb_lieux, 1);
 
-    id_resultat = nb_resultats_use_by_lieu(data, nb_lieux -1);
+    id_resultat = nb_resultats_use_by_lieu(data, nb_lieux);
 
-    if(id_resultat >= nb_resultats_all_by_lieu(data, nb_lieux -1))
-        all_resultat(data, nb_lieux, 1);
+    if(id_resultat >= nb_resultats_all_by_lieu(data, nb_lieux))
+        all_resultats(data, nb_lieux, 1);
 
     destination_resultat = data->resultat.resultats[nb_lieux -1][id_resultat];
     source_solution = data->solution.solution[id_solution];
@@ -174,29 +178,67 @@ int cpy_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution){
 }
 
 int nb_resultats_all_by_lieu(Donnee *data, int nb_lieux){
-    return data->resultat.nb_resultats[nb_lieux][1];
+    return data->resultat.nb_resultats[nb_lieux-1][1];
 }
 
 int nb_resultats_use_by_lieu(Donnee *data, int nb_lieux){
-    return data->resultat.nb_resultats[nb_lieux][0];
+    return data->resultat.nb_resultats[nb_lieux -1][0];
 }
 
+int cut_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution){
+    int id_resultat;
+    Parcourt **tmp;
 
-void unall_resultat(Donnee *data){
+    id_resultat = nb_resultats_use_by_lieu(data, nb_lieux);
+
+    free(data->resultat.resultats[nb_lieux -1][id_resultat]);
+
+    data->resultat.resultats[nb_lieux -1][id_resultat] = data->solution.solution[id_solution];
+
+    data->resultat.nb_resultats[nb_lieux -1][0]++;
+
+    while(id_solution < data->solution.nb_solution -1){
+        data->solution.solution[id_solution] = data->solution.solution[id_solution +1];
+        id_solution++;
+    }
+
+    if(data->solution.nb_solution == 1){
+        data->solution.nb_solution = 0;
+
+        //unall_solution(data, data->solution.nb_solution);
+        free(data->solution.solution);
+    }
+    else{
+        data->solution.nb_solution -= 1;
+        //unall_solution(data, data->solution.nb_solution);
+
+        tmp = (Parcourt **)realloc(data->solution.solution, (data->solution.nb_solution)*sizeof(Parcourt*));
+        if(tmp == NULL) fatalerreur(data, "cut_solution_to_resultat : echeque de la reallocation");
+        data->solution.solution = tmp;
+    }
+
+    return id_resultat;
+}
+
+void unall_resultats(Donnee *data){
     int i, j;
 
     for(i = 0; i < data->resultat.nb_lieux ; ++i){
-        for(j = 0; j < data->resultat.nb_resultats[i][1] -1; ++j){
-            free(data->resultat.resultats[i][j]->itineraire);
-            free(data->resultat.resultats[i][j]->trajet);
+        if(data->resultat.resultats[i] != NULL){
+            for(j = 0; j < data->resultat.nb_resultats[i][1]; ++j){
 
-            if(data->resultat.resultats[i][j]->visite != NULL){
-                free(data->resultat.resultats[i][j]->visite);
+                free(data->resultat.resultats[i][j]->itineraire);
+                free(data->resultat.resultats[i][j]->trajet);
+
+                if(data->resultat.resultats[i][j]->visite != NULL){
+                    free(data->resultat.resultats[i][j]->visite);
+                }
+
+                free(data->resultat.resultats[i][j]);
             }
-           free(data->resultat.resultats[i][j]);
-        }
-        if(data->resultat.resultats[i] != NULL)
+
             free(data->resultat.resultats[i]);
+        }
     }
     free(data->resultat.resultats);
 
