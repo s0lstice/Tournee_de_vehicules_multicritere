@@ -5,6 +5,7 @@ void init_solution(Donnee *data);
 int nb_solution(Donnee *data);
 Parcourt *str_parcourt(Donnee *data, int id_parcourt);
 int existe_solution(Donnee *data);
+int existe_solution(Donnee *data);
 void all_solutions(Donnee *data, int nb_reallocation);
 void unall_nb_solutions(Donnee *data, int nb_suppretion);
 void add_lieu_solution(Donnee *data, int id_solution, int id_lieu);
