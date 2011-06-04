@@ -1,5 +1,7 @@
 #include "use_resultat.h"
 #include "use_solution.h"
+#include "use_map.h"
+#include "use_index.h"
 #include <stdlib.h>
 #include "erreur.h"
 
@@ -46,30 +48,50 @@ void all_resultats(Donnee *data, int nb_lieux, int nb_ajout){
         data->resultat.nb_lieux = nb_lieux;
     }
 
-    /*allocation des nouveaux resultat*/
-    nb_l = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;
-    tmp_doubptr_parcourt = (Parcourt **)realloc(data->resultat.resultats[nb_lieux -1], (nb_l)*sizeof(Parcourt*));
-    if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "all_resultats : echeque de la reallocation des parcourts lv2");
-    data->resultat.resultats[nb_lieux -1] = tmp_doubptr_parcourt;
 
+    if(nb_ajout > 0){
 
-    /*initialisation de la partie rajoute*/
-    for(i = data->resultat.nb_resultats[nb_lieux -1][1]; i < data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout; ++i){
-        /*creation des desultat*/
-        data->resultat.resultats[nb_lieux -1][i] = (Parcourt *)malloc(sizeof(Parcourt));
-        if(data->resultat.resultats[nb_lieux -1][i] == NULL) fatalerreur(data, "all_resultats : echeque de l'allocation des resultats vl3");
+        /*allocation des nouveaux resultat*/
+        nb_l = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;
+        tmp_doubptr_parcourt = (Parcourt **)realloc(data->resultat.resultats[nb_lieux -1], (nb_l)*sizeof(Parcourt*));
+        if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "all_resultats : echeque de la reallocation des parcourts lv2");
+        data->resultat.resultats[nb_lieux -1] = tmp_doubptr_parcourt;
 
-        /*initialisation des caracteristique*/
-        data->resultat.resultats[nb_lieux -1][i]->carac.distance = 0;
-        data->resultat.resultats[nb_lieux -1][i]->carac.insecurite = 0;
-        data->resultat.resultats[nb_lieux -1][i]->carac.interet = 0;
-        data->resultat.resultats[nb_lieux -1][i]->carac.nb_lieux_total = 0;
-        data->resultat.resultats[nb_lieux -1][i]->carac.nb_lieux_utile = 0;
-        data->resultat.resultats[nb_lieux -1][i]->carac.nb_arc = 0;
+        /*initialisation de la partie rajoute*/
+        for(i = data->resultat.nb_resultats[nb_lieux -1][1]; i < data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout; ++i){
+            /*creation des desultat*/
+            data->resultat.resultats[nb_lieux -1][i] = (Parcourt *)malloc(sizeof(Parcourt));
+            if(data->resultat.resultats[nb_lieux -1][i] == NULL) fatalerreur(data, "all_resultats : echeque de l'allocation des resultats vl3");
 
-        data->resultat.resultats[nb_lieux -1][i]->itineraire  = NULL;
-        data->resultat.resultats[nb_lieux -1][i]->trajet = NULL;
-        data->resultat.resultats[nb_lieux -1][i]->visite = NULL;
+            /*initialisation des caracteristique*/
+            data->resultat.resultats[nb_lieux -1][i]->carac.distance = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.insecurite = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.interet = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.nb_lieux_total = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.nb_lieux_utile = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.nb_arc = 0;
+
+            data->resultat.resultats[nb_lieux -1][i]->itineraire  = NULL;
+            data->resultat.resultats[nb_lieux -1][i]->trajet = NULL;
+            data->resultat.resultats[nb_lieux -1][i]->visite = NULL;
+        }
+    }
+    else{
+        for(i = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout; i < data->resultat.nb_resultats[nb_lieux -1][1]; ++i){
+            free(data->resultat.resultats[nb_lieux -1][i]->trajet);
+            free(data->resultat.resultats[nb_lieux -1][i]->itineraire);
+
+            if(data->resultat.resultats[nb_lieux -1][i]->visite != NULL)
+                free(data->resultat.resultats[nb_lieux -1][i]->visite);
+
+            free(data->resultat.resultats[nb_lieux -1][i]);
+        }
+
+        /*desallocation des resultat*/
+        nb_l = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;
+        tmp_doubptr_parcourt = (Parcourt **)realloc(data->resultat.resultats[nb_lieux -1], (nb_l)*sizeof(Parcourt*));
+        if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "all_resultats : echeque de la reallocation des parcourts lv2");
+        data->resultat.resultats[nb_lieux -1] = tmp_doubptr_parcourt;
     }
 
     /*mise a jour du nombre de resultats en fonction du nombre de lieux*/
@@ -218,6 +240,84 @@ int cut_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution){
     }
 
     return id_resultat;
+}
+
+int distance_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_arc){
+    return data->resultat.resultats[nb_lieux -1][id_resultat]->trajet[id_arc]->distance;
+}
+
+int insecurite_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_arc){
+    return data->resultat.resultats[nb_lieux -1][id_resultat]->trajet[id_arc]->insecurite;
+}
+
+int distance_totale_resultat(Donnee * data, int nb_lieux, int id_resultat){
+    return data->resultat.resultats[nb_lieux -1][id_resultat]->carac.distance;
+}
+
+int insecurite_totale_resultat(Donnee * data, int nb_lieux, int id_resultat){
+    return data->resultat.resultats[nb_lieux -1][id_resultat]->carac.insecurite;
+}
+
+void change_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_arc, int id_depart, int id_destination, int id_offcet){
+    data->resultat.resultats[nb_lieux -1][id_resultat]->carac.distance = distance_totale_resultat(data, nb_lieux, id_resultat) - distance_arc_resultat(data, nb_lieux, id_resultat, id_arc) + distance_arc(data, id_depart, id_destination, id_offcet);
+    data->resultat.resultats[nb_lieux -1][id_resultat]->carac.insecurite =  data->resultat.resultats[nb_lieux -1][id_resultat]->carac.insecurite - insecurite_arc_resultat(data, nb_lieux, id_resultat, id_arc) + insecurite_arc(data, id_depart, id_destination, id_offcet);
+
+    data->resultat.resultats[nb_lieux -1][id_resultat]->trajet[id_arc] = ptr_arc(data, id_depart, id_destination, id_offcet);
+}
+
+void create_resultats(Donnee *data, int nb_lieux){
+    int id_resultat = data->resultat.nb_resultats[nb_lieux -1][0] -1;
+    int nb_lieux_resultat = data->resultat.resultats[nb_lieux -1][id_resultat]->carac.nb_arc;
+    int lieu, resultat, arc;
+    int nb_resultats_crere = 0;
+    Parcourt* table_resultat = data->resultat.resultats[nb_lieux -1][id_resultat];
+    int id_destination, id_depart;
+    int nb_arc_genere;
+    int nb_resutats_vide;
+    int id_write_resultat = id_resultat + 1;
+    int distance_new, insecurite_new;
+    int distance_ref, insecurite_ref;
+
+    for(lieu = 0; lieu < nb_lieux_resultat; ++lieu){
+        id_depart = table_resultat->itineraire[lieu]->id;
+        id_destination = table_resultat->itineraire[lieu + 1]->id;
+        nb_arc_genere = index_nb_arc(data, id_depart, id_destination); //nombre d'arc entre le depart et la destination
+        nb_resutats_vide =  data->resultat.nb_resultats[nb_lieux -1][1] - data->resultat.nb_resultats[nb_lieux -1][0]; //nombre d'arc alloué et non utilise
+
+        if(nb_resutats_vide < nb_arc_genere){ //on alloue si le nombre de resultat disponible est inferieur aux nombre de resultat necessaire
+            all_resultats(data, nb_lieux, data->resultat.nb_resultats[nb_lieux -1][1] + nb_arc_genere - nb_resutats_vide); //allocation du nombre de resultat necessaire
+        }
+
+        for(resultat = 0; resultat <= nb_resultats_crere; ++resultat){
+            distance_ref = distance_totale_resultat(data, nb_lieux, id_resultat);
+            insecurite_ref = insecurite_totale_resultat(data, nb_lieux, id_resultat);
+
+
+            for(arc = 1; arc < nb_arc_genere; ++arc){
+                distance_new = distance_ref - distance_arc_resultat(data, nb_lieux, id_resultat, lieu) + distance_arc(data, id_depart, id_destination, arc);
+                insecurite_new =  insecurite_ref - insecurite_arc_resultat(data, nb_lieux, id_resultat, lieu) + insecurite_arc(data, id_depart, id_destination, arc);
+
+                if((distance_ref < distance_new)&&(insecurite_ref < insecurite_new)){
+                    continue;
+                }
+                if((distance_ref > distance_new)&&(insecurite_ref > insecurite_new)){
+                    change_arc_resultat(data, nb_lieux, id_resultat, lieu, id_depart, id_destination, arc);
+
+                    distance_ref = distance_totale_resultat(data, nb_lieux, id_resultat);
+                    insecurite_ref = insecurite_totale_resultat(data, nb_lieux, id_resultat);
+                }
+                else{
+                    cpy_resultat(data, nb_lieux, id_write_resultat, id_resultat);
+                    change_arc_resultat(data, nb_lieux, id_write_resultat, lieu, id_depart, id_destination, arc);
+                    id_write_resultat++;
+                }
+            }
+        }
+
+    }
+
+    all_resultats(data, nb_lieux, data->resultat.nb_resultats[nb_lieux -1][0] - data->resultat.nb_resultats[nb_lieux -1][1]);
+
 }
 
 void unall_resultats(Donnee *data){

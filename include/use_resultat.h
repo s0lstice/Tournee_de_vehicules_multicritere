@@ -11,5 +11,10 @@ int nb_resultats_use_by_lieu(Donnee *data, int nb_lieux);
 int nb_resultats_all_by_lieu(Donnee *data, int nb_lieux);
 void unall_resultats(Donnee *data);
 int cut_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution);
-
+int distance_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_arc);
+int insecurite_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_arc);
+int distance_totale_resultat(Donnee * data, int nb_lieux, int id_resultat);
+int insecurite_totale_resultat(Donnee * data, int nb_lieux, int id_resultat);
+void change_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_arc, int id_depart, int id_destination, int id_offcet);
+void create_resultats(Donnee *data, int nb_lieux);
 #endif // USE_RESULTAT_H_INCLUDED

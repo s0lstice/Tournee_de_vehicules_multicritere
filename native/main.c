@@ -44,7 +44,7 @@ int main(int argc , char * argv [])
         all_resultats(data, nb_lieux, 2);
         cpy_solution_to_resultat(data, nb_lieux, 1);
         cut_solution_to_resultat(data, nb_lieux, 1);
-        //create_chemin_solution(data, j-1, i);
+        create_resultats(data, nb_lieux);
     }
 
     /*while(data->solution.nb_solution > 1){
