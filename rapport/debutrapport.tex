@@ -1,7 +1,7 @@
 \documentclass[twoside]{EPURapport}
 \input{include.tex}
 
-\thedocument{Rapport Projet Algo-C}{Tournée d'un véhicule multicritéres}%{Titre court}
+\thedocument{Rapport Projet Algorithme-C}{Tournée d'un véhicule multicritéres}%{Titre court}
 
 \grade{Département Informatique\\ 3\ieme{} année\\ 2010 - 2011}
 
@@ -18,7 +18,7 @@
 		\name{Emmanuel Neron} \mail{emmanuel.neron@univ-tours.fr}
 		%\name{Mohamed SLIMANE} \mail{slimane@univ-tours.fr}
 	}
-	\details{Université Fran¡ois-Rabelais, Tours}
+	\details{Université François-Rabelais, Tours}
 }
 
 \abstracts{Description en français}
@@ -39,8 +39,9 @@ La difficulté majeur est de retourner des solutions dans une  période très court
 
 \begin{figure}[h]
 \begin{center}
-\input{graph.tex}
+\includegraphics{graph.jpg}
 \caption{Représentation simplifiée de la configuration}
+\label{fig:Représentation simplifiée de la configuration}
 \end{center}
 \end{figure}
 
@@ -59,20 +60,57 @@ Suite à la première rencontre avec notre encadrant un premier cahier des charges
 \chapter{Modélisation du problème}
 
 \section{Variables}
+Il y a des paramètres sur la configuration de la ville qui vont être importants à prendre en compte car ils vont influencer les résultats ce sont les variables.
+Un variable qui dépend de l'utilisateur c'est l'intérêt des différends lieux de la ville. Par exemple pour un même lieu deux utilisateurs vont pas lui attribuer obligatoirement le même intérêt.
+Les autres variables dont il faut tenir compte sont les caractéristiques des arcs qui sont la distance et l'insécurité.
+
 \section{Contraintes}
+La principale contrainte de ce problème est la liaisons entre les différents lieux, c'est à dire si il existe un ou plusieurs arc entre deux lieux pour pouvoir aller d'un lieu dit source à un lieu dit destination.
+Si on reprend la configuration présenter dans la figure \ref{fig:Représentation simplifiée de la configuration} on voit que pour aller du lieu de départ (0) au lieu A ou E il faut passer par le lieu B.
+En d'autre termes pour réaliser le parcourt on peut se déplacer d'un lieu à un autre si il existe au moins un arc reliant les deux lieux en question.
+ 
 \section{Fonctions Objectifs}
 
-\chapter{ /*Spécification*/ }
-Dans ce chapitre on va détailler le système à développer même si c'est de façon simplifier sans forcement aller jusqu'à tout les différents arbre hiérarchique. 
-Pour réaliser un programme qui permet de répondre au mieux au besoins nous avons séparer le problème en 4-5 partie : 
+Pour notre problème on peu considérer plusieurs fonctions objectifs qui sont les suivantes :
+\begin{itemize}
+\item[1\iere{} fonction :]Il faut que l'ensemble des lieux soit visités en essayant de maximiser l'intérêt
+\item[2\ieme{} fonction :]Le parcourt doit minimiser la distance
+\item[3\ieme{} fonction :]Le parcourt doit aussi minimiser l'insécurité
+\end{itemize} 
 
+\chapter{Spécification}
+Maintenant que nous avons réaliser la définition et la modélisation du problème a été effectué, on va chercher à spécifier le programme qui permettra de répondre au problème et à définir de manière concise la structure général de ce programme.
+
+\section{Délimitation système/environnement}
+
+On peu représenter cette délimitation à l'aide du schéma ci-dessous
+\begin{figure}[h]
+\begin{center}
+\includegraphics{environnement.jpg}
+\caption{Schéma représentant la délimitation système/environnement}
+\label{fig:Schéma représentant la délimitation système/environnement}
+\end{center}
+\end{figure}
+
+En plus de distinguer le système de l'environnement le schéma précèdent nous permet de voir en même temps les flux d'informations entre les différentes identités de l'environnement.
+\begin{itemize}
+\item La flèche entre l'utilisateur et le fichier texte représente le processus par lequel l'utilisateur rentre la configuration de la ville, c'est à dire la position des lieux avec leur intérêt pour l'utilisateur et les arcs avec leurs caractéristiques.
+\item Le fichier texte une fois remplis par l'utilisateur sert d'entré au programme pour créer la structure de données
+\item Une fois que le programme a finis de tourner il retourne à l'utilisateur la liste des parcours possible par rapport à la ville qui a été rentré dans la fichier texte.
+\end{itemize}
+
+\section{Définition du programme à réaliser}
+
+Pour réaliser un programme qui permet de répondre au mieux au besoins nous avons séparer le problème en 4-5 partie : 
 \begin{enumerate}
-\item Pour gérer la configuration des lieux, il faut un ensemble de structure de données qui permet de stocker et d'utiliser les différents paramètre lier à la configuration, c'est à dire :   l'intérêt des lieux, la communication entre les différents lieux, les arcs qui permette cette communication et les caractéristiques de ces arc (Distance, Insécurité).
-\item Comment trier les arcs entre 2 lieux....
+\item Pour gérer la configuration des lieux qui provient du fichier texte prévu comme entrée, il faut un ensemble de structure de données qui permet de stocker et d'utiliser les différents paramètre lier à la configuration, c'est à dire :   l'intérêt des lieux, l'intercommunication entre les différents lieux, les arcs qui permette cette communication et les caractéristiques de ces arc (Distance, Insécurité).
+%\item Comment trier les arcs entre 2 lieux....
 \item Générer un chemin de base
 \item Générer de nouveaux chemin en réalisant des permutations dans le chemin de base en fonction des permutations possible entre les lieux.
 \item Avoir un structure permettant de retourner les chemins générer
 \end{enumerate}
+
+On peut représenter de manière simplifier la structure générale du programme qui répondra au problème posé : 
 
 \section {Lien entre les différentes partie}
 
@@ -306,7 +344,7 @@ Sortie : posi est un booléen \\
 \CR{07/04/2011}{Finalisation de la structure de données, vérification des fonctions permettant d'interroger la structure de données pour les algorithmes permettant de créé les trajets, première réalisation d'un algorithme pour générer le trajet de référence.}
 \CR{11/04/2011}{Réunion avec notre encadrant pour lui présenter la structure de données et l'esquisse de l'algorithme pour générer le trajets de référence.}
 \CR{11/04/2011 au 05/05/2011}{Réalisation et implémentation de l'algorithme pour générer un chemin de base et résolution d'un problème par rapport au tri des arc entre les lieux.}
-%\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+\CR{05/05/2011 au 01/06/2011}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
