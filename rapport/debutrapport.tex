@@ -104,7 +104,6 @@ En plus de distinguer le système de l'environnement le schéma précèdent nous per
 Pour réaliser un programme qui permet de répondre au mieux au besoins nous avons séparer le problème en 4-5 partie : 
 \begin{enumerate}
 \item Pour gérer la configuration des lieux qui provient du fichier texte prévu comme entrée, il faut un ensemble de structure de données qui permet de stocker et d'utiliser les différents paramètre lier à la configuration, c'est à dire :   l'intérêt des lieux, l'intercommunication entre les différents lieux, les arcs qui permette cette communication et les caractéristiques de ces arc (Distance, Insécurité).
-%\item Comment trier les arcs entre 2 lieux....
 \item Générer un chemin de base
 \item Générer de nouveaux chemin en réalisant des permutations dans le chemin de base en fonction des permutations possible entre les lieux.
 \item Avoir un structure permettant de retourner les chemins générer
@@ -117,111 +116,114 @@ On peut représenter de manière simplifier la structure générale du programme qui
 \textcolor{blue}{diagramme de classe}
 
 \part{Algorithimique}
-\chapter{Réalisation de la structure de données}
+Une fois tout l'étape de définition du problème et du contexte, ainsi que de modélisation du programme qui permetterai de répondre au problème.
+Nous avons pu commencer la partie réalisation d'algorithme et structure de données qui permette de répondre au problème.
+Cette partie a pour but de présenter le principe de fonctionnement du programme. Dans un premier temps, elle traite de la gestion des données fournies par l'utilisateur. Et dans une seconde phase, il sera question de la recherche de résultats. 
+Le but étant toujours de tenir compte des fonctions objectifs :
+\begin{itemize}
+\item L'intérêt des lieux visité doit être maximisé.
+\item L'insécurité et la distance du trajet sont à minimiser.
+\end{itemize}
 
-  \section{Introduction}
+Chaque lieu est relié par un ou plusieurs chemins et le retour sur des lieux déjà visités est autorisé. Comme le programme duplique les chemins en mémoire de manière à ce qu'il devienne unidirectionnel, nous ne parlerons plus de chemin pour relier les lieux, mais d'arc.Par abus de langage, nous utiliserons le terme  "chemin" comme équivalant à "trajet". Ils désignent tous deux un résultat.\\
 
-  \section{Informations utile}
-    Le solveur reçoit en paramètre un document texte découpé en trois parties :
-    \begin{itemize}
-      \item Parametres (le nombre de lieux à visiter ; les temps de recherche en seconde ; le nombre de lieux ; le nombre d'arcs)
-      \item Lieux (identifiant ; intérêt ; nom du lieu)
-      \item Arcs (identifiant du lieu de départ ; identifiant du lieu d'arrivée ; distance ; insécurité)
-    \end{itemize}
 
-    voici un exemple de ville : \textcolor{magenta}{donner le .txt correspondant au graphe}
+\chapter{Gestion des données en mémoire}
 
-  \section{disposition en mémoire}
-    L'ensemble des données sont stockées dans un jeu de structures et de tableaux alloués sur le tas.
+\section{Données à mémoriser}
+L'utilisateur fournit les informations aux programmes par l'intermédiaire d'un fichier texte. Ce document répond à une structure particulière : 
+\begin{itemize}
+\item Il est constitué de trois parties : Paramètres, Lieux, Arcs.
+\item Le nom des parties commence par un dièse et se termine par un saut de ligne.
+\item Les commentaires sont précédés du symbole pourcent et sont placés avant que commence l'une des trois parties.
+\end{itemize}
 
-    Il existe une structure principal nome "donnée" qui contient l'ensemble des informations.\\
-    \\
-    \textbf{Donnee :}
-    \begin{itemize}
-      \item temps\_execution : Entier ; \textit{temps imparti pour la recherche de solutions.}
-      \item nb\_lieux\_total : Entier ; \textit{nombre de lieux intéressant.}
-      \item nb\_arcs : Entier; \textit{nombre d'arcs total.}
-      \item *table\_interet : Interet\_lieu ; \textit{tableau des intérêts décroissant avec les correspondances des lieux.}
-      \item *lieux : Lieu ; \textit{pointeur sur un tableau contenant l'ensemble des références des lieux.}
-      \item ***index\_lieu : Index\_arc ; \textit{pointeur sur une table d'index pour l'utilisation de map.}
-      \item ***map : Arc ; \textit{pointeur sur un tableau contenant pour chaque lieu l'ensemble des arcs disponible. Ces arcs sont triés par internet décroissant, distance et insécurité croissante.}
-      \item *solution : Caracteristique ; \textit{pointeur sur un tableau contenant l'ensemble des solutions acceptable.}
-    \end{itemize}
+\subsection{Les paramètres}
 
-    L'ensemble des lieux et de leurs informations sont contenus dans un tableau à une dimension de type "Lieu" :\\
-    \\
-    \textbf{Lieu :}
-    \begin{itemize}
-      \item id : Entier ; \textit{numéro du lieu.}
-      \item interet : Entier ; \textit{intérêt du lieu.}
-      \item *nom : Chaine de caractéres ; \textit{nom du lieu.}
-      \item nb\_arc : Entier ; \textit{nombre d'arcs sortant.}
-    \end{itemize}
+Toutes les informations sont contenues sur une seule ligne et séparées par des points virgule.
+On retrouve :
+\begin{itemize}
+\item Temps de recherche en seconds (entier)
+\item Nombres de lieux totaux (entier)
+\item Nombres d'arcs totaux (entier)
+\item \{d$\vert$c\} caractère qui indique si, lors de la réalisation du chemin de référence, les lieux doivent suivre un intérêt croissant ou décroissant (caractère)\\
+ \end{itemize}   
 
-    Les arcs sont alloués sur le tas indépendamment les uns des autres, la structure qui les définis est du type "Arc" :\\
-    \\
-    \textbf{Arc :}
-    \begin{itemize}
-      \item distance : Entier ; \textit{distance de l'arc.}
-      \item insecurite : Entier ; \textit{insécurité de l'arc.}
-      \item *depart : Lieu; \textit{lieu de départ de l'arc.}
-      \item *destination : Lieu; \textit{lieu de destination de l'arc.}
-    \end{itemize}
+\textit{Exemple :}
+\begin{verbatim}
+	#Parametres
+	60;5;11;d
+\end{verbatim}	
+Indique un temps de recherche de 60s dans un graphe constitué de 5 lieux, 11 chemins.
+Le chemin de base doit être constitué suivant un intérêt décroissant.
 
-    C'est pour se déplacer d'un lieu à un autre que le tableau à trois dimensions "map" à été mi en place. Sur sa première dimension, on retrouve le lieu de départ, sa deuxième dimension contient un tableau de pointeurs sur les arcs alloués sur le tas.
+\subsection{Les lieux}
 
-    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+Les lieux sont caractérisés par trois valeurs et espérés par un retour à la ligne. Le premier lieu est celui de départ de la recherche, il est numéroté zéro et possède un intérêt nul.\\
+Paramètres des lieux : 
+\begin{itemize}
+\item Numéro : commence à partir de zéro et s'incrémente d'un à chaque lieu. (entier)
+\item Intérêt : indique la valeur d'intérêt du lieu. (entier)
+\item Nom du lieu : le nom du lieu (chaine de caractères)\\
+\end{itemize}
+\newpage
+\textit{Exemple :}
+\begin{verbatim}
+	# Lieux
+	0;0;Départ
+	1;6;L1
+	2;2;L2
+	3;12;L3
+	4;1;L4
+\end{verbatim}
+Il y a 5 lieux numérotés de zéro à quatre possédant chacun un intérêt est un nom.
 
-    Comme il existe un nombre variable d'arcs menant à la même destination pour un même point de départ, le tableau carré "index\_lieu" de type "index\_arc" se charge de faire la correspondance entre le départ et la destination.
-    La structure index\_arc contient deux entiers ; id\_arc est l'indice du premier arc disponible, nb\_arc indique combien d'arcs sont disponibles.\\
-    \\
-    \textbf{Index\_arc :}
-    \begin{itemize}
-      \item id\_arc : Entier ; \textit{identifiant de l'arc}
-      \item nb\_arc : Entier ; \textit{nombre d'arcs disponible}
-    \end{itemize}
+\subsection{Les Arcs}
+Les arcs sont séparés par des retours à la lignes, ils sont constitués de quatre paramètres :
+\begin{itemize}
+\item Le numéro de lieu de départ (entier)
+\item Le numéro du lieu d'arrivée (entier)
+\item Sa distance (entier)
+\item Son insécurité (entier)\\
+\end{itemize}
 
-    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+\textit{Exemple :}
+\begin{verbatim}
+	# Arcs
+	0;3;10;1
+	0;3;7;2
+	0;3;8;3
+	0;3;1;2	0;2;7;9
+	0;1;6;3	0;1;2;5	2;3;2;2	2;1;7;1	2;1;6;2	2;1;5;3	2;4;8;8	2;4;9;9	4;1;1;9
+\end{verbatim}
 
-    Le chemin de référence est construit de manière à maximiser dès le départ un des trois critères. De ce fait une table "liste\_lieu", de type "index\_lieu" contiens les lieux triés \textcolor{magenta}{en fonction des choix de l'utilisateur.\textbf{à faire}}. Ainsi le constructeur de chemins de référence n'aura plus qu'à utiliser cette liste sans faire de recherche.
-    \textcolor{magenta}{Donner le tableau en fonction de l'exemple.}
+On retrouve ici 11 arcs, tous reliant des lieux et possédant une distance et une insécurité.\\
 
-    Le dernier tableau contenu par la structure de donnée est celui des solutions, il grandit avec l'avancement du programme. Il est nommé "solution" et est de type parcours. Il contient une structure de type "caractéristique" qui définit le chemin, un tableau trajet pointant les arcs utilisés et un tableau itinéraire qui stocke les lieux visités. \\
-    \\
-    \textbf{Parcourt :}
-    \begin{itemize}
-      \item *carac : Caracteristique; \textit{pointeur sur les caractéristiques de cette solution.}
-      \item *trajet : Arc; \textit{tableau contenant les arcs utilisés dans cette solution.}
-      \item itineraire : interet\_lieu; \textit{tableau contenant les lieux déjà visités et le nombre de fois.}
-    \end{itemize}
-    
-    
-%\chapter{Test Algo}
-%\algsetup{indent=3em}
-%\begin{algorithm}
-%\caption{calcul de la matrice B à partir de la matrice d'adjacence $A$}
-%\label{algo1}
-%\begin{algorithmic}[1]
-%\REQUIRE  ~\\
-%$n$ : entier positif $/*$ nombre de sommets $*/$\\
-%$A$ : tableau$[n \times n]$ de $\{0,1\}$  $/*$ matrice d'adjacence de $G$ $*/$
-%\ENSURE ~\\
-%$B$ : tableau$[n \times n]$ de $\{0,1\}$ $/*$ matrice énigmatique $*/$
-%  \FOR{$i$ {\textbf de} 1 \textbf{à} $n$}
-%     \FOR{$j$ {\textbf de} 1 \textbf{à} $n$}
-%        \STATE $k = 1$
-%        \WHILE{$((k \leq n)$ \& $(A_{i,k} \times A_{k,j} == 0))$}
-%            \STATE $k = k+1$
-%        \ENDWHILE
-%        \IF{$(k \leq n)$}
-%            \STATE $B_{i,j} = 1$
-%          \ELSE
-%             \STATE $B_{i,j} = 0$
-%        \ENDIF  
-%     \ENDFOR
-%   \ENDFOR
-% \end{algorithmic}
-%\end{algorithm}
+Les exemples précédents permettent de créer une ville de cette forme :
+\begin{figure}[h]
+\begin{center}
+\includegraphics{graphe1.png}
+\caption{Schéma représentant la configuration}
+\label{fig:Schéma représentant la configuration}
+\end{center}
+\end{figure}
+
+\section{Mémorisation des informations}
+
+Toutes les informations utiles au programme sont contenues dans une structure principales nommée "Donnee", cela permet d'avoir un programme ordonné, avec une seule variable à passer en paramètre aux fonctions
+
+\subsection{Structure de "Donnee"}
+
+\begin{itemize}
+\item paramètres (Parametres)
+\item liste\_lieu (Coef\_lieu)
+\item lieu (Lieu)
+\item index\_lieu (Index\_arc)
+\item map (Arc)
+\item resultat (Resultats)
+\item solution (Solution)
+\end{itemize}
+On va détailler les informations contenues dans cette structure dans les parties suivant.
 
 \chapter{Algo de tri rapide multicritères}
 
@@ -298,7 +300,7 @@ Entrée : \begin{itemize}
 \item id\_arc entier, identifiant de l'arc\\
 \item	id\_key entier, identifiant de la clef\\
 \end{itemize}
-Toutes les données doivent Õtre valides
+Toutes les données doivent être valides
 \ENSURE ~\\
 Sortie : posi est un booléen \\
 \begin{itemize}
@@ -325,12 +327,34 @@ Sortie : posi est un booléen \\
 		\ENDIF	
 	\ENDIF
 \ENDIF
-\STATE retourner(posi)
-		
+\STATE retourner(posi)		
 \end{algorithmic}
 \end{algorithm}
 
+\section{Création de chemin}
 
+\algsetup{indent=3em}
+\begin{algorithm}
+\caption{Permutation}
+\label{Permutation}
+\begin{algorithmic}[1]
+\REQUIRE ~\\
+\ENSURE ~\\
+\STATE Cpy\_Solution(data,Id\_Solution\_base,Id\_Solution\_New);
+ \FOR{$i$ {\textbf du} 1\ier{}lieu \textbf{au} dernier lieu}
+  	\IF {$Permutation\_Possible(i+2,i+1) = 1$}
+		\STATE $tmp \gets lieu[i+2];$
+		\STATE $lieu[i+2] \gets lieu[i+1];$
+		\STATE $lieu[i+1] \gets tmp;$
+		\STATE Sortie de la boucle
+	\ELSE
+		\STATE Retourner("Il n'y a pas de permutation possible")
+	\ENDIF
+\ENDFOR
+\STATE Retourner(Le nouveau chemin)
+\end{algorithmic}
+\end{algorithm}
+		
 \chapter{Conclusion}
 
 
@@ -344,7 +368,7 @@ Sortie : posi est un booléen \\
 \CR{07/04/2011}{Finalisation de la structure de données, vérification des fonctions permettant d'interroger la structure de données pour les algorithmes permettant de créé les trajets, première réalisation d'un algorithme pour générer le trajet de référence.}
 \CR{11/04/2011}{Réunion avec notre encadrant pour lui présenter la structure de données et l'esquisse de l'algorithme pour générer le trajets de référence.}
 \CR{11/04/2011 au 05/05/2011}{Réalisation et implémentation de l'algorithme pour générer un chemin de base et résolution d'un problème par rapport au tri des arc entre les lieux.}
-\CR{05/05/2011 au 01/06/2011}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
+\CR{05/05/2011 au 01/06/2011}{}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
 %\CR{XX/XX/2008}{validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats	validation du planning, installation et évaluation du logiciel XX, essais sur le jeu de données fourni, présentation orale des résultats.}
