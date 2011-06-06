@@ -100,7 +100,7 @@ void print_result(Donnee * data){
 
     /*affichage des resultats*/
     for(i = 0; i < nb_lieu_resultats(data); ++i){
-        for(j = 0; j < data->resultat.nb_resultats[i][1]; ++j){
+        for(j = 0; j < data->resultat.nb_resultats[i][0]; ++j){
             printf("\n*** resultat avec %d/%d lieux n° %d ***\n", i+1, nb_lieu_resultats(data),j+1);
             printf("**cara : \n distance : %d \n insecurite : %d \n interet : %d \n nb_lieux_total : %d \n nb_lieux_utile : %d\n",
                 data->resultat.resultats[i][j]->carac.distance,

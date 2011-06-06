@@ -122,6 +122,7 @@ static int position_arc(const void *p1, const void *p2){
 /**
  * \fn int epure_map(Donnee *data,int id_lieu)
  * \brief supprime les arcs domminés du lieu.
+
  *
  * \param Un pointeur sur une structure Donnee.
  * \param l'indentifiant du lieu.

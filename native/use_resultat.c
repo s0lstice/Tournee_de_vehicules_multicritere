@@ -98,6 +98,21 @@ void all_resultats(Donnee *data, int nb_lieux, int nb_ajout){
     data->resultat.nb_resultats[nb_lieux -1][1] += nb_ajout;
 }
 
+static void replace_resultat(Donnee *data, int nb_lieux, int id_resultat_destination, int id_resultat_source){
+
+    free(data->resultat.resultats[nb_lieux -1][id_resultat_destination]->itineraire);
+    data->resultat.resultats[nb_lieux -1][id_resultat_destination]->itineraire = NULL;
+
+    free(data->resultat.resultats[nb_lieux -1][id_resultat_destination]->trajet);
+    data->resultat.resultats[nb_lieux -1][id_resultat_destination]->trajet = NULL;
+
+    if(data->resultat.resultats[nb_lieux -1][id_resultat_destination]->visite != NULL){
+        free(data->resultat.resultats[nb_lieux -1][id_resultat_destination]->visite);
+    }
+
+    cpy_resultat(data, nb_lieux, id_resultat_destination, id_resultat_source);
+}
+
 void cpy_resultat(Donnee *data, int nb_lieux, int id_resultat_destination, int id_resultat_source){
     int i, nb_lieux_total;
     Arc **temp_arc;
@@ -105,8 +120,13 @@ void cpy_resultat(Donnee *data, int nb_lieux, int id_resultat_destination, int i
     Parcourt *destination_resultat = data->resultat.resultats[nb_lieux -1][id_resultat_destination];
     Parcourt *source_resultat = data->resultat.resultats[nb_lieux -1][id_resultat_source];
 
-    if(data->resultat.nb_resultats[nb_lieux -1][1]-data->resultat.nb_resultats[nb_lieux -1][0] < 1)
-        all_resultats(data, nb_lieux, 1);
+    if(destination_resultat == NULL){
+        data->resultat.resultats[nb_lieux -1][id_resultat_destination] = (Parcourt *)malloc(sizeof(Parcourt));
+        destination_resultat = data->resultat.resultats[nb_lieux -1][id_resultat_destination];
+    }
+
+    if(destination_resultat == NULL) fatalerreur(data, "cpy_resultat : echeque de l'allocation des resultats vl3");
+
 
     /*copy des caracteristique*/
     destination_resultat->carac.distance = source_resultat->carac.distance;
@@ -139,7 +159,8 @@ void cpy_resultat(Donnee *data, int nb_lieux, int id_resultat_destination, int i
         destination_resultat->trajet[i] = source_resultat->trajet[i];
     }
 
-    data->resultat.nb_resultats[nb_lieux -1][0]++;//augmante de 1 le nombre de resultats utilise
+    if(id_resultat_destination >= data->resultat.nb_resultats[nb_lieux -1][0]) //il y a une nouvelle solution que si sa position de destination est plus grand que le nombre de resultat deja utilise
+        data->resultat.nb_resultats[nb_lieux -1][0]++;//augmante de 1 le nombre de resultats utilise
     /*on ne copy pas la table des visites car elle n'est utilisé que pour la generation de chemin de referance*/
 }
 
@@ -265,7 +286,7 @@ void change_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_arc
     data->resultat.resultats[nb_lieux -1][id_resultat]->trajet[id_arc] = ptr_arc(data, id_depart, id_destination, id_offcet);
 }
 
-void create_resultats(Donnee *data, int nb_lieux){
+void genere_resultats(Donnee *data, int nb_lieux){
     int id_resultat = data->resultat.nb_resultats[nb_lieux -1][0] -1;
     int nb_lieux_resultat = data->resultat.resultats[nb_lieux -1][id_resultat]->carac.nb_arc;
     int lieu, resultat, arc;
@@ -320,20 +341,117 @@ void create_resultats(Donnee *data, int nb_lieux){
 
 }
 
+static int compar_resultats(Donnee *data, int nb_lieux, int id_resultat1, int id_resultat2){
+    int nb_arc_resultat = data->resultat.resultats[nb_lieux -1][id_resultat1]->carac.nb_arc;
+    int i = 0;
+    Arc **arc1;
+    Arc **arc2;
+    int test = 0;
+
+    arc1 = data->resultat.resultats[nb_lieux -1][id_resultat1]->trajet;
+    arc2 = data->resultat.resultats[nb_lieux -1][id_resultat2]->trajet;
+
+    while( (i < nb_arc_resultat)&&(test == 0)){
+        test = test + arc1[i]->depart->id - arc2[i]->depart->id;
+        test = test + arc1[i]->destination->id - arc2[i]->destination->id ;
+        test = test + arc1[i]->distance - arc2[i]->distance;
+        test = test + arc1[i]->insecurite - arc2[i]->insecurite;
+
+        i++;
+    }
+
+    if(test == 0) return 0;
+    return 1;
+}
+
+static void suprime_resultat(Donnee *data, int nb_lieux, int id_resultat){
+    int i;
+    //Parcourt **tmp_doubptr_parcourt;
+
+    free(data->resultat.resultats[nb_lieux -1][id_resultat]->itineraire);
+    free(data->resultat.resultats[nb_lieux -1][id_resultat]->trajet);
+    if(data->resultat.resultats[nb_lieux -1][id_resultat]->visite != NULL){
+        free(data->resultat.resultats[nb_lieux -1][id_resultat]->visite);
+    }
+
+
+    for(i = id_resultat; i < nb_resultats_use_by_lieu(data, nb_lieux) -1; ++i){
+        data->resultat.resultats[nb_lieux -1][i] = data->resultat.resultats[nb_lieux -1][i +1];
+    }
+
+    data->resultat.resultats[nb_lieux -1][i] = NULL;
+
+    /*free(data->resultat.resultats[nb_lieux -1][i]->itineraire);
+    free(data->resultat.resultats[nb_lieux -1][i]->trajet);
+    if(data->resultat.resultats[nb_lieux -1][i]->visite != NULL){
+        free(data->resultat.resultats[nb_lieux -1][i]->visite);
+    }
+
+    tmp_doubptr_parcourt = (Parcourt **)realloc(data->resultat.resultats[nb_lieux -1], i*sizeof(Parcourt*));
+    if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "suprime_resultat :  echeque de la realocation de lv2");
+    data->resultat.resultats[nb_lieux -1] = tmp_doubptr_parcourt;
+
+    data->resultat.nb_resultats[nb_lieux -1][1] = i;
+    */
+    data->resultat.nb_resultats[nb_lieux -1][0]--;
+}
+
+void supprime_domine_resultats(Donnee *data, int nb_lieux){
+    int id_referance, id_test;
+    int interet_referance, distance_referance, insecurite_referance;
+    int interet_test, distance_test, insecurite_test;
+
+    for(id_referance = 0; id_referance < nb_resultats_use_by_lieu(data, nb_lieux); ++id_referance){
+
+        interet_referance = data->resultat.resultats[nb_lieux -1][id_referance]->carac.interet;
+        distance_referance = data->resultat.resultats[nb_lieux -1][id_referance]->carac.distance;
+        insecurite_referance = data->resultat.resultats[nb_lieux -1][id_referance]->carac.insecurite;
+
+        for(id_test = id_referance +1; id_test < nb_resultats_use_by_lieu(data, nb_lieux); ++id_test){
+
+            interet_test = data->resultat.resultats[nb_lieux -1][id_test]->carac.interet;
+            distance_test = data->resultat.resultats[nb_lieux -1][id_test]->carac.distance;
+            insecurite_test = data->resultat.resultats[nb_lieux -1][id_test]->carac.insecurite;
+
+            if((interet_referance == interet_test)&&(distance_referance == distance_test)&&(insecurite_referance == insecurite_test)){
+                if(compar_resultats(data, nb_lieux, id_referance, id_test) == 0){// teste si les chemins sont idantiques
+                    //suprimer test
+                    suprime_resultat(data, nb_lieux, id_test);
+                }
+            }
+            else {
+                if((interet_referance >= interet_test)&&(distance_referance <= distance_test)&&(insecurite_referance <= insecurite_test)){
+                    suprime_resultat(data, nb_lieux, id_test);
+                }
+                else {
+                    if((interet_referance <= interet_test)&&(distance_referance >= distance_test)&&(insecurite_referance >= insecurite_test)){
+                        replace_resultat(data, nb_lieux, id_referance, id_test);
+                        suprime_resultat(data, nb_lieux, id_test);
+
+                        interet_referance = interet_test;
+                        distance_referance = distance_test;
+                        insecurite_referance = insecurite_test;
+                    }
+                }
+            }
+        }
+    }
+}
+
 void unall_resultats(Donnee *data){
     int i, j;
 
     for(i = 0; i < data->resultat.nb_lieux ; ++i){
         if(data->resultat.resultats[i] != NULL){
             for(j = 0; j < data->resultat.nb_resultats[i][1]; ++j){
+                if(data->resultat.resultats[i][j] != NULL){
+                    free(data->resultat.resultats[i][j]->itineraire);
+                    free(data->resultat.resultats[i][j]->trajet);
 
-                free(data->resultat.resultats[i][j]->itineraire);
-                free(data->resultat.resultats[i][j]->trajet);
-
-                if(data->resultat.resultats[i][j]->visite != NULL){
-                    free(data->resultat.resultats[i][j]->visite);
+                    if(data->resultat.resultats[i][j]->visite != NULL){
+                        free(data->resultat.resultats[i][j]->visite);
+                    }
                 }
-
                 free(data->resultat.resultats[i][j]);
             }
 
