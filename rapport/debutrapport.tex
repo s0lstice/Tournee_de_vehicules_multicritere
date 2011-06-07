@@ -14,9 +14,8 @@
 }
 
 \supervisors{%
-	\category{Encadrants}{%
+	\category{Encadrant}{%
 		\name{Emmanuel Neron} \mail{emmanuel.neron@univ-tours.fr}
-		%\name{Mohamed SLIMANE} \mail{slimane@univ-tours.fr}
 	}
 	\details{Université François-Rabelais, Tours}
 }
@@ -66,7 +65,7 @@ Les autres variables dont il faut tenir compte sont les caractéristiques des arc
 
 \section{Contraintes}
 La principale contrainte de ce problème est la liaisons entre les différents lieux, c'est à dire si il existe un ou plusieurs arc entre deux lieux pour pouvoir aller d'un lieu dit source à un lieu dit destination.
-Si on reprend la configuration présenter dans la figure \ref{fig:Représentation simplifiée de la configuration} on voit que pour aller du lieu de départ (0) au lieu A ou E il faut passer par le lieu B.
+Si on reprend la configuration présenter dans la figure  on voit que pour aller du lieu de départ (0) au lieu A ou E il faut passer par le lieu B.
 En d'autre termes pour réaliser le parcourt on peut se déplacer d'un lieu à un autre si il existe au moins un arc reliant les deux lieux en question.
  
 \section{Fonctions Objectifs}
@@ -125,7 +124,8 @@ Le but étant toujours de tenir compte des fonctions objectifs :
 \item L'insécurité et la distance du trajet sont à minimiser.
 \end{itemize}
 
-Chaque lieu est relié par un ou plusieurs chemins et le retour sur des lieux déjà visités est autorisé. Comme le programme duplique les chemins en mémoire de manière à ce qu'il devienne unidirectionnel, nous ne parlerons plus de chemin pour relier les lieux, mais d'arc.Par abus de langage, nous utiliserons le terme  "chemin" comme équivalant à "trajet". Ils désignent tous deux un résultat.\\
+Chaque lieu est relié par un ou plusieurs chemins et le retour sur des lieux déjà visités est autorisé. Comme le programme duplique les chemins en mémoire de manière à ce qu'il devienne unidirectionnel, nous ne parlerons plus de chemin pour relier les lieux, mais d'arc.
+Par abus de langage, nous utiliserons le terme  "chemin" comme équivalant à "trajet". Ils désignent tous deux un résultat.\\
 
 
 \chapter{Gestion des données en mémoire}
@@ -193,8 +193,17 @@ Les arcs sont séparés par des retours à la lignes, ils sont constitués de quatre
 	0;3;10;1
 	0;3;7;2
 	0;3;8;3
-	0;3;1;2	0;2;7;9
-	0;1;6;3	0;1;2;5	2;3;2;2	2;1;7;1	2;1;6;2	2;1;5;3	2;4;8;8	2;4;9;9	4;1;1;9
+	0;3;1;2
+	0;2;7;9
+	0;1;6;3
+	0;1;2;5
+	2;3;2;2
+	2;1;7;1
+	2;1;6;2
+	2;1;5;3
+	2;4;8;8
+	2;4;9;9
+	4;1;1;9
 \end{verbatim}
 
 On retrouve ici 11 arcs, tous reliant des lieux et possédant une distance et une insécurité.\\
@@ -215,7 +224,7 @@ Toutes les informations utiles au programme sont contenues dans une structure pr
 \subsection{Structure de "Donnee"}
 
 \begin{itemize}
-\item paramètres (Parametres)
+\item parametres (Parametres)
 \item liste\_lieu (Coef\_lieu)
 \item lieu (Lieu)
 \item index\_lieu (Index\_arc)
@@ -224,6 +233,133 @@ Toutes les informations utiles au programme sont contenues dans une structure pr
 \item solution (Solution)
 \end{itemize}
 On va détailler les informations contenues dans cette structure dans les parties suivant.
+
+\subsection{Les paramètres de la recherche}
+La structure "Parametre" contient les informations sur la recherche, voir la partie correspondante pour plus d'information.
+
+Structure Parametres :\\
+\begin{itemize}
+\item temps\_execution (entier)
+\item nb\_lieux (entier)
+\item nb\_arcs (entier)
+\item ordre\_lieu (caractère)
+\end{itemize}
+
+\subsection{La gestion des lieux dans la mémoire}
+Les lieux sont contenus dans un tableau "lieux" de type "lieu" qui est accessible de puis la structure générale. Il y a sont stockés en fonction de leur apparition dans le fichier de données. Le tableau est donc ordonné en fonction de leur numéro.\\
+La structure "lieu" est utilisée pour contenir toutes les informations relatives à un lieu, ref section correspodante.\\
+
+Structure Lieu :\\
+\begin{itemize}
+\item id (entier)
+\item interet (entier)
+\item nom (chaine de caractères)
+\item nb\_arc (entier)
+\end{itemize}
+
+On détaille cette structure de cette manière :\\
+\begin{itemize}
+\item id : fait référence au numéro du lieu du fichier de donnée.
+\item interet : valeur
+\item nom : celui du lieu
+\item nb\_arc : nombre d'arc sortant de ce lieu
+\end{itemize}
+
+\subsection{La gestion des lieux pour le chemin de base}
+
+Comme le solver doit fournir des solutions comportant les chemins intermédiaires, il est nécessaire de pouvoir rajouter rapidement un lieu au chemin de référence dès que la recherche pour n lieux est terminée.\\
+Pour éviter d'avoir à parcourir la liste des lieux à chaque ajout, le tableau liste\_lieu de paramètre ordre\_lieu renseigné par l'utilisateur.
+
+\subsection{La gestion des arcs}
+
+Tous les chemins décrits dans le fichier sont dupliqués de manière à devenir unidirectionnelle, c'est pourquoi l'on parle d'arc.\\
+Ils sont contenus dans un tableau à trois dimensions nommé "map", de type "Arc" et est accessible depuis la structure générale. La première dimensions permet de pointer les arcs stockés en mémoire. La troisième dimension est l'arc lui-même. Cette table est ainsi construite afin de permettre les tris et la suppression des arcs dominés.\\
+La structure "Arc" est utilisé pour contenir toutes les informations définissant un arc. Voir partie sur arc pour plus d'information.\\
+
+Structure Arc :\\
+\begin{itemize}
+\item distance (entier)
+\item insecurite (entier)
+\item depart (entier)
+\item destination (pointeur lieu)
+\end{itemize}
+
+Le départ et la destination sont des pointeurs sur les structure de type "lieu" détenues par lieux de la structure data. Faire cette référence évite de surcharger la mémoire d'informations redondantes.\\
+
+Voici a quoi doit ressembler la table "map" après suppression des arcs dominés dans l'exemple du chapitre précédent.
+\begin{figure}[h]
+\begin{center}
+\includegraphics{map.jpg}
+\caption{Schéma représentant la structure "map"}
+\label{fig:Schéma représentant la structure "map"}
+\end{center}
+\end{figure}
+
+\subsection{Relation entre le lieu de départ et le lieu d'arrivée}
+
+Le tableau "map" indique déjà le lieu de départ, mais comme le nombre d'arcs entre les lieux est variables, seul le parcourt des dimensions deux et trois permet de connaitre le lieu de destination. C'est pour éviter cette recherche que l'on créé une table d'index nommé "index\_lieu" de type "index\_arc" et accessible depuis la structure "Donnee".
+Il s'agit d'un tableau carré, utilisé comme une tableau à deux entrées (le lieu de départ et le lieu d'arrivée). La structure "index\_arc" permet de savoir combien d'arcs ces lieux ont en commun et contiens l'identifiant du premier arc utile dans le tableau map[lieu\_depart].
+
+Structure index\_arc :\\
+\begin{itemize}
+\item {itemize} id\_arc (entier)
+\item {itemize} nb\_arc (entier)
+\end{itemize}
+Voici une représentation possible de la table index\_lieu et des structures Inde\_arc. Les adresses en mémoire sont fictives. 
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics{index.jpg}
+\caption{Schéma représentant la structure}
+\label{fig:Schéma représentant la structure}
+\end{center}
+\end{figure}
+
+\subsection{La gestion des solutions}
+
+Le tableau des solutions était prévu pour contenir les solutions obtenus après la recherche. Mais cela posait des problèmes avec l'algorithme permettant de générer tous les chemins avec les différents arcs.\\
+C'est pour cela que cette table est maintenant utilisée comme une pile de résultats intermédiaires, nommés "solution", pour qui tous les chemins non pas encore étaient généré.\\
+Cette table nommée "solution", de type "solutions" et accesible dans la structure "Donnee"\\
+La structure "solution" permet de contenir tous les chemins obtenus grâce aux algorithmes de recherche. Elle contient le nombres de solutions disponibles dans cette table est un tableau nommé "solutions" de type "Parcourt".\\
+La structure "parcourt" définit un résultat, une partie "carac" de type "caractéristique" contient les informations générales sur la solution, un tableau "trajet" contient tous les arcs utilisés dans l'ordre de parcourt. "Itiniaire" est l'équivalent de trajet, mais pour les lieux, quant à la table "visite", elle n'est utilisée que par l'algorithme de génération du chemin de base pour savoir quel lieu est déjà présent sur le chemin.\\
+La structure "caractéristique" contient les informations globales de la solution. C'est à dire, l'intérêt, la distance, l'insécurité, le nombre de lieux total, le nombre de lieux utile et le nombre d'arcs du chemin.\\
+
+Structure Solutions :\\
+\begin{itemize}
+\item nb\_solution (entier)
+\item solution (pointeur Parcourt)\\
+\end{itemize}
+
+Structure Parcourt :\\
+\begin{itemize}
+\item Carac (Caracteristique)
+\item Trajet (pointeur Arc)
+\item Itineraire (pointeur Lieu)
+\item visite (entier)\\
+\end{itemize}
+
+Structure Caracteristique :\\
+\begin{itemize}
+\item interet (entier)
+\item distance (entier)
+\item insecurite (entier)
+\item nb\_lieux\_utile (entier)
+\item nb\_lieux\_total (entier)
+\item nb\_arc (entier)
+\end{itemize}
+
+\subsection{La gestion des résultats}
+
+L'entrer "resultat" de type "resultat" est disponible dans la structure "Donnee" elle contient, dans le tableau "résultats", les chemins non dominés et dont toutes les possibilités au niveau de la permutation des arcs ont été testées.\\
+Afin de disposer de résultat ordonnés et pour faciliter l'algorithme de suppression des chemins dominés et identiques, le tableau "résultats" de type "parcourt" est à trois dimensions. Une première dimension permet de classer les chemins en fonction du nombre de lieux total, la deuxième dimension est un pointeur sur le résultat.\\
+Comme cette structure est entièrement dynamique, la structure "résultats" dispose d'un entier nommé "nb\_lieu" qui indique le nombre de lieux constituant un chemin qui est géré par la table "resultat" mais aussi un tableau nommé "nb\_resultat" qui indique le nombre de chemins alloués et le nombre de chemins utilisés en fonction du nombre de lieux.\\
+
+Structure resultat :\\
+\begin{itemize}
+\item nb\_lieux (entier)
+\item nb\_resultats (entier)
+\item resultats (pointeur Parcourt)
+\end{itemize}
 
 \chapter{Algo de tri rapide multicritères}
 
@@ -331,6 +467,7 @@ Sortie : posi est un booléen \\
 \end{algorithmic}
 \end{algorithm}
 
+\newpage
 \section{Création de chemin}
 
 \algsetup{indent=3em}
