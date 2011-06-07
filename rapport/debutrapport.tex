@@ -361,25 +361,34 @@ Structure resultat :\\
 \item resultats (pointeur Parcourt)
 \end{itemize}
 
-\chapter{Algo de tri rapide multicritères}
+\chapter{Tris et suppression des arcs dominés}
 
-\algsetup{indent=3em}
-\begin{algorithm}
-\caption{Swap}
-\label{Swap}
-\begin{algorithmic}[1]
-\REQUIRE  ~\\
-Entrée : $X,Y$  pointeur sur des Arcs\\
-$X et Y$  sont des pointeurs valides
-\ENSURE ~\\
-Sortie :$\emptyset$ \\
-$X$ = $Y'$ et $Y$=$X'$\\
- \STATE Allouer(tmp)\\
- \STATE tmp $\gets$ $\uparrow$X\\
- \STATE $\uparrow$X $\gets$ $\uparrow$Y\\
- \STATE $\uparrow$Y $\gets$ tmp
-\end{algorithmic}
-\end{algorithm}
+\section{But de la suppression et du tri}
+
+Dans les arcs renseignés par l'utilisateur rien n'indique qu'ils soient non dominés entre eux. Un arc dominé est, selon le critère de recherche, forcement mauvais. Par exemple, l'arc d'intérêt 6,  de distance 5 et d'insécurité 3 et dominé par un arc don les valeurs sont respectivement 7,5,3. Dans ce cas, bien qu'il y ai une distance et une insécurité identique, le deuxième arc l'emporte, car il possède un intérêt plus fort.\\
+
+Il est donc nécessaire de supprimer, avant le début de la recherche, tous ces arcs qui sont ignorés dans la solution finale, mais qui feraient perdre du temps.\\
+
+La relation de dominance entre les arcs ne peut s'établir que s'ils ont la même destination et la même source. Comme le tableau "map" qui détient l'ensemble des arcs est dans un premier temps rempli dans l'ordre où le fichier de donnée a été écrit, rien ne garantis que les arcs homologues se suivent.\\
+
+Afin de simplifier l'algorithme de suppression des arcs dominés, il est donc nécessaire de trier la table "map" afin de regrouper les destinations entre elles. La structure de ce tableau ayant déjà effectué un regroupant des arcs en fonction du lieu de départ.\\
+
+De même, comme on le verra dans la partie XX, la création du chemin de référence nécessite de connaitre l'arc de distance la plus courte entre deux points donnés. Le fait de trier les arcs en fonction de leur distance puis de leur insécurité en cas d'égalité, permet d'avoir en sommet de liste l'arc de distance minimal, ce qui évite de faire une recherche a chaque ajout d'un arc au chemin de base.
+\\
+Il est donc intéressant de trier cette table d'arcs, et ce en fonction de plusieurs critères :\\
+\begin{itemize}
+\item les arcs possédant une destination identique doivent être regroupés. Comme on cherche à maximiser l'intérêt du parcourt, les intérêts les plus forts sont placés au début. Si deux lieux on un intérêt identique, la destination possédant l'identifiant le plus faible est placé avant. 
+\item Dans chaque groupe, les arcs sont triés a fin de minimiser la distance puis l'insécurité des premiers arcs.
+\end{itemize}
+
+\section{Algorithme de tris multi-critère}
+
+L'algorithme de tris utilisé est celui du "Quicksort", bien que récursif, il permet d'avoir une complexité en $\Theta(n\log(n))$ dans le cas moyen. C'est à dire quand le pivot n'est pas sur une des extrémités du tableau à trier.\\
+Comme les données sont rentrées manuellement, rien ne permet de près-dire où le pivot à des chances de ce trouver. On aurait pu choisir un pivot aléatoirement, mais nous avons décidé de le prendre au milieu de la table à trier.\\
+Pour ce tri il y a plusieurs éléments à prendre en compte afin de décider si un élément doit se trouver avant ou après le pivot, les testes sont effectués par une fonction externe à celle de tris.\\
+
+\textit{Algorithme de tri :}\\
+Il s'agit une implémentation standard du « Quicksort », deux boucles positionnent les éléments dans un tableau qui est ensuite partagé en deux pour subir le même algorithme.
 
 \algsetup{indent=3em}
 \begin{algorithm}
@@ -397,32 +406,55 @@ Toutes les données sont valides
 \ENSURE ~\\
 Sortie : $\emptyset$ \\
 Postcondition : data  $\to$ map[id\_lieu] est trier par : \begin{itemize}
-\item IntérÕt décroissant
+\item Intérêt décroissant
 \item Distance croissant
 \item Insécurité croissant
 \end{itemize}
+\STATE $Arc **map \gets data->map[id_lieu];$
+\STATE $int i, j, k;$
 \IF {$(m<n)$}
+   \STATE /*determination et sauvgarde du pivot*/
    \STATE $k$ $\gets$ $($m$+$n$)/2$
-   \STATE swap (map[m],map[n])
+   \STATE swap (map[m],map[k])
+   \STATE /*placement des marqueurs*/
    \STATE $i$ $\gets$ $m+1$
    \STATE $j$ $\gets$ $n$
-   \WHILE {$i \leq j$}     
+   \STATE /*recherche des elements a permuter*/
+   \WHILE {$i \leq j$}    
+        \STATE /*element a gauche*/ 
         \WHILE {$((i \leq n)$ \& $position(data, id\_lieu,i,m)$}
 	  \STATE $i \gets i+1$
         \ENDWHILE
+        \STATE /*element a droit*/
         \WHILE {$((j \leq n)$ \& $position(data,id\_lieu,j,m)$}
             \STATE $j \gets j+1$
         \ENDWHILE
         \IF {$(i < j)$}
+        	\STATE /*permutation*/
           \STATE swap (map[i],map[j])
         \ENDIF
    \ENDWHILE     
+        \STATE  /* remise en place du pivot*/
         \STATE swap(map[m],map[j])
+        \STATE /* appel récursif sur les deux demi-éléments droit et gauche*/
         \STATE quicksort\_map(data,id\_lieu,m,j-1)
         \STATE quicksort\_map(data,id\_lieu,j+1,n)
 \ENDIF
 \end{algorithmic}
 \end{algorithm}
+
+\newpage
+\textit{Algorithme de la fonction position :}\\
+Son rôle est d'indiquer si un arc se trouve avant ou après un autre. Le second arc, celui de référence, est nommé clef.
+	Cette fonction prend en compte l'intérêt, la distance, la destination et l'insécurité. Si l'arc doit se trouver avant celui pointé par la clef, la fonction renvoie 0. Ce cas est vrai si :\\
+\begin{enumerate}
+\item L'intérêt de l'arc est supérieur à celui de la clef.
+\item En cas d'égalité de l'intérêt, et de différence entre les identifiants des destinations, il faut que le numéro de destination de l'arc soit inférieur à celui de la clef.
+\item En cas d'égalité de l'intérêt, il faut que la distance de l'arc soit inférieure à celui de la clef.
+\item En cas d'égalité de l'intérêt et de la distance, il faut que l'insécurité de l'arc soit inférieure ou égale à celui de la clef.
+\end{enumerate}
+
+Pour s'affranchir de changement éventuel dans la structure de donnée, de  nombreuses fonctions ont été écrites afin de récupérer des valeurs précises. Cela présente également l'avantage de clarifier les algorithmes.
 
 \algsetup{indent=3em}
 \begin{algorithm}
@@ -443,29 +475,61 @@ Sortie : posi est un booléen \\
 \item posi = 0 : id\_arc avant id\_key
 \item posi = 1 : id\_arc après id\_key
 \end{itemize}
-\STATE Key\_interet $\gets$ interet\_destination (data,id\_lieu,id\_key) 
-\STATE Key\_distance $\gets$ distance\_arc (data,id\_lieu,id\_key)
-\STATE Key\_insecurite $\gets$ insecurite\_arc (data,id\_lieu,id\_key)
-\STATE arc\_interet $\gets$ insecurite\_arc (data,id\_lieu,id\_arc)
-\STATE arc\_distance $\gets$ insecurite\_arc (data,id\_lieu,id\_arc) 
-\STATE arc\_insecurite $\gets$ insecurite\_arc (data,id\_lieu,id\_arc) 
-\STATE $posi = 1$
+\STATE /*Initialisation : récuperation des valeurs*/
+\STATE key\_interet $\gets$ interet\_map\_destination (data, id\_lieu, id\_key); 
+\STATE key\_distance $\gets$ distance\_map\_arc (data, id\_lieu, id\_key);
+\STATE key\_insecurite $\gets$ insecurite\_map\_arc (data, id\_lieu, id\_key);
+\STATE key\_destination $\gets$ destination\_map\_arc (data, id\_lieu, id\_key);
+\STATE arc\_interet $\gets$ interet\_map\_destination (data, id\_lieu, id\_arc);
+\STATE arc\_distance $\gets$ distance\_map\_arc (data, id\_lieu, id\_arc); 
+\STATE arc\_insecurite $\gets$ insecurite\_map\_arc (data, id\_lieu, id\_arc);
+\STATE arc\_destination $\gets$ destination\_map\_arc (data, id\_lieu, id\_arc); 
+\STATE /*comparaison*/
 \IF {$(arc\_interet > key\_interet)$}
-	\STATE $posi=0$
+	\STATE Retourner ($posi=0$);
 \ENDIF
-\IF {$(posi \ne 0)$ et $(arc\_interet = key\_interet)$}
-	\IF {$(arc\_distance < key\_distance)$}
-		\STATE $posi = 0$
+\IF {$(arc\_interet = key\_interet)$}
+	\IF {$(arc\_destination < key\_destination)$}
+		\STATE Retourner ($posi = 0$);
 	\ENDIF
-	\IF {$(posi \ne 0)$ et $(arc\_distance = key\_distance)$}
+	\IF {$(arc\_distance < key\_distance)$}
+	\STATE Retourner ($posi = 0$);
+	\ENDIF
+	\IF {$(arc\_distance = key\_distance)$}
 		\IF {$(arc\_insecurite \le key\_insecurite)$}
-			\STATE $posi = 0$
+			\STATE Retourner ($posi = 0$);
 		\ENDIF	
 	\ENDIF
 \ENDIF
-\STATE retourner(posi)		
+\STATE Retourner($posi=1$)		
 \end{algorithmic}
 \end{algorithm}
+
+\section{Algorithme de suppression des arcs dominés}
+Le rôle de cet algorithme de comparer tous les arcs entre eux afin de supprimer les dominés et les identiques. Un arc A est dominé pour un arc B si :\\
+\begin{itemize}
+\item Sa distance est supérieure ou égale à celle de B
+\item Son insécurité est supérieure ou égale à celle de B\\
+\end{itemize}
+
+Cette Algorithme possède deux curseurs de lecture. Un premier qui sert de référence, et un deuxième qui sert de test. Le teste se déplace d'arc en arc jusqu'à ce que le lieu de destination entre teste et référence diffère. Lorsque c'est le cas, la référence ce décale d'un arc et le teste devient égale à la position de référence plus un. Ainsi, on ne compare que des arcs homologues ; ils sont tous testés et la fonction s'arrête quand la référence a atteint la fin du tableau.\\
+
+Comme la suppression d'arc engendre des trous, nous avons du mètre en place un mécanisme qui décale le curseur de teste ou de référence s'ils viennent à designer un arc inexistant. Cette méthode est accompagnée d'une technique de copie qui déplace les arcs testés dès qu'un trou apparait. Pour ce fait il existe nu curseur nommé  "id\_cpy" qui indique la position vide.\\
+
+%\algsetup{indent=3em}
+%\begin{algorithm}
+%\caption{Epure\_Map}
+%\label{Epure\_Map}
+%\begin{algorithmic}[1]
+%\REQUIRE ~\\
+%Entrée : \begin{itemize}
+%\item data pointeur sur la structure donnée\\
+%\item id\_lieu entier, identifiant du lieu a trier\\
+%\end{itemize}
+%\ENSURE ~\\
+%\STATE /* Intialisation */
+%\end{algorithmic}
+%\end{algorithm}
 
 \newpage
 \section{Création de chemin}
