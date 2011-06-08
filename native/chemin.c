@@ -128,15 +128,15 @@ int chemin_base(Donnee *data){
     /*maj nb lieu utile*/
     if(trouve == 1){
         tmp = nb_lieu_solution(data, 0) +1;
-        maj_nb_lieu_solution(data, 0, tmp);
+        maj_nb_lieu_utile_solution(data, 0, tmp);
 
         tmp = interet_solution(data, 0) + interet_destination_arc(data, id_lieu_depart, id_sol, 0);
         maj_interet_solution(data, 0, tmp);
     }
 
     /*maj caracteristique*/
-    tmp = distance_totale_solution(data, 0) + distance_arc(data, id_lieu_depart, id_sol, 0);
-    maj_distance_totale_solution(data, 0, tmp);
+    tmp = distance_solution(data, 0) + distance_arc(data, id_lieu_depart, id_sol, 0);
+    maj_distance_solution(data, 0, tmp);
 
     tmp = insecurite_solution(data, 0) + insecurite_arc(data, id_lieu_depart, id_sol, 0);
     maj_insecurite_solution(data, 0, tmp);

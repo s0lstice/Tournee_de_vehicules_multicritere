@@ -95,6 +95,9 @@ void all_resultats(Donnee *data, int nb_lieux, int nb_ajout){
     }
 
     /*mise a jour du nombre de resultats en fonction du nombre de lieux*/
+    if(data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout < data->resultat.nb_resultats[nb_lieux -1][0])
+        data->resultat.nb_resultats[nb_lieux -1][0] = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;
+
     data->resultat.nb_resultats[nb_lieux -1][1] += nb_ajout;
 }
 
@@ -232,24 +235,29 @@ int cut_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution){
     int id_resultat;
     Parcourt **tmp;
 
+    /*recupere le nombre de resultat utilisé. comme ils sont contenuent dans un tableau (debut a 0), cela corespond aussi a la position du nouvel element*/
     id_resultat = nb_resultats_use_by_lieu(data, nb_lieux);
 
+    /*libere cette espace, en effet contrairement a copie, cette espace existe deja dans le tableau des solutions*/
     free(data->resultat.resultats[nb_lieux -1][id_resultat]);
 
+    /*cpoie de l'adresse*/
     data->resultat.resultats[nb_lieux -1][id_resultat] = data->solution.solution[id_solution];
 
+    /*increùmantation du nombre de resultats utilisé*/
     data->resultat.nb_resultats[nb_lieux -1][0]++;
 
+    /*comble le vide engendre dans le tableau des solutions*/
     while(id_solution < data->solution.nb_solution -1){
         data->solution.solution[id_solution] = data->solution.solution[id_solution +1];
         id_solution++;
     }
 
+    /*desaloue la derniere solution du tableaux, si le tableau est vide, il est suprimé*/
     if(data->solution.nb_solution == 1){
         data->solution.nb_solution = 0;
 
-        //unall_solution(data, data->solution.nb_solution);
-        free(data->solution.solution);
+         free(data->solution.solution);
     }
     else{
         data->solution.nb_solution -= 1;
@@ -260,6 +268,7 @@ int cut_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution){
         data->solution.solution = tmp;
     }
 
+    /*renvoie la pisiont de destination*/
     return id_resultat;
 }
 
