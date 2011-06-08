@@ -100,7 +100,7 @@ En plus de distinguer le système de l'environnement le schéma précèdent nous per
 
 \section{Définition du programme à réaliser}
 
-Pour réaliser un programme qui permet de répondre au mieux au besoins nous avons séparer le problème en 4-5 partie : 
+Pour réaliser un programme qui permet de répondre au mieux au besoins nous avons séparer le problème en 4-5 parties : 
 \begin{enumerate}
 \item Pour gérer la configuration des lieux qui provient du fichier texte prévu comme entrée, il faut un ensemble de structure de données qui permet de stocker et d'utiliser les différents paramètre lier à la configuration, c'est à dire :   l'intérêt des lieux, l'intercommunication entre les différents lieux, les arcs qui permette cette communication et les caractéristiques de ces arc (Distance, Insécurité).
 \item Générer un chemin de base
@@ -110,11 +110,11 @@ Pour réaliser un programme qui permet de répondre au mieux au besoins nous avons
 
 On peut représenter de manière simplifier la structure générale du programme qui répondra au problème posé : 
 
-\section {Lien entre les différentes partie}
 
-\textcolor{blue}{diagramme de classe}
 
 \part{Algorithimique}
+
+\chapter{Principe de fonctionnement du programme}
 Une fois tout l'étape de définition du problème et du contexte, ainsi que de modélisation du programme qui permetterai de répondre au problème.
 Nous avons pu commencer la partie réalisation d'algorithme et structure de données qui permette de répondre au problème.
 Cette partie a pour but de présenter le principe de fonctionnement du programme. Dans un premier temps, elle traite de la gestion des données fournies par l'utilisateur. Et dans une seconde phase, il sera question de la recherche de résultats. 
@@ -126,6 +126,35 @@ Le but étant toujours de tenir compte des fonctions objectifs :
 
 Chaque lieu est relié par un ou plusieurs chemins et le retour sur des lieux déjà visités est autorisé. Comme le programme duplique les chemins en mémoire de manière à ce qu'il devienne unidirectionnel, nous ne parlerons plus de chemin pour relier les lieux, mais d'arc.
 Par abus de langage, nous utiliserons le terme  "chemin" comme équivalant à "trajet". Ils désignent tous deux un résultat.\\
+
+
+Exécution du programme étape par étape :\\
+\begin{enumerate}
+\item L?utilisateur fournit l?ensemble des données au programme par l?intermédiaire d?un fichier texte. Celui-ci est passé dans les paramètres lors lancement du solveur.
+\item Le programme mémorise l?ensemble des informations.
+\item Il y a un tri et une suppression des informations erronées.
+\item Le programme recherche le chemin de référence en ajoutant un lieu de plus au parcours déjà existant.
+\item Le chemin de référence est utilisé pour produire des solutions optimisées, placées dans la pille en vue d?un traitement final.
+\item Les solutions sont dépilées, l?ensemble des possibilités est calculé et enregistré un tableau de résultats classé par nombre de lieux.
+\item On remonte au point 4 tant que tous les lieux ne sont pas dans la solution et qu?il reste du temps de recherche.
+\item On affiche les résultats sur la sortie standard.\\
+\end{enumerate}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[height=22cm, width=18cm]{srtucture.png}
+\caption{Schéma représentant le principe de fonctionnement du programme}
+\label{fig:Schéma représentant le principe de fonctionnement du programme}
+\end{center}
+\end{figure}
+
+Pour récupérer les résultats dans un fichier texte, il suffit de rediriger la sortie standard vers le fichier de résultats. Sous Window comme sous Linux, la redirection se fait avec le symbole supérieur.\\
+\textit{Exemple :}
+\begin{verbatim}
+
+\$ : nom_du_programe [parametre(s)] > chemin_du_fichier
+
+\end{verbatim}
 
 
 \chapter{Gestion des données en mémoire}
@@ -527,9 +556,227 @@ Comme la suppression d'arc engendre des trous, nous avons du mètre en place un m
 %\item id\_lieu entier, identifiant du lieu a trier\\
 %\end{itemize}
 %\ENSURE ~\\
-%\STATE /* Intialisation */
+%\STATE /* Récuperation des valeurs de la clef*/
+%\STATE int key_distance $/gets$ distance_map_arc(data, id_lieu, id_key);
+%\STATE int key_insecurite $/gets$  insecurite_map_arc(data, id_lieu, id_key);
+%\STATE int key_destination $/gets$  destination_map_arc(data, id_lieu, id_key);
+%\STATE /*lecture de tous le tableau*/
+%\FOR{$id\_arc$ {\textbf du} 1\ier{}arc \textbf{au} nbre\_arc}
+% \STATE /*si l'arc n'existe pas, on prends le suivnat*/
 %\end{algorithmic}
 %\end{algorithm}
+
+\textit {Algorithme d'épuration :}
+\begin{verbatim}
+int epure_map(Donnee *data,int id_lieu){
+    int nbre_arc = nb_arc(data, id_lieu);
+    int id_arc, id_key = 0, id_cpy = 1;
+
+    int arc_distance, arc_insecurite, arc_destination;
+
+    /*récupération des valeurs de la clef*/
+    int key_distance = distance_map_arc(data, id_lieu, id_key);
+    int key_insecurite = insecurite_map_arc(data, id_lieu, id_key);
+    int key_destination = destination_map_arc(data, id_lieu, id_key);
+
+    /*lecture de tous le tableau*/
+    for(id_arc = 1 ; id_arc < nbre_arc ; ++id_arc){
+        /*si l'arc n'existe pas, on prends le suivant*/
+        while((id_arc != nbre_arc)&&(existe_map_arc(data, id_lieu, id_arc) == 0)) id_arc++;
+
+        /*récupération des valeurs de l'arc*/
+        arc_distance = distance_map_arc(data, id_lieu, id_arc);
+        arc_insecurite = insecurite_map_arc(data, id_lieu, id_arc);
+        arc_destination = destination_map_arc(data, id_lieu, id_arc);
+
+        /*si l'arc est dominé, on le supprime*/
+        /*à destination égale, les intérêt sont égaux*/
+        if((arc_destination == key_destination)&&(arc_distance >= key_distance)&&(arc_insecurite >= key_insecurite)){
+            spr_str_map_arc(data, id_lieu, id_arc);
+            maj_str_map_arc(data, id_lieu, id_arc, NULL);
+        }
+        else{
+            /*si les lieux de destination sont différant*/
+            if(arc_destination != key_destination){
+                /*on déplace la clef d'un*/
+                ++id_key;
+                /*si l'arc n'existe pas, on prends le suivant*/
+                while((id_key != nbre_arc)&&(str_map_arc(data, id_lieu, id_key) == NULL)) ++id_key;
+
+                /*récupération des valeurs de la clef*/
+                key_distance = distance_map_arc(data, id_lieu, id_key);
+                key_insecurite = insecurite_map_arc(data, id_lieu, id_key);
+                key_destination = destination_map_arc(data, id_lieu, id_key);
+            }
+
+            /* s'il y a des arcs de supprimes, on comble les trous*/
+            if(id_arc != id_cpy){
+                if(str_map_arc(data, id_lieu, id_cpy) != NULL) spr_str_map_arc(data, id_lieu, id_cpy);
+                maj_str_map_arc(data, id_lieu, id_cpy, str_map_arc(data, id_lieu, id_arc));
+                maj_str_map_arc(data, id_lieu, id_arc, NULL);
+            }
+            ++id_cpy;
+        }
+    }
+    return id_cpy;
+}
+\end{verbatim} 
+
+\section{Utilisation des solutions}
+La table solution est utilisée pour stocker le chemin de référence et ceux qui sont en attente pour générer l?ensemble des solutions qu?ils renfermement. Comme ces résultats partiel son issues du chemin de base, Il est nécessaire de définir des méthodes pour pouvoir créer, copier, modifier et supprimer une solution afin que les algorithmes de recherche puissent opérer.\\
+
+Attention, comme pour toutes les fonctions définit pour ce projet, il n?y a aucuns teste pour savoir si l?opération est permise ou non. C?est à l?utilisateur de savoir ce qu?il fait et ce qu?il désir.\\
+
+\subsection{Les méthodes de création et de suppression de solutions}
+
+La fonction all\_solutions, est conçue pour créer et initialiser un certain nombre de nouvelles solutions, voir, si la table n?existe pas, c?est elle qui la créer. Ces nouveaux espaces sont obligatoirement ajoutés à la fin de la table. La structure de donnée et le nombre de solutions que l?on désire créer sont passés en paramètre.\\
+
+Après son utilisation on dispose du nombre de solutions désiré. Le nombre de solutions allouées est défini dans la structure « solutions», cette fonction maintien cette valeur à jour. Toutes caractéristiques sont initialisées à zéro et les tables itinéraire, trajet et visite à NIL.\\
+
+\textit {Algorithme de all\_solutions :}
+\begin{verbatim}
+
+void all_solutions(Donnee *data, int nb_ajout){
+    int nb_solution_totale = nb_solution(data);
+    int nb_reallocation = nb_solution_totale + nb_ajout;
+    int i;
+    Parcourt **temp_doublep;
+
+    /*on redimentionne la table du nombre specifie*/
+    temp_doublep = (Parcourt **)realloc(data->solution.solution, nb_reallocation*sizeof(Parcourt*));
+    if(temp_doublep == NULL) fatalerreur(data, "all_solutions : echeque de l'allocation");
+    data->solution.solution = temp_doublep;
+
+    /*definition des nouvelles tables*/
+    for(i = data->solution.nb_solution; i < nb_reallocation; ++i){
+        /*creation de la solution*/
+        data->solution.solution[i] = (Parcourt *)malloc(sizeof(Parcourt));
+        if(data->solution.solution[i] == NULL) fatalerreur(data, "all_solutions : echeque de l'allocation de all_solutions");
+
+        /*initialisation des caracteristique*/
+        data->solution.solution[i]->carac.distance = 0;
+        data->solution.solution[i]->carac.insecurite = 0;
+        data->solution.solution[i]->carac.interet = 0;
+        data->solution.solution[i]->carac.nb_lieux_total = 0;
+        data->solution.solution[i]->carac.nb_lieux_utile = 0;
+        data->solution.solution[i]->carac.nb_arc = 0;
+
+        data->solution.solution[i]->itineraire = NULL;
+        data->solution.solution[i]->trajet = NULL;
+        data->solution.solution[i]->visite = NULL;
+    }
+
+    /* mise a jour du nombre de solution*/
+    data->solution.nb_solution = nb_reallocation;
+}
+\end{verbatim}
+
+Pour supprimer des solutions, il existe plusieurs méthodes : 
+\begin{itemize}
+\item unall\_nb\_solutions : elle est équivalente à all\_solutions ; en plus de la supprimer, elle réadapte la taille du tableau "solutions". Les solutions qu?elles suppriment sont donc nécessairement à la fin de cette table. Elle maintint à jour le nombre de solutions présent, mais ne désalloue pas totalement la table "solutions" même si elle devient vide.
+\item unall\_table\_solution : vide entièrement la table est la supprime de la mémoire.
+\item unall\_solution : supprime une solution au milieu de la table, la case du tableau "solutions" sensé contenir l?adresse de la solution supprimée obtiens la valeur NIL.
+\end{itemize}
+
+Pour désallouer correctement la mémoire, il est nécessaire de préalablement supprimer les tableaux "trajectoire", "itinéraire" et "visite" qui sont contenus dans la solution. Cependant, visite n?existe pas forcement, c?est pour quoi il est nécessaire de tester sont existence. Si cette table n?existe pas, alors le pointeur "visite" présent dans la structure "solutions" est à NIL.\\
+
+\textit {Algorithme de unall\_solutions :}
+\begin{verbatim}
+void unall_solution(Donnee *data, int id_solution){
+
+    free(data->solution.solution[id_solution]->itineraire);
+    free(data->solution.solution[id_solution]->trajet);
+
+    if(data->solution.solution[id_solution]->visite != NULL){
+
+        free(data->solution.solution[id_solution]->visite);
+        data->solution.solution[id_solution]->visite = NULL;
+    }
+
+    free(data->solution.solution[id_solution]);
+
+    data->solution.solution[id_solution] = NULL;
+}
+\end{verbatim}
+
+\textit{Algorithme unall\_nb\_solutions :} 
+\begin{verbatim}
+void unall_nb_solutions(Donnee *data, int nb_suppretion){
+    int nb_solution_totale = nb_solution(data);
+    int nb_solution_restant = nb_solution_totale - nb_suppretion;
+    int i;
+    Parcourt **temp_doublep;
+
+    for(i = nb_solution_restant; i < nb_solution_totale; ++i){
+        unall_solution(data, i);
+    }
+
+    temp_doublep = (Parcourt **)realloc(data->solution.solution, nb_solution_restant*sizeof(Parcourt*));
+    if(temp_doublep == NULL) fatalerreur(data, "unall_table_solutions : echeque de la reallocation");
+    data->solution.solution = temp_doublep;
+
+    data->solution.nb_solution = nb_solution_restant;
+}
+\end{verbatim}
+
+\textit{Algorithme unall\_table\_solution :}
+\begin{verbatim}
+void unall_table_solutions(Donnee *data){
+    int i;
+
+    for(i = 0; i < data->solution.nb_solution; ++i){
+        unall_solution(data, i);
+    }
+    free(data->solution.solution);
+}
+\end{verbatim}
+
+\subsection{La méthode pour copier une solution}
+Comme une solution est la modification du chemin de référence, il est plus commode de copier ce dernier avant toutes modifications. L?existence de cette fonction de copie présente l?avantage de préserver le chemin de base et de ne pas avoir à la régénérer pour pouvoir le modifier.\\
+
+La fonction cpy\_solution, recopie un à un tous les éléments de la source vers la destination. Les caractéristiques sont dupliquées et les tables "trajet" et "itineraire" sont créés et affecté avec les valeurs correspondantes, seules la table "visite" est ignorée, car la probabilité pour qu?elle soit utile sur ce chemin est presque nulle. Si cela est nécessaire, la fonction générant le chemin de base, seule fonction utilisatrice de cette table, est capable de la recréer. Faire cette omission présente l?avantage de limiter l?utilisation superflue de la mémoire, de minimiser les instructions de copie pour un risque quasi inexistant.
+
+\textit{Algorithme cpy\_solution :}
+\begin{verbatim}
+void cpy_solution(Donnee *data, int id_solution_destination, int id_solution_source){    int i, nb_lieux_total;    Arc **temp_arc;    Lieu **temp_lieu;    Parcourt *destination_solution = data->solution.solution[id_solution_destination];    Parcourt *source_solution = data->solution.solution[id_solution_source];    /*copie des caracteristiques*/    destination_solution->carac.distance = source_solution->carac.distance;    destination_solution->carac.insecurite = source_solution->carac.insecurite;    destination_solution->carac.interet = source_solution->carac.interet;    destination_solution->carac.nb_arc = source_solution->carac.nb_arc;    destination_solution->carac.nb_lieux_total = source_solution->carac.nb_lieux_total;    destination_solution->carac.nb_lieux_utile = source_solution->carac.nb_lieux_utile;    /*copie de l'itineraire*/    nb_lieux_total = destination_solution->carac.nb_lieux_total;    /*on augmente l'itineraire de nb_lieux_total*/    temp_lieu = (Lieu **)realloc(destination_solution->itineraire, (nb_lieux_total)*sizeof(Lieu *));    if(temp_lieu == NULL) fatalerreur(data, "cpy_solution : echeque de la realocation de itineraire");    destination_solution->itineraire = temp_lieu;    for(i = 0; i < nb_lieux_total; ++i){        destination_solution->itineraire[i] = source_solution->itineraire[i];    }    /*copy du trajet*/    /*on augmante le trajet de nb_lieux_total*/    temp_arc = (Arc **)realloc(destination_solution->trajet, (nb_lieux_total -1)*sizeof(Arc *)); //-1 : il y a un arc de moins que de lieu    if(temp_arc == NULL) fatalerreur(data, "cpy_solution : echeque de la realocation de trajet");    destination_solution->trajet = temp_arc;    /*on affecte l'adresse de l'arc*/    for(i = 0; i < nb_lieux_total -1; ++i){        destination_solution->trajet[i] = source_solution->trajet[i];    }    /*on ne copy pas la table des visites car elle n'est utilisé que pour la generation de chemin de referance*/}
+\end{verbatim}
+
+\subsection{Les méthodes pour modifier une solution}
+
+La modification d?une solution ne comprend pas uniquement la simple possibilité de modifier des valeurs contenues dans les caractéristiques ou un lieu ou un arc. Il faut aussi pouvoir rajouter des éléments à la solution ciblée. C?est pour cela que de nombreuses de fonctions modification ont été créées :
+\begin{itemize}
+\item add\_arc\_solution : ajout un arc à la fin de la solution
+\item add\_lieu\_solution : ajout un lieu à la fin de la solution
+\item maj\_lieu\_total\_soltuion : affecte un nouveau nombre de lieux total
+\item maj\_nb\_lieu\_utile\_solution : affecte un nouveau nombre de lieux utiles
+\item maj\_distance\_solution : change la distance de la solution
+\item maj\_insecurite\_solution : change l?insécurité de la solution
+\item maj\_interet\_solution : change l?intérêt de la solution
+\item maj\_arc\_solution : change l?arc désigné dans la table trajet
+\item maj\_lieu\_solution : change le lieu désigné dans la table trajet
+\end{itemize}
+
+Seuls les algorithmes de add\_arc\_solution et add\_lieu\_solution sont présentés, les autres fonctions sont de simples modifications de valeurs dans une structure et ne présente que peu d?intérêt.
+
+\begin{verbatim}
+void add_lieu_solution(Donnee *data, int id_solution, int id_lieu){    int nb_lieu = data->solution.solution[id_solution]->carac.nb_lieux_total++;    Lieu **temp;    /*on augmente l'itineraire de 1*/    temp = (Lieu **)realloc(data->solution.solution[id_solution]->itineraire, (nb_lieu +1)*sizeof(Lieu *));    if(temp == NULL) fatalerreur(data, "add_li; maj_lieu_totaleu_solution : echeque de la realocation");    data->solution.solution[id_solution]->itineraire = temp;    /*on affecte l'adresse du lieu*/    data->solution.solution[id_solution]->itineraire[nb_lieu] = str_lieu(data, id_lieu);}
+\end{verbatim}
+
+
+\begin{verbatim}
+void add_arc_solution(Donnee *data, int id_solution, int id_lieu_depart, int id_lieu_arrive, int offset){    int nb_arc = data->solution.solution[id_solution]->carac.nb_arc++;    Arc **temp;    int id_arc;    Arc *arc;    /*recupere la position du premier arc disponible a la quelle on ajout l'offset*/    id_arc = index_id_arc(data, id_lieu_depart, id_lieu_arrive);    arc = str_map_arc(data, id_lieu_depart, id_arc) + offset;    /*on augmante le trajet de 1*/    temp = (Arc **)realloc(data->solution.solution[id_solution]->trajet, (nb_arc +1)*sizeof(Arc *));    if(temp == NULL) fatalerreur(data, "add_lieu_solution : echeque de la realocation");    data->solution.solution[id_solution]->trajet = temp;    /*on affecte l'adresse de l'arc*/    data->solution.solution[id_solution]->trajet[nb_arc] = arc;}
+\end{verbatim}
+
+Afin que l?utilisateur soit le moins dépendant possible de la forme des structures des données, nous avons créé des fonctions intermédiaires capables de récupérer la bonne valeur, le bon pointeur. En contrepartie, aucuns testes n?est effectué pour déterminer si l?action est permise ou non.Parmi ces fonctions intermédiaires, se trouve :\\
+\begin{itemize}
+\item Distance\_arc\_solution : renvoie la distance d?un arc en fonction de son identifiant dans la table "trajet" et de celui de la solution,
+\item Distance\_solution : renvoie la distance totale de la solution\item Id\_depart\_trajet\_solution : renvoie l?identifiant du lieu de départ de l?arc désigné\item Id\_destination\_trajet\_solution : renvoie l?identifiant du lieu de destination de l?arc désigné\item Id\_laste\_lieu\_solution : renvoie l?identifiant du dernier lieu du chemin, utile pour connaitre le point d?arrivée\item Id\_lieu\_solution : renvoie l?identifiant du lieu désigné\item Insecurite\_arc\_solution : renvoie l?insécurité de l?arc désigné\item distance\_arc\_solution : renvoie la distance de l?arc désigné\item interet\_lieu\_solution : renvoie l?intérêt du lieu\item intérêt\_solution : renvoie l?intérêt total de la solution\item nb\_arc\_solution : renvoie le nombre d?arcs dans la solution\item nb\_lieu\_solution : renvoie le nombre de lieu utile\item nb\_lieu\_totale\_solution : renvoie le nombre de lieux total\item nb\_solution : renvoie le nombre de solutions existantes dans la table
+\end{itemize}
+
+Cette liste non exhaustive présente les fonctions les plus utilisées, comme pour une grande partie d?entre elles, elles ne sont constituées que d?une seule ligne, nous ne présenterons pas leurs algorithmes.\\
+
+Grace à ces fonctions nous disposons présent d?outils pour créer modifier et supprimer une solution. Cela nous serra très utile pour la réalisation du chemin de référence et des optimisations.\\
+
 
 \newpage
 \section{Création de chemin}
