@@ -421,7 +421,7 @@ Donnee * main_create_db(char * path){
  */
 void free_db(Donnee * data){
     unall_resultats(data);
-    unall_solutions(data);
+    unall_table_solutions(data);
     unall_index(data);
     unall_liste(data);
     unall_map(data);

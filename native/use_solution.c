@@ -78,7 +78,7 @@ void unall_nb_solutions(Donnee *data, int nb_suppretion){
     }
 
     temp_doublep = (Parcourt **)realloc(data->solution.solution, nb_solution_restant*sizeof(Parcourt*));
-    if(temp_doublep == NULL) fatalerreur(data, "unall_solutions : echeque de la reallocation");
+    if(temp_doublep == NULL) fatalerreur(data, "unall_table_solutions : echeque de la reallocation");
     data->solution.solution = temp_doublep;
 
     data->solution.nb_solution = nb_solution_restant;
@@ -90,11 +90,16 @@ void add_lieu_solution(Donnee *data, int id_solution, int id_lieu){
 
     /*on augmente l'itineraire de 1*/
     temp = (Lieu **)realloc(data->solution.solution[id_solution]->itineraire, (nb_lieu +1)*sizeof(Lieu *));
-    if(temp == NULL) fatalerreur(data, "add_lieu_solution : echeque de la realocation");
+    if(temp == NULL) fatalerreur(data, "add_li; maj_lieu_totaleu_solution : echeque de la realocation");
     data->solution.solution[id_solution]->itineraire = temp;
 
     /*on affecte l'adresse du lieu*/
     data->solution.solution[id_solution]->itineraire[nb_lieu] = str_lieu(data, id_lieu);
+}
+
+void maj_lieu_solution(Donnee *data, int id_solution, int id_itineraire, int id_lieu){
+    /*on reaffecte l'adresse du lieu*/
+    data->solution.solution[id_solution]->itineraire[id_itineraire] = str_lieu(data, id_lieu);
 }
 
 int id_last_lieu_solution(Donnee *data, int id_solution){
@@ -108,9 +113,9 @@ void add_arc_solution(Donnee *data, int id_solution, int id_lieu_depart, int id_
     int id_arc;
     Arc *arc;
 
-    /*recupere la position du premier arc disponible*/
+    /*recupere la position du premier arc disponible a la quelle on ajout l'offset*/
     id_arc = index_id_arc(data, id_lieu_depart, id_lieu_arrive);
-    arc = str_map_arc(data, id_lieu_depart, id_arc);
+    arc = str_map_arc(data, id_lieu_depart, id_arc) + offset;
 
     /*on augmante le trajet de 1*/
     temp = (Arc **)realloc(data->solution.solution[id_solution]->trajet, (nb_arc +1)*sizeof(Arc *));
@@ -119,6 +124,19 @@ void add_arc_solution(Donnee *data, int id_solution, int id_lieu_depart, int id_
 
     /*on affecte l'adresse de l'arc*/
     data->solution.solution[id_solution]->trajet[nb_arc] = arc;
+}
+
+void maj_arc_solution(Donnee *data, int id_solution, int id_arc, int id_lieu_depart, int id_lieu_arrive, int offset){
+
+    int id_arc_new;
+    Arc *arc;
+
+    /*recupere la position du premier arc disponible a la quelle on ajout l'offset*/
+    id_arc_new = index_id_arc(data, id_lieu_depart, id_lieu_arrive);
+    arc = str_map_arc(data, id_lieu_depart, id_arc_new) + offset;
+
+    /*on affecte l'adresse de l'arc*/
+    data->solution.solution[id_solution]->trajet[id_arc] = arc;
 }
 
 int nb_lieu_total_solution(Donnee * data, int id_solution){
@@ -137,15 +155,15 @@ int nb_arc_solution(Donnee * data, int id_solution){
     return data->solution.solution[id_solution]->carac.nb_arc;
 }
 
-void maj_nb_lieu_solution(Donnee * data, int id_solution, int nb_lieu){
+void maj_nb_lieu_utile_solution(Donnee * data, int id_solution, int nb_lieu){
     data->solution.solution[id_solution]->carac.nb_lieux_utile = nb_lieu;
 }
 
-int distance_totale_solution(Donnee * data, int id_solution){
+int distance_solution(Donnee * data, int id_solution){
     return data->solution.solution[id_solution]->carac.distance;
 }
 
-void maj_distance_totale_solution(Donnee * data, int id_solution, int distance){
+void maj_distance_solution(Donnee * data, int id_solution, int distance){
     data->solution.solution[id_solution]->carac.distance = distance;
 }
 
@@ -205,7 +223,7 @@ void unall_solution(Donnee *data, int id_solution){
     data->solution.solution[id_solution] = NULL;
 }
 
-void unall_solutions(Donnee *data){
+void unall_table_solutions(Donnee *data){
     int i;
 
     for(i = 0; i < data->solution.nb_solution; ++i){
