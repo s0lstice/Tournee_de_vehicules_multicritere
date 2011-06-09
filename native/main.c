@@ -45,7 +45,7 @@ int main(int argc , char * argv [])
         cpy_solution_to_resultat(data, nb_lieux, 1);
         cut_solution_to_resultat(data, nb_lieux, 1);
         genere_resultats(data, nb_lieux);
-        supprime_domine_resultats(data, nb_lieux);
+        epure_resultats(data, nb_lieux);
     }
 
     /*while(data->solution.nb_solution > 1){

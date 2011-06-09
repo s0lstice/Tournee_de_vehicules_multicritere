@@ -16,6 +16,6 @@ int insecurite_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_
 int distance_totale_resultat(Donnee * data, int nb_lieux, int id_resultat);
 int insecurite_totale_resultat(Donnee * data, int nb_lieux, int id_resultat);
 void change_arc_resultat(Donnee *data, int nb_lieux, int id_resultat, int id_arc, int id_depart, int id_destination, int id_offcet);
-void supprime_domine_resultats(Donnee *data, int nb_lieux);
+void epure_resultats(Donnee *data, int nb_lieux);
 void genere_resultats(Donnee *data, int nb_lieux);
 #endif // USE_RESULTAT_H_INCLUDED
