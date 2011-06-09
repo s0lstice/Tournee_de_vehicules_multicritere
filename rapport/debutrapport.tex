@@ -66,15 +66,15 @@ Les autres variables dont il faut tenir compte sont les caractéristiques des arc
 \section{Contraintes}
 La principale contrainte de ce problème est la liaisons entre les différents lieux, c'est à dire si il existe un ou plusieurs arc entre deux lieux pour pouvoir aller d'un lieu dit source à un lieu dit destination.
 Si on reprend la configuration présenter dans la figure  on voit que pour aller du lieu de départ (0) au lieu A ou E il faut passer par le lieu B.
-En d'autre termes pour réaliser le parcourt on peut se déplacer d'un lieu à un autre si il existe au moins un arc reliant les deux lieux en question.
+En d'autre termes pour réaliser le Parcours on peut se déplacer d'un lieu à un autre si il existe au moins un arc reliant les deux lieux en question.
  
 \section{Fonctions Objectifs}
 
 Pour notre problème on peu considérer plusieurs fonctions objectifs qui sont les suivantes :
 \begin{itemize}
 \item[1\iere{} fonction :]Il faut que l'ensemble des lieux soit visités en essayant de maximiser l'intérêt
-\item[2\ieme{} fonction :]Le parcourt doit minimiser la distance
-\item[3\ieme{} fonction :]Le parcourt doit aussi minimiser l'insécurité
+\item[2\ieme{} fonction :]Le Parcours doit minimiser la distance
+\item[3\ieme{} fonction :]Le Parcours doit aussi minimiser l'insécurité
 \end{itemize} 
 
 \chapter{Spécification}
@@ -326,7 +326,7 @@ Voici a quoi doit ressembler la table "map" après suppression des arcs dominés d
 
 \subsection{Relation entre le lieu de départ et le lieu d'arrivée}
 
-Le tableau "map" indique déjà le lieu de départ, mais comme le nombre d'arcs entre les lieux est variables, seul le parcourt des dimensions deux et trois permet de connaitre le lieu de destination. C'est pour éviter cette recherche que l'on créé une table d'index nommé "index\_lieu" de type "index\_arc" et accessible depuis la structure "Donnee".
+Le tableau "map" indique déjà le lieu de départ, mais comme le nombre d'arcs entre les lieux est variables, seul le Parcours des dimensions deux et trois permet de connaitre le lieu de destination. C'est pour éviter cette recherche que l'on créé une table d'index nommé "index\_lieu" de type "index\_arc" et accessible depuis la structure "Donnee".
 Il s'agit d'un tableau carré, utilisé comme une tableau à deux entrées (le lieu de départ et le lieu d'arrivée). La structure "index\_arc" permet de savoir combien d'arcs ces lieux ont en commun et contiens l'identifiant du premier arc utile dans le tableau map[lieu\_depart].
 
 Structure index\_arc :\\
@@ -349,17 +349,17 @@ Voici une représentation possible de la table index\_lieu et des structures Inde
 Le tableau des solutions était prévu pour contenir les solutions obtenus après la recherche. Mais cela posait des problèmes avec l'algorithme permettant de générer tous les chemins avec les différents arcs.\\
 C'est pour cela que cette table est maintenant utilisée comme une pile de résultats intermédiaires, nommés "solution", pour qui tous les chemins non pas encore étaient généré.\\
 Cette table nommée "solution", de type "solutions" et accesible dans la structure "Donnee"\\
-La structure "solution" permet de contenir tous les chemins obtenus grâce aux algorithmes de recherche. Elle contient le nombres de solutions disponibles dans cette table est un tableau nommé "solutions" de type "Parcourt".\\
-La structure "parcourt" définit un résultat, une partie "carac" de type "caractéristique" contient les informations générales sur la solution, un tableau "trajet" contient tous les arcs utilisés dans l'ordre de parcourt. "Itiniaire" est l'équivalent de trajet, mais pour les lieux, quant à la table "visite", elle n'est utilisée que par l'algorithme de génération du chemin de base pour savoir quel lieu est déjà présent sur le chemin.\\
+La structure "solution" permet de contenir tous les chemins obtenus grâce aux algorithmes de recherche. Elle contient le nombres de solutions disponibles dans cette table est un tableau nommé "solutions" de type "Parcours".\\
+La structure "Parcours" définit un résultat, une partie "carac" de type "caractéristique" contient les informations générales sur la solution, un tableau "trajet" contient tous les arcs utilisés dans l'ordre de Parcours. "Itiniaire" est l'équivalent de trajet, mais pour les lieux, quant à la table "visite", elle n'est utilisée que par l'algorithme de génération du chemin de base pour savoir quel lieu est déjà présent sur le chemin.\\
 La structure "caractéristique" contient les informations globales de la solution. C'est à dire, l'intérêt, la distance, l'insécurité, le nombre de lieux total, le nombre de lieux utile et le nombre d'arcs du chemin.\\
 
 Structure Solutions :\\
 \begin{itemize}
 \item nb\_solution (entier)
-\item solution (pointeur Parcourt)\\
+\item solution (pointeur Parcours)\\
 \end{itemize}
 
-Structure Parcourt :\\
+Structure Parcours :\\
 \begin{itemize}
 \item Carac (Caracteristique)
 \item Trajet (pointeur Arc)
@@ -380,14 +380,14 @@ Structure Caracteristique :\\
 \subsection{La gestion des résultats}
 
 L'entrer "resultat" de type "resultat" est disponible dans la structure "Donnee" elle contient, dans le tableau "résultats", les chemins non dominés et dont toutes les possibilités au niveau de la permutation des arcs ont été testées.\\
-Afin de disposer de résultat ordonnés et pour faciliter l'algorithme de suppression des chemins dominés et identiques, le tableau "résultats" de type "parcourt" est à trois dimensions. Une première dimension permet de classer les chemins en fonction du nombre de lieux total, la deuxième dimension est un pointeur sur le résultat.\\
+Afin de disposer de résultat ordonnés et pour faciliter l'algorithme de suppression des chemins dominés et identiques, le tableau "résultats" de type "Parcours" est à trois dimensions. Une première dimension permet de classer les chemins en fonction du nombre de lieux total, la deuxième dimension est un pointeur sur le résultat.\\
 Comme cette structure est entièrement dynamique, la structure "résultats" dispose d'un entier nommé "nb\_lieu" qui indique le nombre de lieux constituant un chemin qui est géré par la table "resultat" mais aussi un tableau nommé "nb\_resultat" qui indique le nombre de chemins alloués et le nombre de chemins utilisés en fonction du nombre de lieux.\\
 
 Structure resultat :\\
 \begin{itemize}
 \item nb\_lieux (entier)
 \item nb\_resultats (entier)
-\item resultats (pointeur Parcourt)
+\item resultats (pointeur Parcours)
 \end{itemize}
 
 \chapter{Tris et suppression des arcs dominés}
@@ -406,7 +406,7 @@ De même, comme on le verra dans la partie XX, la création du chemin de référence
 \\
 Il est donc intéressant de trier cette table d'arcs, et ce en fonction de plusieurs critères :\\
 \begin{itemize}
-\item les arcs possédant une destination identique doivent être regroupés. Comme on cherche à maximiser l'intérêt du parcourt, les intérêts les plus forts sont placés au début. Si deux lieux on un intérêt identique, la destination possédant l'identifiant le plus faible est placé avant. 
+\item les arcs possédant une destination identique doivent être regroupés. Comme on cherche à maximiser l'intérêt du Parcours, les intérêts les plus forts sont placés au début. Si deux lieux on un intérêt identique, la destination possédant l'identifiant le plus faible est placé avant. 
 \item Dans chaque groupe, les arcs sont triés a fin de minimiser la distance puis l'insécurité des premiers arcs.
 \end{itemize}
 
@@ -642,17 +642,17 @@ void all_solutions(Donnee *data, int nb_ajout){
     int nb_solution_totale = nb_solution(data);
     int nb_reallocation = nb_solution_totale + nb_ajout;
     int i;
-    Parcourt **temp_doublep;
+    Parcours **temp_doublep;
 
     /*on redimentionne la table du nombre specifie*/
-    temp_doublep = (Parcourt **)realloc(data->solution.solution, nb_reallocation*sizeof(Parcourt*));
+    temp_doublep = (Parcours **)realloc(data->solution.solution, nb_reallocation*sizeof(Parcours*));
     if(temp_doublep == NULL) fatalerreur(data, "all_solutions : echeque de l'allocation");
     data->solution.solution = temp_doublep;
 
     /*definition des nouvelles tables*/
     for(i = data->solution.nb_solution; i < nb_reallocation; ++i){
         /*creation de la solution*/
-        data->solution.solution[i] = (Parcourt *)malloc(sizeof(Parcourt));
+        data->solution.solution[i] = (Parcours *)malloc(sizeof(Parcours));
         if(data->solution.solution[i] == NULL) fatalerreur(data, "all_solutions : echeque de l'allocation de all_solutions");
 
         /*initialisation des caracteristique*/
@@ -709,13 +709,13 @@ void unall_nb_solutions(Donnee *data, int nb_suppretion){
     int nb_solution_totale = nb_solution(data);
     int nb_solution_restant = nb_solution_totale - nb_suppretion;
     int i;
-    Parcourt **temp_doublep;
+    Parcours **temp_doublep;
 
     for(i = nb_solution_restant; i < nb_solution_totale; ++i){
         unall_solution(data, i);
     }
 
-    temp_doublep = (Parcourt **)realloc(data->solution.solution, nb_solution_restant*sizeof(Parcourt*));
+    temp_doublep = (Parcours **)realloc(data->solution.solution, nb_solution_restant*sizeof(Parcours*));
     if(temp_doublep == NULL) fatalerreur(data, "unall_table_solutions : echeque de la reallocation");
     data->solution.solution = temp_doublep;
 
@@ -739,12 +739,12 @@ void unall_nb_solutions(Donnee *data, int nb_suppretion){
 %\STATE int nb\_solution\_totale $\gets$ nb\_solution(data);
 %\STATE int nb\_solution\_restant $\gets$ nb\_solution\_totale - nb\_suppretion;
 %\STATE int i;
-%\STATE Parcourt **temp\_doublep;
+%\STATE Parcours **temp\_doublep;
 %	\FOR{$i$ {\textbf du} nb\_solution\_restant; i < nb\_solution\_totale; ++i}
 %	%	\FOR{$i$ {\textbf du} 1\ier{}lieu \textbf{au} dernier lieu}
 %		\STATE unall\_solution(data, i);
 %	\ENDFOR	
-%	\STATE temp\_doublep $\gets$ (Parcourt **)realloc(data$\to$solution.solution, nb\_solution\_restant*sizeof(Parcourt*));
+%	\STATE temp\_doublep $\gets$ (Parcours **)realloc(data$\to$solution.solution, nb\_solution\_restant*sizeof(Parcours*));
 %	\IF {(temp\_doublep = NULL) }
 %	\STATE fatalerreur(data, "unall\_table\_solutions : echeque de la reallocation");
 %	\ENDIF
@@ -778,8 +778,8 @@ void cpy_solution(Donnee *data, int id_solution_destination, int id_solution_sou
     int i, nb_lieux_total;
     Arc **temp_arc;
     Lieu **temp_lieu;
-    Parcourt *destination_solution = data->solution.solution[id_solution_destination];
-    Parcourt *source_solution = data->solution.solution[id_solution_source];
+    Parcours *destination_solution = data->solution.solution[id_solution_destination];
+    Parcours *source_solution = data->solution.solution[id_solution_source];
 
     /*copie des caracteristiques*/
     destination_solution->carac.distance = source_solution->carac.distance;
@@ -911,25 +911,95 @@ Bien que lors de la copie des solutions, la table "visite" n?est pas traitée, il
 
 void all_resultats(Donnee *data, int nb_lieux, int nb_ajout){
 
-  int **tmp_doubptr_int;  int i, nb_l;  Parcourt ***tmp_tripptr_parcourt;  Parcourt **tmp_doubptr_parcourt;    
+  int **tmp_doubptr_int;
+  int i, nb_l;
+  Parcours ***tmp_tripptr_Parcours;
+  Parcours **tmp_doubptr_Parcours;
+    
 /*ajout de parcours*/
 
   if(data->resultat.nb_lieux < nb_lieux){ 
-  /*reallocation de la table des parcourts enxistant en fonction des leux*/    tmp_doubptr_int = (int**)realloc(data->resultat.nb_resultats, nb_lieux*sizeof(int*));
+  /*reallocation de la table des Parcourss enxistant en fonction des leux*/
+    tmp_doubptr_int = (int**)realloc(data->resultat.nb_resultats, nb_lieux*sizeof(int*));
     if(tmp_doubptr_int == NULL) 
-      fatalerreur(data, "all_resultats : echeque de la reallocation de la table des resultats lv1");    data->resultat.nb_resultats = tmp_doubptr_int;    for(i = data->resultat.nb_lieux; i < nb_lieux; ++i){
+      fatalerreur(data, "all_resultats : echeque de la reallocation de la table des resultats lv1");
+    data->resultat.nb_resultats = tmp_doubptr_int;
+
+    for(i = data->resultat.nb_lieux; i < nb_lieux; ++i){
       data->resultat.nb_resultats[i] = (int*)malloc(2*sizeof(int));
       if(data->resultat.nb_resultats[i] == NULL) 
         fatalerreur(data, "all_resultats : echeque de la reallocation de la table des resultats lv2");
       data->resultat.nb_resultats[i][0] = 0;
-      data->resultat.nb_resultats[i][1] = 0;        }     /*realocation des parcours*/
-      tmp_tripptr_parcourt = (Parcourt ***)realloc(data->resultat.resultats, nb_lieux*sizeof(Parcourt**));
-      if(tmp_tripptr_parcourt == NULL) 
-      	fatalerreur(data, "all_resultats : echeque de la reallocation des parcourts lv1");
-      data->resultat.resultats = tmp_tripptr_parcourt;
+      data->resultat.nb_resultats[i][1] = 0;
+        }
+
+     /*realocation des parcours*/
+      tmp_tripptr_Parcours = (Parcours ***)realloc(data->resultat.resultats, nb_lieux*sizeof(Parcours**));
+      if(tmp_tripptr_Parcours == NULL) 
+      	fatalerreur(data, "all_resultats : echeque de la reallocation des Parcourss lv1");
+      data->resultat.resultats = tmp_tripptr_Parcours;
       
-      for( i = data->resultat.nb_lieux; i < nb_lieux; ++i)            data->resultat.resultats[i] = NULL;        /* mise à jour du maximum de lieux utilise*/        data->resultat.nb_lieux = nb_lieux;    }    if(nb_ajout > 0){        /*allocation des nouveaux resultat*/        nb_l = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;        tmp_doubptr_parcourt = (Parcourt **)realloc(data->resultat.resultats[nb_lieux -1], (nb_l)*sizeof(Parcourt*));        if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "all_resultats : echec de la reallocation des parcours lv2");        data->resultat.resultats[nb_lieux -1] = tmp_doubptr_parcourt;        /*initialisation de la partie rajoute*/        for(i = data->resultat.nb_resultats[nb_lieux -1][1]; i < data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout; ++i){            /*creation des desultat*/            data->resultat.resultats[nb_lieux -1][i] = (Parcourt *)malloc(sizeof(Parcourt));            if(data->resultat.resultats[nb_lieux -1][i] == NULL) fatalerreur(data, "all_resultats : echec de l'allocation des resultats vl3");            /*initialisation des caracteristique*/            data->resultat.resultats[nb_lieux -1][i]->carac.distance = 0;            data->resultat.resultats[nb_lieux -1][i]->carac.insecurite = 0;            data->resultat.resultats[nb_lieux -1][i]->carac.interet = 0;            data->resultat.resultats[nb_lieux -1][i]->carac.nb_lieux_total = 0;            data->resultat.resultats[nb_lieux -1][i]->carac.nb_lieux_utile = 0;            data->resultat.resultats[nb_lieux -1][i]->carac.nb_arc = 0;            data->resultat.resultats[nb_lieux -1][i]->itineraire  = NULL;            data->resultat.resultats[nb_lieux -1][i]->trajet = NULL;            data->resultat.resultats[nb_lieux -1][i]->visite = NULL;        }    }    else{        for(i = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout; i < data->resultat.nb_resultats[nb_lieux -1][1]; ++i){            free(data->resultat.resultats[nb_lieux -1][i]->trajet);            free(data->resultat.resultats[nb_lieux -1][i]->itineraire);            if(data->resultat.resultats[nb_lieux -1][i]->visite != NULL)                free(data->resultat.resultats[nb_lieux -1][i]->visite);            free(data->resultat.resultats[nb_lieux -1][i]);        }        /*desallocation des resultat*/        nb_l = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;        tmp_doubptr_parcourt = (Parcourt **)realloc(data->resultat.resultats[nb_lieux -1], (nb_l)*sizeof(Parcourt*));        if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "all_resultats : echec de la reallocation des parcourts lv2");        data->resultat.resultats[nb_lieux -1] = tmp_doubptr_parcourt;    }    /*mise a jour du nombre de résultats en fonction du nombre de lieux*/    if(data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout < data->resultat.nb_resultats[nb_lieux -1][0])        data->resultat.nb_resultats[nb_lieux -1][0] = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;    data->resultat.nb_resultats[nb_lieux -1][1] += nb_ajout;}
-\end{verbatim}	
+      for( i = data->resultat.nb_lieux; i < nb_lieux; ++i)
+            data->resultat.resultats[i] = NULL;
+
+        /* mise à jour du maximum de lieux utilise*/
+        data->resultat.nb_lieux = nb_lieux;
+    }
+
+
+    if(nb_ajout > 0){
+
+        /*allocation des nouveaux resultat*/
+        nb_l = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;
+        tmp_doubptr_Parcours = (Parcours **)realloc(data->resultat.resultats[nb_lieux -1], (nb_l)*sizeof(Parcours*));
+        if(tmp_doubptr_Parcours == NULL) fatalerreur(data, "all_resultats : echec de la reallocation des parcours lv2");
+        data->resultat.resultats[nb_lieux -1] = tmp_doubptr_Parcours;
+
+        /*initialisation de la partie rajoute*/
+        for(i = data->resultat.nb_resultats[nb_lieux -1][1]; i < data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout; ++i){
+            /*creation des desultat*/
+            data->resultat.resultats[nb_lieux -1][i] = (Parcours *)malloc(sizeof(Parcours));
+            if(data->resultat.resultats[nb_lieux -1][i] == NULL) fatalerreur(data, "all_resultats : echec de l'allocation des resultats vl3");
+
+            /*initialisation des caracteristique*/
+            data->resultat.resultats[nb_lieux -1][i]->carac.distance = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.insecurite = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.interet = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.nb_lieux_total = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.nb_lieux_utile = 0;
+            data->resultat.resultats[nb_lieux -1][i]->carac.nb_arc = 0;
+
+            data->resultat.resultats[nb_lieux -1][i]->itineraire  = NULL;
+            data->resultat.resultats[nb_lieux -1][i]->trajet = NULL;
+            data->resultat.resultats[nb_lieux -1][i]->visite = NULL;
+        }
+    }
+    else{
+        for(i = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout; i < data->resultat.nb_resultats[nb_lieux -1][1]; ++i){
+            free(data->resultat.resultats[nb_lieux -1][i]->trajet);
+            free(data->resultat.resultats[nb_lieux -1][i]->itineraire);
+
+            if(data->resultat.resultats[nb_lieux -1][i]->visite != NULL)
+                free(data->resultat.resultats[nb_lieux -1][i]->visite);
+
+            free(data->resultat.resultats[nb_lieux -1][i]);
+        }
+
+        /*desallocation des resultat*/
+        nb_l = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;
+        tmp_doubptr_Parcours = (Parcours **)realloc(data->resultat.resultats[nb_lieux -1], (nb_l)*sizeof(Parcours*));
+        if(tmp_doubptr_Parcours == NULL) fatalerreur(data, "all_resultats : echec de la reallocation des Parcourss lv2");
+        data->resultat.resultats[nb_lieux -1] = tmp_doubptr_Parcours;
+    }
+
+    /*mise a jour du nombre de résultats en fonction du nombre de lieux*/
+    if(data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout < data->resultat.nb_resultats[nb_lieux -1][0])
+        data->resultat.nb_resultats[nb_lieux -1][0] = data->resultat.nb_resultats[nb_lieux -1][1] + nb_ajout;
+
+    data->resultat.nb_resultats[nb_lieux -1][1] += nb_ajout;
+}
+\end{verbatim}
+	
 Il existe aussi une fonction nommée unall\_resultats qui est chargé d?effacer totalement le tableau "resultats" de la mémoire
 
 \textit{Alogorithme Unall\_resultat :}
@@ -937,12 +1007,100 @@ Il existe aussi une fonction nommée unall\_resultats qui est chargé d?effacer to
 Pratiquement identique à unall\_solutions, il doit cependant travailler sur un tableau à trois dimensions, ce qui explique la présence d?une boucle supplémentaire.
 Voici l'implémentation en C
 \begin{verbatim}
-void unall_resultats(Donnee *data){    int i, j;    for(i = 0; i < data->resultat.nb_lieux ; ++i){        if(data->resultat.resultats[i] != NULL){            for(j = 0; j < data->resultat.nb_resultats[i][1]; ++j){                if(data->resultat.resultats[i][j] != NULL){                    free(data->resultat.resultats[i][j]->itineraire);                    free(data->resultat.resultats[i][j]->trajet);	       if(data->resultat.resultats[i][j]->visite != NULL)		free(data->resultat.resultats[i][j]->visite);                }                free(data->resultat.resultats[i][j]);            }            free(data->resultat.resultats[i]);        }    }    free(data->resultat.resultats);    for(i = 0; i < data->resultat.nb_lieux; ++i){        free(data->resultat.nb_resultats[i]);    }    free(data->resultat.nb_resultats);}
+void unall_resultats(Donnee *data){
+    int i, j;
+
+    for(i = 0; i < data->resultat.nb_lieux ; ++i){
+        if(data->resultat.resultats[i] != NULL){
+            for(j = 0; j < data->resultat.nb_resultats[i][1]; ++j){
+                if(data->resultat.resultats[i][j] != NULL){
+                    free(data->resultat.resultats[i][j]->itineraire);
+                    free(data->resultat.resultats[i][j]->trajet);
+
+	       if(data->resultat.resultats[i][j]->visite != NULL)
+		free(data->resultat.resultats[i][j]->visite);
+                }
+                free(data->resultat.resultats[i][j]);
+            }
+
+            free(data->resultat.resultats[i]);
+        }
+    }
+    free(data->resultat.resultats);
+
+    for(i = 0; i < data->resultat.nb_lieux; ++i){
+        free(data->resultat.nb_resultats[i]);
+    }
+    free(data->resultat.nb_resultats);
+}
 \end{verbatim}
+
+\subsection{Copie de la solution vers les résultats}
+Le chemin résultant de l?optimisation est un résultat en soit, est il doit être placé dans le tableau « résultats », pour cela nous avons créé deux fonctions :\\
+\begin{itemize}
+\item cpy\_solution\_to\_resultat : qui fonctionne de la même manière que cpy\_solutions.
+\item cut\_solution\_to\_resultat : copie et retire l?adresse mémoire de la solution pour la placer dans les résultats. Elle présente l?avantage d?avoir une complexité nettement plus faible que cpy\_solution\_to\_resultat ce qui lui garantit un temps d?exécution plus faible. Mais comme elle retire le chemin des solutions, elle équivaut aussi à un dépilage. Ces deux raisons majeures nous permettent de n?utiliser que cut\_solution\_to\_resultat pour obtenir un phénomène de pille sur le tableau "solutions".\\
+\end{itemize}
+C?est deux fonctions place les éléments à copier à la fin du tableau "resultats" désigné par le nombre de lui que possède le chemin. C?est pour cela qu?il n?est pas nécessaire de préciser la position de destination. Par contre, l?utilisateur de la fonction peut avoir besoin de savoir à quelle position le chemin a été copier, c?est pour quoi, c?est fonction renvoie cette information.
+
+\textit{Algorithme cpy\_solution\_to\_resultat :}
+\begin{verbatim}
+int cpy_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution){    int i, nb_lieux_total;    Arc **temp_arc;    Lieu **temp_lieu;    Parcours *destination_resultat;    Parcours *source_solution;    int id_resultat;    /*si la table de resultat n'existe pas encore, on la cree*/    if(data->resultat.nb_lieux < nb_lieux)        all_resultats(data, nb_lieux, 1);    id_resultat = nb_resultats_use_by_lieu(data, nb_lieux);    if(id_resultat >= nb_resultats_all_by_lieu(data, nb_lieux))        all_resultats(data, nb_lieux, 1);    destination_resultat = data->resultat.resultats[nb_lieux -1][id_resultat];    source_solution = data->solution.solution[id_solution];    /*copy des caracteristique*/    destination_resultat->carac.distance = source_solution->carac.distance;    destination_resultat->carac.insecurite = source_solution->carac.insecurite;    destination_resultat->carac.interet = source_solution->carac.interet;    destination_resultat->carac.nb_arc = source_solution->carac.nb_arc;    destination_resultat->carac.nb_lieux_total = source_solution->carac.nb_lieux_total;    destination_resultat->carac.nb_lieux_utile = source_solution->carac.nb_lieux_utile;    /*copy de l'itineraire*/    nb_lieux_total = destination_resultat->carac.nb_lieux_total;    /*on augmente l'itineraire de nb_lieux_total*/    temp_lieu = (Lieu **)realloc(destination_resultat->itineraire, (nb_lieux_total)*sizeof(Lieu *));    if(temp_lieu == NULL) fatalerreur(data, "cpy_solution_to_resultat : echeque de la realocation de itineraire");    destination_resultat->itineraire = temp_lieu;    for(i = 0; i < nb_lieux_total; ++i){        destination_resultat->itineraire[i] = source_solution->itineraire[i];    }    /*copy du trajet*/    /*on augmante le trajet de nb_lieux_total*/    temp_arc = (Arc **)realloc(destination_resultat->trajet, (nb_lieux_total -1)*sizeof(Arc *)); //-1 : il y a un arc de moins que de lieu    if(temp_arc == NULL) fatalerreur(data, "cpy_solution_to_resultat : echeque de la realocation de trajet");    destination_resultat->trajet = temp_arc;    /*on affecte l'adresse de l'arc*/    for(i = 0; i < nb_lieux_total -1; ++i){        destination_resultat->trajet[i] = source_solution->trajet[i];    }    data->resultat.nb_resultats[nb_lieux -1][0]++; //augmante de 1 le nombre de resultat utilise    /*on ne copy pas la table des visites car elle n'est utilisé que pour la generation de chemin de referance*/    return id_resultat;// renvoi la position de la copie}
+\end{verbatim}
+
+\textit{Algorithme cut\_solution\_to\_resultat :}
+Contrairement à cpy\_solution\_to\_resultat, cut\_solution\_to\_resultat doit gère le vide occasionné par la suppression d?un élément du tableau. Il se charge aussi de la désallocation et de la suppression définitive de cette table quand il n?y a plus de solution dedans.\\
+\begin{verbatim}
+int cut_solution_to_resultat(Donnee *data, int nb_lieux, int id_solution){    int id_resultat;    Parcours **tmp;    /*récupère le nombre de résultat utilisé. comme ils sont contenues dans un tableau (debut a 0), cela correspond aussi a la position du nouvel élément*/    id_resultat = nb_resultats_use_by_lieu(data, nb_lieux);    /*libere cette espace, en effet contrairement a copie, cette espace existe deja dans le tableau des solutions*/    free(data->resultat.resultats[nb_lieux -1][id_resultat]);    /*cpoie de l'adresse*/    data->resultat.resultats[nb_lieux -1][id_resultat] = data->solution.solution[id_solution];    /*increùmantation du nombre de resultats utilisé*/    data->resultat.nb_resultats[nb_lieux -1][0]++;    /*comble le vide engendre dans le tableau des solutions*/    while(id_solution < data->solution.nb_solution -1){        data->solution.solution[id_solution] = data->solution.solution[id_solution +1];        id_solution++;    }    /*desaloue la derniere solution du tableaux, si le tableau est vide, il est suprimé*/    if(data->solution.nb_solution == 1){        data->solution.nb_solution = 0;         free(data->solution.solution);    }    else{        data->solution.nb_solution -= 1;        //unall_solution(data, data->solution.nb_solution);        tmp = (Parcours **)realloc(data->solution.solution, (data->solution.nb_solution)*sizeof(Parcours*));        if(tmp == NULL) fatalerreur(data, "cut_solution_to_resultat : echeque de la reallocation");        data->solution.solution = tmp;    }    /*renvoie la position de destination*/    return id_resultat;}
+\end{verbatim}
+
+\subsection{Enumeration des résultants}
+
+La fonction genere\_resultats est prévue pour créer tous les résultants possibles en permutant les arcs du chemin qui vient juste d?être copiée. En effet, elle prend comme référence le dernier résultat de la table. Comme les algorithmes d?optimisation ne se basent que sur des villes, les arcs restent ceux du chemin de référence. Et comme il est construit en utilisant les arcs de plus petites distances on connaît déjà leur position dans la table  "map", il s?agit des arcs au début du tableau désigné par "index\_map".\\
+Cette information est intéressante, car comme nous faisons un parcourt en largeur des arcs, cela évite d?avoir à gérer l?arc numéroté zéro dans le tableau.\\
+Cependant, tous les chemins ne sont pas intéressants, si un résultat dominé est trouvé, il n?est pas enregistré. De même, si le trajet servent de graine devient dominé, il est remplacé. En précédant ainsi, le tableau des résultats contient des chemins de lus en plus acceptable. Mais cela n?empêche pas le tableau résultats de contenir des trajets non désirables, car un chemin non dominé à une énumération donnée peut le devenir à la suivante. Pourtant il à bien été enregistré. C?est pour cela que nous avons créé la fonction epure\_resultats, qui est comparable a epure\_map.\\ 
+epure\_resultats à pour but de supprimer tous les chemins dominés ou identiques. Il travaille sur l?ensemble de la table "resultats" qui est désigné par son nombre de lieux. Ainsi, s?il y a eu plusieurs générations, on est sûrs que les potentiels doublons ont disparu tous comme les chemins dominés.
+
+\textit{Implémentation en C de l'algorithme de genere\_resultats :}
+\begin{verbatim}
+
+void genere_resultats(Donnee *data, int nb_lieux){    int id_resultat = data->resultat.nb_resultats[nb_lieux -1][0] -1;    int nb_lieux_resultat = data->resultat.resultats[nb_lieux -1][id_resultat]->carac.nb_arc;    int lieu, arc;    Parcourt* table_resultat = data->resultat.resultats[nb_lieux -1][id_resultat];    int id_destination, id_depart;    int nb_arc_genere;    int nb_resutats_vide;    int id_write_resultat = id_resultat + 1;    int distance_new, insecurite_new;    int distance_ref, insecurite_ref;    /*pour tous les lieux du chemin*/    for(lieu = 0; lieu < nb_lieux_resultat; ++lieu){        /* on recupere leur valeur*/        id_depart = table_resultat->itineraire[lieu]->id;        id_destination = table_resultat->itineraire[lieu + 1]->id;        nb_arc_genere = index_nb_arc(data, id_depart, id_destination); //nombre d'arc entre le depart et la destination        nb_resutats_vide =  data->resultat.nb_resultats[nb_lieux -1][1] - data->resultat.nb_resultats[nb_lieux -1][0]; //nombre d'arc alloué et non utilise        if(nb_resutats_vide < nb_arc_genere){ //on alloue si le nombre de resultat disponible est inferieur aux nombre de resultat necessaire            all_resultats(data, nb_lieux, data->resultat.nb_resultats[nb_lieux -1][1] + nb_arc_genere - nb_resutats_vide); //allocation du nombre de resultat necessaire        }        distance_ref = distance_totale_resultat(data, nb_lieux, id_resultat);        insecurite_ref = insecurite_totale_resultat(data, nb_lieux, id_resultat);        /*pour tous les arcs disponible entre le lieu de depart et le lieu d'arrive*/        for(arc = 1; arc < nb_arc_genere; ++arc){            distance_new = distance_ref - distance_arc_resultat(data, nb_lieux, id_resultat, lieu) + distance_arc(data, id_depart, id_destination, arc);            insecurite_new =  insecurite_ref - insecurite_arc_resultat(data, nb_lieux, id_resultat, lieu) + insecurite_arc(data, id_depart, id_destination, arc);            if((distance_ref < distance_new)&&(insecurite_ref < insecurite_new)){                continue; //new est dominé            }            if((distance_ref > distance_new)&&(insecurite_ref > insecurite_new)){                /*le chemin de referance, est dominé, on modifi sont arc pour ne pas garder un chemin dominé, sur tout celui de la generation*/                change_arc_resultat(data, nb_lieux, id_resultat, lieu, id_depart, id_destination, arc);                distance_ref = distance_totale_resultat(data, nb_lieux, id_resultat);                insecurite_ref = insecurite_totale_resultat(data, nb_lieux, id_resultat);            }            else{                cpy_resultat(data, nb_lieux, id_write_resultat, id_resultat); /* c'est un nouveau chemin valide*/                change_arc_resultat(data, nb_lieux, id_write_resultat, lieu, id_depart, id_destination, arc);                id_write_resultat++;            }        }    }        /*on vide la table de tous les resultat non utilisé*/    all_resultats(data, nb_lieux, data->resultat.nb_resultats[nb_lieux -1][0] - data->resultat.nb_resultats[nb_lieux -1][1]);}
+
+\end{verbatim}
+
+\textit{Implémentation en C de l'algortime de epure\_resultats}
+Le fonctionnement de cet algorithme est semblable à epure\_map, il semble plus simple car la fonction suprime\_resultat comble immédiatement les trous créer dans le tableau par la suppression.Cependant, il reste des erreurs de désallocation mémoire qui ne sont pas géré.
+\begin{verbatim}
+
+void epure_resultats(Donnee *data, int nb_lieux){    int id_referance, id_test;    int interet_referance, distance_referance, insecurite_referance;    int interet_test, distance_test, insecurite_test;    /* pour tous les resultats du tableau, meme si cete valeir change*/    for(id_referance = 0; id_referance < nb_resultats_use_by_lieu(data, nb_lieux); ++id_referance){        /*valeurs de la referance*/        interet_referance = data->resultat.resultats[nb_lieux -1][id_referance]->carac.interet;        distance_referance = data->resultat.resultats[nb_lieux -1][id_referance]->carac.distance;        insecurite_referance = data->resultat.resultats[nb_lieux -1][id_referance]->carac.insecurite;        /*pour de refance +1 a la fin du tableau*/        for(id_test = id_referance +1; id_test < nb_resultats_use_by_lieu(data, nb_lieux); ++id_test){            /*valeur du teste*/            interet_test = data->resultat.resultats[nb_lieux -1][id_test]->carac.interet;            distance_test = data->resultat.resultats[nb_lieux -1][id_test]->carac.distance;            insecurite_test = data->resultat.resultats[nb_lieux -1][id_test]->carac.insecurite;            /*si les caracteristique sont identique*/            if((interet_referance == interet_test)&&(distance_referance == distance_test)&&(insecurite_referance == insecurite_test)){                                if(compar_resultats(data, nb_lieux, id_referance, id_test) == 0){// teste si les chemins sont idantiques                    //suprimer test                    suprime_resultat(data, nb_lieux, id_test);                }            }            else {                /*si il est dominé*/                if((interet_referance >= interet_test)&&(distance_referance <= distance_test)&&(insecurite_referance <= insecurite_test)){                    suprime_resultat(data, nb_lieux, id_test);                }                else {                    /*si la referance est dominé*/                    if((interet_referance <= interet_test)&&(distance_referance >= distance_test)&&(insecurite_referance >= insecurite_test)){                        replace_resultat(data, nb_lieux, id_referance, id_test);                        suprime_resultat(data, nb_lieux, id_test);                        /*mise a jour des valeurs de la referance*/                        interet_referance = interet_test;                        distance_referance = distance_test;                        insecurite_referance = insecurite_test;                    }                }            }        }    }}
+
+\end{verbatim}
+
+\textit{Voici l'implémentation de l'algorithme suprime\_resultat}
+\begin{verbatim}
+
+static void suprime_resultat(Donnee *data, int nb_lieux, int id_resultat){    int i;    //Parcourt **tmp_doubptr_parcourt;    free(data->resultat.resultats[nb_lieux -1][id_resultat]->itineraire);    free(data->resultat.resultats[nb_lieux -1][id_resultat]->trajet);    if(data->resultat.resultats[nb_lieux -1][id_resultat]->visite != NULL){        free(data->resultat.resultats[nb_lieux -1][id_resultat]->visite);    }    for(i = id_resultat; i < nb_resultats_use_by_lieu(data, nb_lieux) -1; ++i){        data->resultat.resultats[nb_lieux -1][i] = data->resultat.resultats[nb_lieux -1][i +1];    }    data->resultat.resultats[nb_lieux -1][i] = NULL;    /*free(data->resultat.resultats[nb_lieux -1][i]->itineraire);    free(data->resultat.resultats[nb_lieux -1][i]->trajet);    if(data->resultat.resultats[nb_lieux -1][i]->visite != NULL){        free(data->resultat.resultats[nb_lieux -1][i]->visite);    }    tmp_doubptr_parcourt = (Parcourt **)realloc(data->resultat.resultats[nb_lieux -1], i*sizeof(Parcourt*));    if(tmp_doubptr_parcourt == NULL) fatalerreur(data, "suprime_resultat :  echeque de la realocation de lv2");    data->resultat.resultats[nb_lieux -1] = tmp_doubptr_parcourt;    data->resultat.nb_resultats[nb_lieux -1][1] = i;    data->resultat.nb_resultats[nb_lieux -1][0]--;}
+
+\end{verbatim}
+
 
 
 \newpage
 \chapter{Création de chemin}
+
+\section{Création d'un chemin de base}
+
+\section{Création de nouveau chemin}
+Pour créer de nouveau chemin à partir du chemin de base, il y a deux méthodes qui sont la permutation et l'insertion.
+
+\subsection{Permutation}
+La permutation consiste à interchanger des lieux dans la solutions, pour cela il faut procéder de la manière suivant :
+\begin{enumerate}
+\item Récuperer le chemin de base dans un tableau vide pour pouvoir travailler dessus
+\item Parcourt du tableau pour tester l'existence d'arcs entre les différents lieux
+\item Si il existe un arc entre deux lieux on peu envisager de les permuter à condition qu'il existe un arc entre le lieux précédent le 1er lieu concerner par la permutation ainsi que le lieu successeur de deuxième lieu concerner par la permutation. 
+\item Si les deux conditions sont remplis on réalise la permutation.
+\end{enumerate}
 
 \algsetup{indent=3em}
 \begin{algorithm}
